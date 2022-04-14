@@ -109,10 +109,13 @@ class world_t
 	void logic()
 		{
 		units[0].is_player_controlled = true;
+
+
 		if(key_w_down)units[0].up();
 		if(key_s_down)units[0].down();
 		if(key_a_down)units[0].left();
 		if(key_d_down)units[0].right();
+		
 		if(key_q_down)units[0].action_attack();
 		if(key_space_down)units[0].action_jump();
 			
@@ -157,6 +160,11 @@ class world_t
 	player_t[2] players;
 		
 	ALLEGRO_FONT* 	font;
+	
+	ALLEGRO_BITMAP* dude_up_bmp;
+	ALLEGRO_BITMAP* dude_down_bmp;
+	ALLEGRO_BITMAP* dude_left_bmp;
+	ALLEGRO_BITMAP* dude_right_bmp;
 	
 	ALLEGRO_BITMAP* dwarf_bmp;
 	ALLEGRO_BITMAP* goblin_bmp;

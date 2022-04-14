@@ -33,6 +33,12 @@
 		-> Can you HOLD attack to do something different than pressing? (like SOM)
 
 
+
+	[magic]
+		 in SoM each magic type has a "mana spirit" and a series of spells associated with that spirit. kind a neat way
+		 to do it other than the tried-and-old "light/dark/fire/water/lightning" by putting a face on that spirit.
+
+
 	We could basically be fighting all the KNIGHTS of King Arthur as well as MERLIN (and his associates/underlings)
 	
 		https://en.wikipedia.org/wiki/Knights_of_the_Round_Table
@@ -225,6 +231,11 @@ void load_resources()
 	{
 	g.font = al_load_font("./data/DejaVuSans.ttf", 18, 0);
 
+	g.dude_up_bmp  	= getBitmap("./data/dude_up.png");
+	g.dude_down_bmp  	= getBitmap("./data/dude_down.png");
+	g.dude_left_bmp  	= getBitmap("./data/dude_left.png");
+	g.dude_right_bmp  	= getBitmap("./data/dude_right.png");
+	
 	g.dwarf_bmp  	= getBitmap("./data/dwarf.png");
 	g.goblin_bmp  	= getBitmap("./data/goblin.png");
 

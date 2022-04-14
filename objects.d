@@ -4,25 +4,40 @@
 enum STATE{	WALKING, JUMPING, LANDING, ATTACKING}
 
 /*
+
+
+TODO - 
+	add diagonal detection
+	also decide whether diagonal should be proper sqrt(2) or classic wrong faster.
+
+
 player finite state machine! DRAW THIS THING.
 
 	walking - free movement
 	jumping - in air jumping
-	landing - delay after hitting ground
+		- Can jumping be interrupted???
+	
+	landing - delay after hitting ground 'blade landing'
 	
 	stunned - can't move. (also can't be hurt?)
 			<-- I think in Secret of Mana, you get hit for a moment, immortal. But then you are still immortal for another second or two while walking/attacking.
 				- so the key here is INVULERABILITY_TIMER gets set upon being STUNNED (edge trigger) but keeps ticking down after STUN_TIMER runs out. So 
 				invulnerability is not tied to state transitions out.
+	attacking?
+		- "windup animation for attack"  Animation: yes. Otherwise ??? (ala can it be canceled)
+
 	casting?
 		- in secret of mana casting has a windup animation but also you can't be hit but... hits attacks can be queued up on you
 			ANIMATION: yes. Whether it controls immortality or anything is a ???.
-	attacking?
-		- "windup animation for attack"  Animation: yes. Otherwise ??? (ala can it be canceled)
+		- more or less just attack 
 	
 	parry?
 		- can we parry? (I think in SoM if both attacks hit at same time they don't subtract stamina and both get attackers attacks get reset)
-
+		- parry could be a very short stun duration with no invulnerability
+		
+	dodge/roll? [more or less a jump with different animation?]
+		-
+		-
 
 
 
@@ -170,8 +185,6 @@ class unit_t : drawable_object_t
 		}
 	}
 
-
-
 class dwarf_t : unit_t
 	{
 	STATE state = STATE.WALKING;
@@ -199,8 +212,6 @@ class dwarf_t : unit_t
 				y, 
 				ALLEGRO_ALIGN_CENTER, 
 				text.toStringz());
-		
-
 		}
 
 			
@@ -256,10 +267,10 @@ class dwarf_t : unit_t
 		
 	immutable float RUN_SPEED = 2.0f; 
 
-	override void up(){ if(state == STATE.WALKING){vx = 0; vy = -RUN_SPEED;}}
-	override void down() { if(state == STATE.WALKING){vx = 0; vy = RUN_SPEED;}}
-	override void left() { if(state == STATE.WALKING){vx = -RUN_SPEED; vy = 0;}}
-	override void right() { if(state == STATE.WALKING){vx = RUN_SPEED; vy = 0;}}
+	override void up(){ if(state == STATE.WALKING){vx = 0; vy = -RUN_SPEED; bmp = g.dude_up_bmp;}}
+	override void down() { if(state == STATE.WALKING){vx = 0; vy = RUN_SPEED; bmp = g.dude_down_bmp;}}
+	override void left() { if(state == STATE.WALKING){vy = 0; vx = -RUN_SPEED; bmp = g.dude_left_bmp;}}
+	override void right() { if(state == STATE.WALKING){vy = 0; vx = RUN_SPEED; bmp = g.dude_right_bmp;}}
 	override void action_attack()
 		{
 		if(state == STATE.WALKING)
