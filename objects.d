@@ -190,7 +190,7 @@ class dwarf_t : unit_t
 			x += vx*2;
 			y += vy*2;
 			state_delay++;
-			if(state_delay == 60) 
+			if(state_delay == 45) 
 				{
 				state_delay = 0;
 				state = STATE.LANDING;
@@ -200,7 +200,7 @@ class dwarf_t : unit_t
 			
 			case STATE.LANDING: 	// Note: Our current jump is VELOCITY not DISTANCE based. Faster = further. Not faster to get same distance.
 			state_delay++;
-			if(state_delay == 30) 
+			if(state_delay == 20) 
 				{
 				state_delay = 0;
 				state = STATE.WALKING;
@@ -217,10 +217,10 @@ class dwarf_t : unit_t
 		
 	immutable float RUN_SPEED = 2.0f; 
 
-	override void up(){ vx = 0; vy = -RUN_SPEED;}
-	override void down() { vx = 0; vy = RUN_SPEED;}
-	override void left() { vx = -RUN_SPEED; vy = 0;}
-	override void right() { vx = RUN_SPEED; vy = 0;}
+	override void up(){ if(state == STATE.WALKING){vx = 0; vy = -RUN_SPEED;}}
+	override void down() { if(state == STATE.WALKING){vx = 0; vy = RUN_SPEED;}}
+	override void left() { if(state == STATE.WALKING){vx = -RUN_SPEED; vy = 0;}}
+	override void right() { if(state == STATE.WALKING){vx = RUN_SPEED; vy = 0;}}
 
 		
 	override void action_attack()
