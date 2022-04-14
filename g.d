@@ -113,6 +113,7 @@ class world_t
 		if(key_s_down)units[0].down();
 		if(key_a_down)units[0].left();
 		if(key_d_down)units[0].right();
+		if(key_q_down)units[0].action_attack();
 		if(key_space_down)units[0].action_jump();
 			
 		map.logic();
@@ -197,5 +198,6 @@ bool key_w_down = false;
 bool key_s_down = false;
 bool key_a_down = false;
 bool key_d_down = false;
+bool key_q_down = false;
 bool key_space_down = false;
 

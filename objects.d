@@ -1,4 +1,37 @@
 
+
+
+enum STATE{	WALKING, JUMPING, LANDING, ATTACKING}
+
+/*
+player finite state machine! DRAW THIS THING.
+
+	walking - free movement
+	jumping - in air jumping
+	landing - delay after hitting ground
+	
+	stunned - can't move. (also can't be hurt?)
+			<-- I think in Secret of Mana, you get hit for a moment, immortal. But then you are still immortal for another second or two while walking/attacking.
+				- so the key here is INVULERABILITY_TIMER gets set upon being STUNNED (edge trigger) but keeps ticking down after STUN_TIMER runs out. So 
+				invulnerability is not tied to state transitions out.
+	casting?
+		- in secret of mana casting has a windup animation but also you can't be hit but... hits attacks can be queued up on you
+			ANIMATION: yes. Whether it controls immortality or anything is a ???.
+	attacking?
+		- "windup animation for attack"  Animation: yes. Otherwise ??? (ala can it be canceled)
+	
+	parry?
+		- can we parry? (I think in SoM if both attacks hit at same time they don't subtract stamina and both get attackers attacks get reset)
+
+
+
+
+JUMPING -> LANDING -> WALKING -> JUMPING
+
+
+
+*/
+
 import allegro5.allegro;
 import allegro5.allegro_primitives;
 import allegro5.allegro_image;
@@ -139,11 +172,6 @@ class unit_t : drawable_object_t
 
 
 
-
-enum STATE{	WALKING, JUMPING, LANDING
-
-}
-
 class dwarf_t : unit_t
 	{
 	STATE state = STATE.WALKING;
@@ -207,6 +235,17 @@ class dwarf_t : unit_t
 				writeln("switching to STATE.WALKING");
 				}
 			break;
+			case STATE.ATTACKING:
+			state_delay++;
+			if(state_delay == 20)
+				{
+				state_delay = 0;
+				// DO ATTACK ON SPOT
+				writeln("ATTACKED.");
+				state = STATE.WALKING;
+				writeln("switching to STATE.WALKING");
+				}
+			break;		
 			
 			default:
 			assert(0, "invalid state!"); 
@@ -221,10 +260,14 @@ class dwarf_t : unit_t
 	override void down() { if(state == STATE.WALKING){vx = 0; vy = RUN_SPEED;}}
 	override void left() { if(state == STATE.WALKING){vx = -RUN_SPEED; vy = 0;}}
 	override void right() { if(state == STATE.WALKING){vx = RUN_SPEED; vy = 0;}}
-
-		
 	override void action_attack()
 		{
+		if(state == STATE.WALKING)
+			{
+			state = STATE.ATTACKING;
+			writeln("switching to STATE.ATTACKING");
+			}
+		
 		}
 	override void action_jump()
 		{

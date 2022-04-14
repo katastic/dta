@@ -1,4 +1,12 @@
 /*
+
+
+	Look at bosses from METAL SLUG etc
+
+
+
+
+
 	maps are mostly hand made. maybe we can cookie-cutter them like Diablo. 
 	We could add "themes" / mutators to existing map areas. 
 		Long path + [Undead] modifier + [High level] modifier
@@ -524,6 +532,7 @@ void execute()
 				case ALLEGRO_EVENT_KEY_DOWN:
 					{
 					isKeySet(ALLEGRO_KEY_SPACE, key_space_down);
+					isKeySet(ALLEGRO_KEY_Q, key_q_down);
 					isKeySet(ALLEGRO_KEY_W, key_w_down);
 					isKeySet(ALLEGRO_KEY_S, key_s_down);
 					isKeySet(ALLEGRO_KEY_A, key_a_down);
@@ -536,6 +545,7 @@ void execute()
 				case ALLEGRO_EVENT_KEY_UP:				
 					{
 					isKeyRel(ALLEGRO_KEY_SPACE, key_space_down);
+					isKeyRel(ALLEGRO_KEY_Q, key_q_down);
 					isKeyRel(ALLEGRO_KEY_W, key_w_down);
 					isKeyRel(ALLEGRO_KEY_S, key_s_down);
 					isKeyRel(ALLEGRO_KEY_A, key_a_down);
