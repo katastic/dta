@@ -1,0 +1,3 @@
+#!/bin/sh
+dmd -profile -profile=gc -debug -gs -g -ofmain main.d helper.d objects.d viewport.d g.d -L-L. $@
+
