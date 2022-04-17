@@ -346,7 +346,7 @@ static if (false) // MULTISAMPLING. Not sure if helpful.
 	// FPS Handling
 	// --------------------------------------------------------
 	fps_timer = al_create_timer(1.0f);
-	screencap_timer = al_create_timer(5.0f);
+	screencap_timer = al_create_timer(7.5f);
 	al_register_event_source(queue, al_get_timer_event_source(fps_timer));
 	al_register_event_source(queue, al_get_timer_event_source(screencap_timer));
 	al_start_timer(fps_timer);
