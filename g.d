@@ -5,6 +5,7 @@ import allegro5.allegro_font;
 import allegro5.allegro_ttf;
 import allegro5.allegro_color;
 
+import std.stdio;
 import std.conv;
 import std.random;
 import std.algorithm : remove;
@@ -83,16 +84,22 @@ class world_t
 		units ~= new monster_t(220, 220, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5));	
 		
 		int x = 300;
-		int y = 350;
-		chests ~= new treasure_chest(0, x, y, 0, 0, g.fountain_bmp);
+		int y = 300;
+		chests ~= new treasure_chest(0, x, y, 0, 0);
 		
 			item i = new item(0,x,y,uniform!"[]"(-.5,.5),uniform!"[]"(-.5,.5), g.reinforced_wall_bmp);
 			chests[0].itemsInside ~= i; 
+			items ~= i;
+			
 			item i2 = new item(0,x,y,uniform!"[]"(-.5,.5),uniform!"[]"(-.5,.5), g.stone_bmp);
 			chests[0].itemsInside ~= i2; 
+			items ~= i2;
+
 			item i3 = new item(0,x,y,uniform!"[]"(-.5,.5),uniform!"[]"(-.5,.5), g.wood_bmp);
 			chests[0].itemsInside ~= i3; 
-
+			items ~= i3;
+			
+			writeln("chests size", chests.length);
 		}
 
 	void draw(viewport_t v)
@@ -219,6 +226,9 @@ class world_t
 	ALLEGRO_BITMAP* dude_left_bmp;
 	ALLEGRO_BITMAP* dude_right_bmp;
 	
+	ALLEGRO_BITMAP* chest_bmp;
+	ALLEGRO_BITMAP* chest_open_bmp;
+
 	ALLEGRO_BITMAP* dwarf_bmp;
 	ALLEGRO_BITMAP* goblin_bmp;
 
@@ -237,6 +247,44 @@ class world_t
 	int SCREEN_H = 600;
 //	}
 //globals_t g;
+
+
+import std.format;
+void load_resources()	
+	{
+	g.font = al_load_font("./data/DejaVuSans.ttf", 18, 0);
+
+	g.dude_up_bmp  	= getBitmap("./data/dude_up.png");
+	g.dude_down_bmp  	= getBitmap("./data/dude_down.png");
+	g.dude_left_bmp  	= getBitmap("./data/dude_left.png");
+	g.dude_right_bmp  	= getBitmap("./data/dude_right.png");
+	
+	g.chest_bmp  		= getBitmap("./data/chest.png");
+	g.chest_open_bmp  	= getBitmap("./data/chest_open.png");
+
+	g.dwarf_bmp  	= getBitmap("./data/dwarf.png");
+	g.goblin_bmp  	= getBitmap("./data/goblin.png");
+
+	g.wall_bmp  	= getBitmap("./data/wall.png");
+	g.grass_bmp  	= getBitmap("./data/grass.png");
+	g.lava_bmp  	= getBitmap("./data/lava.png");
+	g.water_bmp  	= getBitmap("./data/water.png");
+	g.fountain_bmp  = getBitmap("./data/fountain.png");
+	g.wood_bmp  	= getBitmap("./data/wood.png");
+	g.stone_bmp  	= getBitmap("./data/brick.png");
+	
+	g.reinforced_wall_bmp  	= getBitmap("./data/reinforced_wall.png");	
+	}
+
+
+ALLEGRO_BITMAP* getBitmap(string path)
+	{
+	import std.string : toStringz;
+	ALLEGRO_BITMAP* bmp = al_load_bitmap(toStringz(path));
+	assert(bmp != null, format("ERROR: Failed to load bitmap [%s]!", path));
+	return bmp;
+	}
+
 
 struct statistics_t
 	{

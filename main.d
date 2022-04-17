@@ -227,29 +227,6 @@ import g;
 
 alias BITMAP=ALLEGRO_BITMAP;
 
-void load_resources()	
-	{
-	g.font = al_load_font("./data/DejaVuSans.ttf", 18, 0);
-
-	g.dude_up_bmp  	= getBitmap("./data/dude_up.png");
-	g.dude_down_bmp  	= getBitmap("./data/dude_down.png");
-	g.dude_left_bmp  	= getBitmap("./data/dude_left.png");
-	g.dude_right_bmp  	= getBitmap("./data/dude_right.png");
-	
-	g.dwarf_bmp  	= getBitmap("./data/dwarf.png");
-	g.goblin_bmp  	= getBitmap("./data/goblin.png");
-
-	g.wall_bmp  	= getBitmap("./data/wall.png");
-	g.grass_bmp  	= getBitmap("./data/grass.png");
-	g.lava_bmp  	= getBitmap("./data/lava.png");
-	g.water_bmp  	= getBitmap("./data/water.png");
-	g.fountain_bmp  = getBitmap("./data/fountain.png");
-	g.wood_bmp  	= getBitmap("./data/wood.png");
-	g.stone_bmp  	= getBitmap("./data/brick.png");
-	
-	g.reinforced_wall_bmp  	= getBitmap("./data/reinforced_wall.png");	
-	}
-
 //ALLEGRO_CONFIG* 		cfg;  //whats this used for?
 ALLEGRO_DISPLAY* 		al_display;
 ALLEGRO_EVENT_QUEUE* 	queue;
@@ -284,14 +261,6 @@ enum keys_label
 	FIRE_LEFT_KEY,
 	FIRE_RIGHT_KEY,
 	ACTION_KEY
-	}
-
-ALLEGRO_BITMAP* getBitmap(string path)
-	{
-	import std.string : toStringz;
-	ALLEGRO_BITMAP* bmp = al_load_bitmap(toStringz(path));
-	assert(bmp != null, format("ERROR: Failed to load bitmap [%s]!", path));
-	return bmp;
 	}
 
 bool initialize()

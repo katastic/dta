@@ -100,13 +100,37 @@ import map;
 
 class item : drawable_object_t
 	{
-	bool isInside = false;
+	bool isInside = false; //or isHidden? Not always the same though...
 	int team;
 	
-	this(uint _team, float _x, float _y, float _xv, float _yv, ALLEGRO_BITMAP* b)
+	this(uint _team, float _x, float _y, float _vx, float _vy, ALLEGRO_BITMAP* b)
 		{
-		writeln("ITEM EXISTS BTW");
+		x = _x;
+		y = _y;
+		vx = _vx;
+		vy = _vy;
+		
+		writeln("ITEM EXISTS BTW at ", x, " ", y);
 		super(b);
+		}
+		
+	override void draw(viewport_t v)
+		{
+		if(!isInside)
+			{
+			super.draw(v);
+			}
+		}
+		
+	override void on_tick()
+		{
+		if(!isInside)
+			{
+			x += vx;
+			y += vy;
+			vx *= .99; 
+			vy *= .99; 
+			}
 		}
 	}
 
@@ -116,14 +140,14 @@ class treasure_chest : drawable_object_t
 	bool isOpen = false;
 	bool isOpening = false; // so you can't open it while opening it.
 	int state_delay = 0;
-	int open_delay = 120;
+	int open_delay = 200; // initial delay for testing
 	item[] itemsInside;
 
 	//fixme
-	this(uint _team, float _x, float _y, float _xv, float _yv, ALLEGRO_BITMAP* b)
+	this(uint _team, float _x, float _y, float _xv, float _yv)
 		{
 		writeln("i'm existing.");
-		super(b);
+		super(g.chest_bmp);
 		team = _team; 
 		x = _x; 
 		y = _y;
@@ -137,10 +161,11 @@ class treasure_chest : drawable_object_t
 		if(open_delay == 0)
 			{
 			isOpening = true;
-			writeln("[Treasure Chest] OPEN TIME");
+			writeln("[Treasure Chest] OPENING");
 			state_delay = 60;
 			}
-			
+		
+		import std.math;
 		if(isOpening)
 			{
 			state_delay--;
@@ -150,15 +175,21 @@ class treasure_chest : drawable_object_t
 				isOpening = false;
 				
 				writeln("OPENED");
+				bmp = g.chest_open_bmp;
 				foreach(i; itemsInside)
 					{
+					write("item");
 					i.isInside = false;
 					i.x = x;
 					i.y = y;
-					i.vx = uniform!"[]"(-.5, .5);
-					i.vy = uniform!"[]"(-.5, .5);
+					
+					float vel = 1.0f;
+					float angle = uniform!"[]"(0, 2*PI);
+					
+					i.vx = cos(angle)*vel;
+					i.vy = sin(angle)*vel;
 					}
-				
+				itemsInside = [];
 				}
 			}
 		}
@@ -301,6 +332,7 @@ class dwarf_t : unit_t
 	{
 	STATE state = STATE.WALKING;
 	int state_delay=0;
+	item[] myInventory;
 		
 	this(float _x, float _y, float _xv, float _yv, ALLEGRO_BITMAP* b)
 		{
@@ -338,10 +370,10 @@ class dwarf_t : unit_t
 			break;
 			
 			case STATE.JUMPING:
-			x += vx*2;
-			y += vy*2;
+			x += vx*1.5;
+			y += vy*1.5;
 			state_delay++;
-			if(state_delay == 45) 
+			if(state_delay == 35) 
 				{
 				state_delay = 0;
 				state = STATE.LANDING;
@@ -389,6 +421,21 @@ class dwarf_t : unit_t
 			{
 			state = STATE.ATTACKING;
 			writeln("switching to STATE.ATTACKING");
+			
+			foreach(i; g.world.items)
+				{
+				if(i.isInside == false)
+					if(i.x - 5 < x + 5)
+						if(i.y - 5 < y + 5)
+						{
+						i.isInside = true;
+						writeln("I picked you up. ", i);
+						myInventory ~= i;
+						break; // lets only pick up one item at a time if it's for a USE key. [if it's "walk over" we'll pick up all of them--assuming we have room)
+						// eventually: Clause for 'inventory too full'
+						}
+				}
+			
 			}
 		
 		}
