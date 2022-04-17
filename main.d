@@ -1,5 +1,6 @@
 /*
 
+		
 
 	Look at bosses from METAL SLUG etc
 
@@ -231,6 +232,7 @@ alias BITMAP=ALLEGRO_BITMAP;
 ALLEGRO_DISPLAY* 		al_display;
 ALLEGRO_EVENT_QUEUE* 	queue;
 ALLEGRO_TIMER *fps_timer;
+ALLEGRO_TIMER *screencap_timer;
 display_t display;
 
 //=============================================================================
@@ -344,8 +346,11 @@ static if (false) // MULTISAMPLING. Not sure if helpful.
 	// FPS Handling
 	// --------------------------------------------------------
 	fps_timer = al_create_timer(1.0f);
+	screencap_timer = al_create_timer(5.0f);
 	al_register_event_source(queue, al_get_timer_event_source(fps_timer));
+	al_register_event_source(queue, al_get_timer_event_source(screencap_timer));
 	al_start_timer(fps_timer);
+	al_start_timer(screencap_timer);
 	
 	return 0;
 	}
@@ -581,6 +586,13 @@ void execute()
 				
 				case ALLEGRO_EVENT_TIMER:
 					{
+					if(event.timer.source == screencap_timer)
+						{
+						writeln("saving screenshot [screen.png]");
+						al_save_bitmap("screen.png", al_get_backbuffer(al_display));	
+						al_stop_timer(screencap_timer);
+						}
+						
 					if(event.timer.source == fps_timer) //ONCE per second
 						{
 

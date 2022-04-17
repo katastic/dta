@@ -87,15 +87,15 @@ class world_t
 		int y = 300;
 		chests ~= new treasure_chest(0, x, y, 0, 0);
 		
-			item i = new item(0,x,y,uniform!"[]"(-.5,.5),uniform!"[]"(-.5,.5), g.reinforced_wall_bmp);
+			item i = new item(0,x,y,uniform!"[]"(-.5,.5),uniform!"[]"(-.5,.5), g.sword_bmp);
 			chests[0].itemsInside ~= i; 
 			items ~= i;
 			
-			item i2 = new item(0,x,y,uniform!"[]"(-.5,.5),uniform!"[]"(-.5,.5), g.stone_bmp);
+			item i2 = new item(0,x,y,uniform!"[]"(-.5,.5),uniform!"[]"(-.5,.5), g.carrot_bmp);
 			chests[0].itemsInside ~= i2; 
 			items ~= i2;
 
-			item i3 = new item(0,x,y,uniform!"[]"(-.5,.5),uniform!"[]"(-.5,.5), g.wood_bmp);
+			item i3 = new item(0,x,y,uniform!"[]"(-.5,.5),uniform!"[]"(-.5,.5), g.potion_bmp);
 			chests[0].itemsInside ~= i3; 
 			items ~= i3;
 			
@@ -242,6 +242,10 @@ class world_t
 	ALLEGRO_BITMAP* wood_bmp;
 	ALLEGRO_BITMAP* stone_bmp;
 	ALLEGRO_BITMAP* reinforced_wall_bmp;
+	
+	ALLEGRO_BITMAP* sword_bmp;
+	ALLEGRO_BITMAP* carrot_bmp;
+	ALLEGRO_BITMAP* potion_bmp;
 
 	int SCREEN_W = 1200;
 	int SCREEN_H = 600;
@@ -258,6 +262,10 @@ void load_resources()
 	g.dude_down_bmp  	= getBitmap("./data/dude_down.png");
 	g.dude_left_bmp  	= getBitmap("./data/dude_left.png");
 	g.dude_right_bmp  	= getBitmap("./data/dude_right.png");
+	
+	g.sword_bmp  		= getBitmap("./data/sword.png");
+	g.carrot_bmp  		= getBitmap("./data/carrot.png");
+	g.potion_bmp  		= getBitmap("./data/potion.png");
 	
 	g.chest_bmp  		= getBitmap("./data/chest.png");
 	g.chest_open_bmp  	= getBitmap("./data/chest_open.png");

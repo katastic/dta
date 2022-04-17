@@ -178,7 +178,7 @@ class treasure_chest : drawable_object_t
 				bmp = g.chest_open_bmp;
 				foreach(i; itemsInside)
 					{
-					write("item");
+					writeln("item pop");
 					i.isInside = false;
 					i.x = x;
 					i.y = y;
@@ -203,10 +203,6 @@ class treasure_chest : drawable_object_t
 			}
 		}
 	}
-
-
-
-
 
 class monster_t : unit_t
 	{
@@ -425,8 +421,9 @@ class dwarf_t : unit_t
 			foreach(i; g.world.items)
 				{
 				if(i.isInside == false)
-					if(i.x - 5 < x + 5)
-						if(i.y - 5 < y + 5)
+					if(i.x < x + 16 && i.x > x - 16)
+					if(i.x < x + 16 && i.x > x - 16)
+					if(i.y < y + 16 && i.y > y - 16)
 						{
 						i.isInside = true;
 						writeln("I picked you up. ", i);
