@@ -5,10 +5,27 @@ enum STATE{	WALKING, JUMPING, LANDING, ATTACKING}
 
 /*
 
+the problem with horses
+	while we can have NPC horses. if we give players horses then now there's two game modes. 
+		- Fast running on a horse and you have to jump off to fight. [travel horses now its just a hassle]
+		- Can fight while on horse in which case you'll never NOT use horses again [always horses makes non-horses a permenant early game transition]
 
 TODO - 
 	add diagonal detection
 	also decide whether diagonal should be proper sqrt(2) or classic wrong faster.
+
+dudes
+	- animation handler, script files.
+	- more FSM stuff
+	- are items separate from sprites? Then we'll need an anchor point for each sprite cell
+		for the sword location and (if applicable) rotation angle
+	
+map
+	- tileset/texture atlas parser
+	- map editor
+
+particles
+	- sword attack
 
 
 player finite state machine! DRAW THIS THING.
@@ -47,6 +64,22 @@ JUMPING -> LANDING -> WALKING -> JUMPING
 
 */
 
+interface animState
+	{
+	void enter();
+	void trigger();
+	void exit();
+	}
+
+class attackingState : animState
+	{
+	void enter(){}
+	void trigger(){}
+	void exit(){}
+	}
+
+
+
 import allegro5.allegro;
 import allegro5.allegro_primitives;
 import allegro5.allegro_image;
@@ -64,6 +97,85 @@ import g;
 import helper;
 import viewport;
 import map;
+
+class item : drawable_object_t
+	{
+	bool isInside = false;
+	int team;
+	
+	this(uint _team, float _x, float _y, float _xv, float _yv, ALLEGRO_BITMAP* b)
+		{
+		writeln("ITEM EXISTS BTW");
+		super(b);
+		}
+	}
+
+class treasure_chest : drawable_object_t
+	{
+	int team;
+	bool isOpen = false;
+	bool isOpening = false; // so you can't open it while opening it.
+	int state_delay = 0;
+	int open_delay = 120;
+	item[] itemsInside;
+
+	//fixme
+	this(uint _team, float _x, float _y, float _xv, float _yv, ALLEGRO_BITMAP* b)
+		{
+		writeln("i'm existing.");
+		super(b);
+		team = _team; 
+		x = _x; 
+		y = _y;
+		vx = _xv;
+		vy = _yv;
+		}
+	
+	override void on_tick()
+		{
+		open_delay--;
+		if(open_delay == 0)
+			{
+			isOpening = true;
+			writeln("[Treasure Chest] OPEN TIME");
+			state_delay = 60;
+			}
+			
+		if(isOpening)
+			{
+			state_delay--;
+			if(state_delay == 0)
+				{
+				isOpen = true;
+				isOpening = false;
+				
+				writeln("OPENED");
+				foreach(i; itemsInside)
+					{
+					i.isInside = false;
+					i.x = x;
+					i.y = y;
+					i.vx = uniform!"[]"(-.5, .5);
+					i.vy = uniform!"[]"(-.5, .5);
+					}
+				
+				}
+			}
+		}
+
+	void onUse(unit_t user)
+		{
+		if(isOpen == false)
+			{
+			state_delay = 60;
+			isOpening = true;
+			}
+		}
+	}
+
+
+
+
 
 class monster_t : unit_t
 	{

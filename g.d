@@ -68,6 +68,8 @@ class world_t
 	monster_t[] monsters; 
 	object_t[] objects; // other stuff
 	unit_t[] units;
+	treasure_chest[] chests;
+	item[] items;
 	structure_t[] structures;
 	map_t map;
 
@@ -78,17 +80,49 @@ class world_t
 		units ~= new monster_t(220, 220, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5));
 		units ~= new monster_t(220, 220, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5));
 		units ~= new monster_t(220, 220, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5));
-		units ~= new monster_t(220, 220, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5));
+		units ~= new monster_t(220, 220, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5));	
+		
+		int x = 300;
+		int y = 350;
+		chests ~= new treasure_chest(0, x, y, 0, 0, g.fountain_bmp);
+		
+			item i = new item(0,x,y,uniform!"[]"(-.5,.5),uniform!"[]"(-.5,.5), g.reinforced_wall_bmp);
+			chests[0].itemsInside ~= i; 
+			item i2 = new item(0,x,y,uniform!"[]"(-.5,.5),uniform!"[]"(-.5,.5), g.stone_bmp);
+			chests[0].itemsInside ~= i2; 
+			item i3 = new item(0,x,y,uniform!"[]"(-.5,.5),uniform!"[]"(-.5,.5), g.wood_bmp);
+			chests[0].itemsInside ~= i3; 
+
 		}
 
 	void draw(viewport_t v)
 		{
 		map.draw(v);
-		foreach(u; units)
+		
+		void draw(T)(ref T obj)
+			{
+			foreach(o; obj)
+				{
+				o.draw(v);
+				}
+			}
+		
+		void drawStat(T, U)(ref T obj, ref U stat)
+			{
+			foreach(o; obj)
+				{
+				stat++;
+				o.draw(v);
+				}
+			}
+		
+		drawStat(units, stats.number_of_drawn_objects);
+		
+/*		foreach(u; units)
 			{
 			stats.number_of_drawn_objects++;
 			u.draw(v);
-			}
+			}*/
 /*		foreach(d; dwarves)
 			{
 			stats.number_of_drawn_dwarves++;
@@ -99,17 +133,33 @@ class world_t
 			stats.number_of_drawn_dwarves++; //fixme
 			d.draw(v);
 			}*/
-		foreach(s; structures)
+		
+		drawStat(structures, stats.number_of_drawn_structures);
+	
+/*		foreach(s; structures)
 			{
 			stats.number_of_drawn_structures++;
 			s.draw(v);
+			}*/
+			
+		draw(chests);
+		draw(items);
+/*		
+		foreach(c; chests)
+			{
+//			stats.number_of_drawn_structures++;
+			c.draw(v);
 			}
+		foreach(i; items)
+			{
+//			stats.number_of_drawn_structures++;
+			i.draw(v);
+			}*/
 		}
 		
 	void logic()
 		{
 		units[0].is_player_controlled = true;
-
 
 		if(key_w_down)units[0].up();
 		if(key_s_down)units[0].down();
@@ -117,9 +167,8 @@ class world_t
 		if(key_d_down)units[0].right();
 		
 		if(key_q_down)units[0].action_attack();
-		if(key_space_down)units[0].action_jump();
-			
 		map.logic();
+		if(key_space_down)units[0].action_jump();
 		
 		void tick(T)(ref T obj)
 			{
@@ -134,7 +183,9 @@ class world_t
 //		tick(dwarves);
 //		tick(monsters);
 		tick(structures);
-		
+		tick(chests);
+		tick(items);
+
 		//prune ready-to-delete entries
 		void prune(T)(ref T obj)
 			{
@@ -149,6 +200,8 @@ class world_t
 		prune(dwarves);
 		prune(monsters);
 		prune(structures);
+		prune(chests);
+		prune(items);
 		}
 	}
 
