@@ -193,7 +193,7 @@ import std.format;
 import std.random;
 import std.algorithm;
 import std.traits; // EnumMembers
-
+import std.file;
 //thread yielding?
 //-------------------------------------------
 //import core.thread; //for yield... maybe?
@@ -518,12 +518,27 @@ void execute()
 					{
 					isKeySet(ALLEGRO_KEY_SPACE, key_space_down);
 					isKeySet(ALLEGRO_KEY_Q, key_q_down);
+					isKeySet(ALLEGRO_KEY_E, key_e_down);
 					isKeySet(ALLEGRO_KEY_W, key_w_down);
 					isKeySet(ALLEGRO_KEY_S, key_s_down);
 					isKeySet(ALLEGRO_KEY_A, key_a_down);
 					isKeySet(ALLEGRO_KEY_D, key_d_down);
 
 					isKeySet(ALLEGRO_KEY_ESCAPE, exit);
+
+					if(event.keyboard.keycode == ALLEGRO_KEY_1)
+						{
+						std.file.write("save.map", world.map.data);
+//				        auto writeBytes = fwrite(&world.map.data, byte.sizeof, world.map.data.sizeof, file.getFP());
+				        //https://forum.dlang.org/post/mailman.113.1330209587.24984.digitalmars-d-learn@puremagic.com
+						}
+					if(event.keyboard.keycode == ALLEGRO_KEY_2)
+						{
+//						world.map.data = std.file.read("save.map", world.map.data.sizeof);
+//						auto file = File("save.map", g.world.map.data, "r");
+//						auto readBytes = fread(&g.world.map.data, byte.sizeof, dup.sizeof, file.getFP());
+						}
+
 					break;
 					}
 					
@@ -531,6 +546,7 @@ void execute()
 					{
 					isKeyRel(ALLEGRO_KEY_SPACE, key_space_down);
 					isKeyRel(ALLEGRO_KEY_Q, key_q_down);
+					isKeyRel(ALLEGRO_KEY_E, key_e_down);
 					isKeyRel(ALLEGRO_KEY_W, key_w_down);
 					isKeyRel(ALLEGRO_KEY_S, key_s_down);
 					isKeyRel(ALLEGRO_KEY_A, key_a_down);

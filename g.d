@@ -173,8 +173,11 @@ class world_t
 		if(key_d_down)units[0].right();
 		
 		if(key_q_down)units[0].action_attack();
-		map.logic();
+		if(key_e_down)units[0].action_use();
+
 		if(key_space_down)units[0].action_jump();
+
+		map.logic();
 		
 		void tick(T)(ref T obj)
 			{
@@ -311,4 +314,5 @@ bool key_s_down = false;
 bool key_a_down = false;
 bool key_d_down = false;
 bool key_q_down = false;
+bool key_e_down = false;
 bool key_space_down = false;

@@ -211,7 +211,7 @@ class monster_t : unit_t
 
 	bool isBeingHit=false;
 
-	void onHit(unit_t by)
+	void onHit(unit_t by, float damage)
 		{
 		import std.math;
 		isBeingHit=true;
@@ -222,6 +222,7 @@ class monster_t : unit_t
 		vx = -cos(angle)*vel;
 		vy = -sin(angle)*vel;
 		writeln(angle, ",", vel, ",", vx, ",", vy);
+		hp -= damage;
 		}
 
 	override void on_tick()
@@ -277,6 +278,8 @@ class unit_t : drawable_object_t
 	uint team=0;
 	
 	bool is_player_controlled=false;
+	
+	void action_use(){}
 	
 	void search_and_attack_nearby_enemy() /// first one we find. ALSO STRUCTURES!
 		{
@@ -361,6 +364,7 @@ class dwarf_t : unit_t
 	STATE state = STATE.WALKING;
 	int state_delay=0;
 	item[] myInventory;
+	bool hasSword = false;
 		
 	this(float _x, float _y, float _xv, float _yv, ALLEGRO_BITMAP* b)
 		{
@@ -384,6 +388,38 @@ class dwarf_t : unit_t
 				y, 
 				ALLEGRO_ALIGN_CENTER, 
 				text.toStringz());
+		}
+
+	override void action_use() //does this need some sort of delay / anim delay / cooldown
+		{
+
+		foreach(i; g.world.chests)
+			{
+			if(i.x < x + 16 && i.x > x - 16)
+			if(i.x < x + 16 && i.x > x - 16)
+			if(i.y < y + 16 && i.y > y - 16)
+				{
+				writeln("I'm opening a chest");
+				i.onHit(this);
+				return; 
+				}
+			}
+
+		foreach(i; g.world.items)
+			{
+			if(i.isInside == false)
+				if(i.x < x + 16 && i.x > x - 16)
+				if(i.x < x + 16 && i.x > x - 16)
+				if(i.y < y + 16 && i.y > y - 16)
+					{
+					writeln("I'm picking up an item");
+					pickUp(i);
+					return;
+					//break; // lets only pick up one item at a time if it's for a USE key. [if it's "walk over" we'll pick up all of them--assuming we have room)
+					// eventually: Clause for 'inventory too full'
+					}
+			}
+			
 		}
 
 			
@@ -424,9 +460,33 @@ class dwarf_t : unit_t
 				{
 				state_delay = 0;
 				// DO ATTACK ON SPOT
-				writeln("ATTACKED.");
+				
 				state = STATE.WALKING;
 				writeln("switching to STATE.WALKING");
+				
+				
+				if(hasSword)
+					{
+					writeln("ATTACKED with sword.");
+					}else{
+					writeln("NO sword.");
+					return;
+					}
+				
+				foreach(i; g.world.monsters)
+					{
+					if(i.x < x + 16 && i.x > x - 16)
+					if(i.x < x + 16 && i.x > x - 16)
+					if(i.y < y + 16 && i.y > y - 16)
+						{
+						writeln("I hit someone");
+						i.onHit(this, 10);
+						return; 
+						}
+					}
+
+				
+				
 				}
 			break;		
 			
@@ -444,53 +504,23 @@ class dwarf_t : unit_t
 	override void left() { if(state == STATE.WALKING){vy = 0; vx = -RUN_SPEED; bmp = g.dude_left_bmp;}}
 	override void right() { if(state == STATE.WALKING){vy = 0; vx = RUN_SPEED; bmp = g.dude_right_bmp;}}
 
+	void pickUp(ref item i)
+		{
+		i.isInside = true;
+		writeln("I picked ", i ," up. ", i);
+		myInventory ~= i;
+		if(i.bmp == g.sword_bmp)
+			{
+			hasSword = true;
+			}
+		}
+
 	override void action_attack()
 		{
 		if(state == STATE.WALKING)
 			{
 			state = STATE.ATTACKING;
 			writeln("switching to STATE.ATTACKING");
-			
-			foreach(i; g.world.items)
-				{
-				if(i.isInside == false)
-					if(i.x < x + 16 && i.x > x - 16)
-					if(i.x < x + 16 && i.x > x - 16)
-					if(i.y < y + 16 && i.y > y - 16)
-						{
-						i.isInside = true;
-						writeln("I picked you up. ", i);
-						myInventory ~= i;
-						return;
-						//break; // lets only pick up one item at a time if it's for a USE key. [if it's "walk over" we'll pick up all of them--assuming we have room)
-						// eventually: Clause for 'inventory too full'
-						}
-				}
-			
-			foreach(i; g.world.monsters)
-				{
-				if(i.x < x + 16 && i.x > x - 16)
-				if(i.x < x + 16 && i.x > x - 16)
-				if(i.y < y + 16 && i.y > y - 16)
-					{
-					writeln("I hit someone");
-					i.onHit(this);
-					return; 
-					}
-				}
-
-			foreach(i; g.world.chests)
-				{
-				if(i.x < x + 16 && i.x > x - 16)
-				if(i.x < x + 16 && i.x > x - 16)
-				if(i.y < y + 16 && i.y > y - 16)
-					{
-					writeln("I hit a chest");
-					i.onHit(this);
-					return; 
-					}
-				}
-
 			}
 		
 		}
