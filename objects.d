@@ -390,9 +390,19 @@ class dwarf_t : unit_t
 				text.toStringz());
 		}
 
+	
+	int use_cooldown = 0;
+
 	override void action_use() //does this need some sort of delay / anim delay / cooldown
 		{
-
+		if(use_cooldown == 0)
+			{
+			use_cooldown = 20;
+			}else{
+			writeln("use [cooldown] not ready!");
+			return;
+			}
+		
 		foreach(i; g.world.chests)
 			{
 			if(i.x < x + 16 && i.x > x - 16)
@@ -425,6 +435,7 @@ class dwarf_t : unit_t
 			
 	override void on_tick()
 		{		
+		if(use_cooldown > 0)use_cooldown--;
 //		super.on_tick();
 		switch(state)
 			{
