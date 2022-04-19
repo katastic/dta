@@ -140,7 +140,6 @@ class treasure_chest : drawable_object_t
 	bool isOpen = false;
 	bool isOpening = false; // so you can't open it while opening it.
 	int state_delay = 0;
-	int open_delay = 200; // initial delay for testing
 	item[] itemsInside;
 
 	//fixme
@@ -154,17 +153,16 @@ class treasure_chest : drawable_object_t
 		vx = _xv;
 		vy = _yv;
 		}
+		
+	void onHit(unit_t by)
+		{
+		isOpening = true;
+		writeln("[Treasure Chest] OPENING");
+		state_delay = 60;		
+		}
 	
 	override void on_tick()
-		{
-		open_delay--;
-		if(open_delay == 0)
-			{
-			isOpening = true;
-			writeln("[Treasure Chest] OPENING");
-			state_delay = 60;
-			}
-		
+		{		
 		import std.math;
 		if(isOpening)
 			{
@@ -228,6 +226,17 @@ class monster_t : unit_t
 
 	override void on_tick()
 		{
+		if(!isBeingHit && percent(1) )
+			{			
+			import std.math;
+			float angle = atan2(g.world.units[0].y - y, g.world.units[0].x - x);
+			float vel = 1.0f;
+			
+			vx = cos(angle)*vel;
+			vy = sin(angle)*vel;
+			}
+			
+			
 		import std.math;
 		super.on_tick();
 		x += vx;
@@ -236,8 +245,8 @@ class monster_t : unit_t
 			{
 			vx *= .99;
 			vy *= .99;
-			if(abs(vx) < .1 && abs(vy) < .1)
-				{vx = 0; vy = 0;}  
+			if(abs(vx) < .2 && abs(vy) < .2)
+				{vx = 0; vy = 0; isBeingHit = false;}  
 			}
 
 		if(x < 0 || y < 0)delete_me = true;
@@ -452,7 +461,8 @@ class dwarf_t : unit_t
 						i.isInside = true;
 						writeln("I picked you up. ", i);
 						myInventory ~= i;
-						break; // lets only pick up one item at a time if it's for a USE key. [if it's "walk over" we'll pick up all of them--assuming we have room)
+						return;
+						//break; // lets only pick up one item at a time if it's for a USE key. [if it's "walk over" we'll pick up all of them--assuming we have room)
 						// eventually: Clause for 'inventory too full'
 						}
 				}
@@ -465,9 +475,22 @@ class dwarf_t : unit_t
 					{
 					writeln("I hit someone");
 					i.onHit(this);
-					break; 
+					return; 
 					}
 				}
+
+			foreach(i; g.world.chests)
+				{
+				if(i.x < x + 16 && i.x > x - 16)
+				if(i.x < x + 16 && i.x > x - 16)
+				if(i.y < y + 16 && i.y > y - 16)
+					{
+					writeln("I hit a chest");
+					i.onHit(this);
+					return; 
+					}
+				}
+
 			}
 		
 		}

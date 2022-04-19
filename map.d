@@ -38,6 +38,14 @@ class map_t
 				{
 				data[i][j] = 1;
 				}
+			if(percent(25))
+				{
+				data[i][j] = 4;
+				}
+			if(percent(15))
+				{
+				data[i][j] = 5;
+				}
 			}
 			
 		data[10][10] = 2;
