@@ -211,11 +211,34 @@ class monster_t : unit_t
 		super(2, _x, _y, _vx, _vy, g.goblin_bmp);
 		}
 
+	bool isBeingHit=false;
+
+	void onHit(unit_t by)
+		{
+		import std.math;
+		isBeingHit=true;
+
+		float angle = atan2(by.y - y, by.x - x);
+		float vel = 2.0f;
+		
+		vx = -cos(angle)*vel;
+		vy = -sin(angle)*vel;
+		writeln(angle, ",", vel, ",", vx, ",", vy);
+		}
+
 	override void on_tick()
 		{
+		import std.math;
 		super.on_tick();
 		x += vx;
 		y += vy;
+		if(isBeingHit)
+			{
+			vx *= .99;
+			vy *= .99;
+			if(abs(vx) < .1 && abs(vy) < .1)
+				{vx = 0; vy = 0;}  
+			}
 
 		if(x < 0 || y < 0)delete_me = true;
 		if(x > (world.map.w-1)*32)delete_me = true;
@@ -411,6 +434,7 @@ class dwarf_t : unit_t
 	override void down() { if(state == STATE.WALKING){vx = 0; vy = RUN_SPEED; bmp = g.dude_down_bmp;}}
 	override void left() { if(state == STATE.WALKING){vy = 0; vx = -RUN_SPEED; bmp = g.dude_left_bmp;}}
 	override void right() { if(state == STATE.WALKING){vy = 0; vx = RUN_SPEED; bmp = g.dude_right_bmp;}}
+
 	override void action_attack()
 		{
 		if(state == STATE.WALKING)
@@ -433,6 +457,17 @@ class dwarf_t : unit_t
 						}
 				}
 			
+			foreach(i; g.world.monsters)
+				{
+				if(i.x < x + 16 && i.x > x - 16)
+				if(i.x < x + 16 && i.x > x - 16)
+				if(i.y < y + 16 && i.y > y - 16)
+					{
+					writeln("I hit someone");
+					i.onHit(this);
+					break; 
+					}
+				}
 			}
 		
 		}

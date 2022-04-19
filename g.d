@@ -78,10 +78,10 @@ class world_t
 		{
 		map = new map_t;
 		units ~= new dwarf_t(120, 120, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5), g.stone_bmp);
-		units ~= new monster_t(220, 220, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5));
-		units ~= new monster_t(220, 220, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5));
-		units ~= new monster_t(220, 220, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5));
-		units ~= new monster_t(220, 220, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5));	
+		monsters ~= new monster_t(220, 220, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5));
+		monsters ~= new monster_t(220, 220, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5));
+		monsters ~= new monster_t(220, 220, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5));
+		monsters ~= new monster_t(220, 220, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5));	
 		
 		int x = 300;
 		int y = 300;
@@ -135,11 +135,10 @@ class world_t
 			stats.number_of_drawn_dwarves++;
 			d.draw(v);
 			}
-		foreach(d; monsters)
-			{
-			stats.number_of_drawn_dwarves++; //fixme
-			d.draw(v);
-			}*/
+
+
+*/
+		draw(monsters);
 		
 		drawStat(structures, stats.number_of_drawn_structures);
 	
@@ -188,7 +187,7 @@ class world_t
 		tick(units);
 //		tick(objects);
 //		tick(dwarves);
-//		tick(monsters);
+		tick(monsters);
 		tick(structures);
 		tick(chests);
 		tick(items);
@@ -211,7 +210,6 @@ class world_t
 		prune(items);
 		}
 	}
-
 
 // CONSTANTS
 //=============================================================================
@@ -252,7 +250,6 @@ class world_t
 //	}
 //globals_t g;
 
-
 import std.format;
 void load_resources()	
 	{
@@ -284,7 +281,6 @@ void load_resources()
 	g.reinforced_wall_bmp  	= getBitmap("./data/reinforced_wall.png");	
 	}
 
-
 ALLEGRO_BITMAP* getBitmap(string path)
 	{
 	import std.string : toStringz;
@@ -292,7 +288,6 @@ ALLEGRO_BITMAP* getBitmap(string path)
 	assert(bmp != null, format("ERROR: Failed to load bitmap [%s]!", path));
 	return bmp;
 	}
-
 
 struct statistics_t
 	{
@@ -317,4 +312,3 @@ bool key_a_down = false;
 bool key_d_down = false;
 bool key_q_down = false;
 bool key_space_down = false;
-
