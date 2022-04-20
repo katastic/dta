@@ -1,1 +1,1 @@
-dscanner -S main.d | grep -Ev 'undocumented|immutable|120|style'
+dscanner -S *.d | grep -Ev 'undocumented|immutable|120|style'
