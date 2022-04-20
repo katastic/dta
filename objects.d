@@ -122,7 +122,7 @@ class item : drawable_object_t
 			}
 		}
 		
-	override void on_tick()
+	override void onTick()
 		{
 		if(!isInside)
 			{
@@ -161,7 +161,7 @@ class treasure_chest : drawable_object_t
 		state_delay = 60;		
 		}
 	
-	override void on_tick()
+	override void onTick()
 		{		
 		import std.math;
 		if(isOpening)
@@ -225,23 +225,23 @@ class monster_t : unit_t
 		hp -= damage;
 		}
 
-	override void on_tick()
+	override void onTick()
 		{
 		if(!isBeingHit && percent(1) )
 			{			
 			import std.math;
 			float angle = atan2(g.world.units[0].y - y, g.world.units[0].x - x);
 			float vel = 1.0f;
-			
+						
 			vx = cos(angle)*vel;
 			vy = sin(angle)*vel;
 			}
 			
-			
 		import std.math;
-		super.on_tick();
-		x += vx;
-		y += vy;
+		super.onTick();
+
+		attemptMoveRel(vx, vy);
+
 		if(isBeingHit)
 			{
 			vx *= .99;
@@ -276,6 +276,26 @@ class unit_t : drawable_object_t
 	bool is_attacking=false;
 	bool is_running=false;
 	uint team=0;
+	
+	void attemptMoveRel(float dx, float dy)
+		{
+		float cx = x + dx;
+		float cy = y + dy;
+		if(cx > 0 && cy > 0 && cx < 50*32 && cy < 50*32)
+			{
+			tile t = g.world.map.data[cast(int)cx/32][cast(int)cy/32];
+			if(t == 0 || t == 3 || t == 4 || t == 5)
+				{
+				x = cx;
+				y = cy;
+				}
+//			writeln(t);
+			}
+		}
+
+	
+	
+	
 	
 	bool is_player_controlled=false;
 	
@@ -354,7 +374,7 @@ class unit_t : drawable_object_t
 		draw_hp_bar(x, y, v, hp, 100);		
 		}
 
-	override void on_tick()
+	override void onTick()
 		{
 		}
 	}
@@ -365,7 +385,8 @@ class dwarf_t : unit_t
 	int state_delay=0;
 	item[] myInventory;
 	bool hasSword = false;
-		
+	int direction=0;
+
 	this(float _x, float _y, float _xv, float _yv, ALLEGRO_BITMAP* b)
 		{
 		super(1, _x, _y, _xv, _yv, b);
@@ -375,21 +396,16 @@ class dwarf_t : unit_t
 		{
 		super.draw(v);
 		string text;
-		
-/*		if(state == STATE.WALKING) text = __traits(identifier, state);
-		if(state == STATE.JUMPING) text = __traits(identifier, state);
-		if(state == STATE.LANDING) text = __traits(identifier, state);
-	*/
+
 		text = to!string(state);
 		
-			al_draw_text(g.font, 
-				ALLEGRO_COLOR(0, 0, 0, 1), 
-				x, 
-				y, 
-				ALLEGRO_ALIGN_CENTER, 
-				text.toStringz());
+		al_draw_text(g.font, 
+			ALLEGRO_COLOR(0, 0, 0, 1), 
+			x, 
+			y, 
+			ALLEGRO_ALIGN_CENTER, 
+			text.toStringz());
 		}
-
 	
 	int use_cooldown = 0;
 
@@ -432,21 +448,20 @@ class dwarf_t : unit_t
 			
 		}
 
-			
-	override void on_tick()
+	override void onTick()
 		{		
 		if(use_cooldown > 0)use_cooldown--;
-//		super.on_tick();
+//		super.onTick();
 		switch(state)
 			{
 			case STATE.WALKING:
-			x += vx;
-			y += vy;
+//			x += vx;
+//			y += vy;
 			break;
 			
 			case STATE.JUMPING:
-			x += vx*1.5;
-			y += vy*1.5;
+			x += vx;
+			y += vy;
 			state_delay++;
 			if(state_delay == 35) 
 				{
@@ -495,9 +510,6 @@ class dwarf_t : unit_t
 						return; 
 						}
 					}
-
-				
-				
 				}
 			break;		
 			
@@ -509,11 +521,12 @@ class dwarf_t : unit_t
 		}
 		
 	immutable float RUN_SPEED = 2.0f; 
+	immutable float JUMP_SPEED = 4.0f; 
 
-	override void up(){ if(state == STATE.WALKING){vx = 0; vy = -RUN_SPEED; bmp = g.dude_up_bmp;}}
-	override void down() { if(state == STATE.WALKING){vx = 0; vy = RUN_SPEED; bmp = g.dude_down_bmp;}}
-	override void left() { if(state == STATE.WALKING){vy = 0; vx = -RUN_SPEED; bmp = g.dude_left_bmp;}}
-	override void right() { if(state == STATE.WALKING){vy = 0; vx = RUN_SPEED; bmp = g.dude_right_bmp;}}
+	override void up(){ if(state == STATE.WALKING){ direction=0; attemptMoveRel(0, -RUN_SPEED); bmp = g.dude_up_bmp;}}
+	override void down() { if(state == STATE.WALKING){ direction=1; attemptMoveRel(0, RUN_SPEED); bmp = g.dude_down_bmp;}}
+	override void left() { if(state == STATE.WALKING){ direction=2; attemptMoveRel(-RUN_SPEED,0); bmp = g.dude_left_bmp;}}
+	override void right() { if(state == STATE.WALKING){ direction=3; attemptMoveRel(RUN_SPEED,0); bmp = g.dude_right_bmp;}}
 
 	void pickUp(ref item i)
 		{
@@ -540,6 +553,10 @@ class dwarf_t : unit_t
 		if(state == STATE.WALKING)
 			{
 			state = STATE.JUMPING;
+			if(direction == 0){vx = 0; vy = -JUMP_SPEED;}
+			if(direction == 1){vx = 0; vy =  JUMP_SPEED;}
+			if(direction == 2){vx = -JUMP_SPEED; vy = 0;}
+			if(direction == 3){vx =  JUMP_SPEED; vy = 0;}
 			writeln("switching to STATE.JUMPING");
 			}
 		}
@@ -597,7 +614,7 @@ class structure_t : drawable_object_t
 
 	immutable int countdown_rate = 30; // 60 fps, 60 ticks = 1 second
 	int countdown = countdown_rate; // I don't like putting variables in the middle of classes but I ALSO don't like throwing 1-function-only variables at the top like the entire class uses them.
-	override void on_tick()
+	override void onTick()
 		{
 		if(hp <= 0)delete_me = true;
 			
@@ -623,9 +640,9 @@ class dwarf_structure_t : structure_t
 		team = 1;
 		}
 		
-	override void on_tick()
+	override void onTick()
 		{
-		super.on_tick(); // check if we're alive
+		super.onTick(); // check if we're alive
 
 		// Spawn dudes at rate
 		countdown--;
@@ -646,9 +663,9 @@ class monster_structure_t : structure_t
 		team = 2;
 		}
 		
-	override void on_tick()
+	override void onTick()
 		{
-		super.on_tick(); // check if we're alive
+		super.onTick(); // check if we're alive
 
 		// Spawn dudes at rate
 		countdown--;
@@ -718,7 +735,7 @@ class object_t
 	
 	// EVENTS
 	// ------------------------------------------
-	void on_tick()
+	void onTick()
 		{
 		}
 

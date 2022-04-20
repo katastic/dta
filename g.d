@@ -183,7 +183,7 @@ class world_t
 			{
 			foreach(o; obj)
 				{
-				o.on_tick();
+				o.onTick();
 				}
 			}
 			
