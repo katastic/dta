@@ -295,7 +295,7 @@ class unit_t : drawable_object_t
 		if(cx > 0 && cy > 0 && cx < 50*32 && cy < 50*32)
 			{
 			tile t = g.world.map.data[cast(int)cx/32][cast(int)cy/32];
-			if(t == 0 || t == 3 || t == 4 || t == 5)
+			if(t == 0 || t == 4 || t == 5)
 				{
 				x = cx;
 				y = cy;
