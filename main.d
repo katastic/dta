@@ -524,27 +524,36 @@ void execute()
 					isKeySet(ALLEGRO_KEY_A, key_a_down);
 					isKeySet(ALLEGRO_KEY_D, key_d_down);
 
-
-
 					if(event.keyboard.keycode == ALLEGRO_KEY_1)
 						{
 						int i = mouse_x/32;
 						int j = mouse_y/32;
-						if(i >= 0 && j >= 0 && i < 50 && j < 50)g.world.map.data[i][j] = 1;	
+						if(i >= 0 && j >= 0 && i < 50 && j < 50)g.world.map.data[i][j] = 0;	
 						}
 					if(event.keyboard.keycode == ALLEGRO_KEY_2)
 						{
 						int i = mouse_x/32;
 						int j = mouse_y/32;
-						if(i >= 0 && j >= 0 && i < 50 && j < 50)g.world.map.data[i][j] = 4;	
+						if(i >= 0 && j >= 0 && i < 50 && j < 50)g.world.map.data[i][j] = 1;	
 						}
 					if(event.keyboard.keycode == ALLEGRO_KEY_3)
 						{
 						int i = mouse_x/32;
 						int j = mouse_y/32;
+						if(i >= 0 && j >= 0 && i < 50 && j < 50)g.world.map.data[i][j] = 4;	
+						}
+					if(event.keyboard.keycode == ALLEGRO_KEY_4)
+						{
+						int i = mouse_x/32;
+						int j = mouse_y/32;
 						if(i >= 0 && j >= 0 && i < 50 && j < 50)g.world.map.data[i][j] = 5;	
 						}
-
+					if(event.keyboard.keycode == ALLEGRO_KEY_5)
+						{
+						int i = mouse_x/32;
+						int j = mouse_y/32;
+						if(i >= 0 && j >= 0 && i < 50 && j < 50)g.world.map.data[i][j] = 6;	
+						}
 
 					isKeySet(ALLEGRO_KEY_ESCAPE, exit);
 
