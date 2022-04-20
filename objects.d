@@ -528,7 +528,7 @@ class dwarf_t : unit_t
 
 	override void action_attack()
 		{
-		if(state == STATE.WALKING)
+		if(state == STATE.WALKING && hasSword)
 			{
 			state = STATE.ATTACKING;
 			writeln("switching to STATE.ATTACKING");

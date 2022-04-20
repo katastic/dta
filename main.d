@@ -524,18 +524,66 @@ void execute()
 					isKeySet(ALLEGRO_KEY_A, key_a_down);
 					isKeySet(ALLEGRO_KEY_D, key_d_down);
 
-					isKeySet(ALLEGRO_KEY_ESCAPE, exit);
+
 
 					if(event.keyboard.keycode == ALLEGRO_KEY_1)
 						{
-						std.file.write("save.map", world.map.data);
-//				        auto writeBytes = fwrite(&world.map.data, byte.sizeof, world.map.data.sizeof, file.getFP());
-				        //https://forum.dlang.org/post/mailman.113.1330209587.24984.digitalmars-d-learn@puremagic.com
+						int i = mouse_x/32;
+						int j = mouse_y/32;
+						if(i >= 0 && j >= 0 && i < 50 && j < 50)g.world.map.data[i][j] = 1;	
 						}
 					if(event.keyboard.keycode == ALLEGRO_KEY_2)
 						{
-//						world.map.data = std.file.read("save.map", world.map.data.sizeof);
-//						auto file = File("save.map", g.world.map.data, "r");
+						int i = mouse_x/32;
+						int j = mouse_y/32;
+						if(i >= 0 && j >= 0 && i < 50 && j < 50)g.world.map.data[i][j] = 4;	
+						}
+					if(event.keyboard.keycode == ALLEGRO_KEY_3)
+						{
+						int i = mouse_x/32;
+						int j = mouse_y/32;
+						if(i >= 0 && j >= 0 && i < 50 && j < 50)g.world.map.data[i][j] = 5;	
+						}
+
+
+					isKeySet(ALLEGRO_KEY_ESCAPE, exit);
+
+					//https://forum.dlang.org/post/t3ljgm$16du$1@digitalmars.com
+					//big 'ol wtf case.
+					void rawWriteValue(T)(File file, T value)
+					{
+					  file.rawWrite((&value)[0..1]);
+					}
+
+					if(event.keyboard.keycode == ALLEGRO_KEY_O)
+						{
+						auto f = File("save.map", "w");
+						rawWriteValue(f, g.world.map.data);
+//						std.file.write("save.map", world.map.data);
+//				        auto writeBytes = fwrite(&world.map.data, byte.sizeof, world.map.data.sizeof, file.getFP());
+				        //https://forum.dlang.org/post/mailman.113.1330209587.24984.digitalmars-d-learn@puremagic.com
+						writeln("SAVING MAP");
+						}	
+				
+					if(event.keyboard.keycode == ALLEGRO_KEY_P)
+						{
+						writeln("LOADING MAP");
+						auto read = File("save.map").rawRead(g.world.map.data[]);
+			
+					/*
+						union conv
+							{
+							void [50*50] x;
+							tile[50][50] y;
+							}
+						conv c;
+						c.x = std.file.read("save.map", world.map.data.sizeof);
+						g.world.map.data = c.y;
+						//core.exception.ArrayIndexError@main.d(556): index [16] exceeds array of length 2500
+
+						*/
+//						
+//auto file = File("save.map", g.world.map.data, "r");
 //						auto readBytes = fread(&g.world.map.data, byte.sizeof, dup.sizeof, file.getFP());
 						}
 
