@@ -273,8 +273,8 @@ class unit_t : drawable_object_t
 	float armor=0; /// flat reduction (or percentage) on damages, haven't decided.
 	float weapon_damage=50; 
 	bool has_weapon=false;
-	bool is_attacking=false;
-	bool is_running=false;
+	bool isAttacking=false;
+	bool isRunning=false;
 	uint team=0;
 	
 	void attemptMoveRel(float dx, float dy)
@@ -297,13 +297,13 @@ class unit_t : drawable_object_t
 	
 	
 	
-	bool is_player_controlled=false;
+	bool isPlayerControlled=false;
 	
-	void action_use(){}
+	void actionUse(){}
 	
-	void search_and_attack_nearby_enemy() /// first one we find. ALSO STRUCTURES!
+	void searchAndAttackNearbyEnemy() /// first one we find. ALSO STRUCTURES!
 		{
-		is_attacking = false;
+		isAttacking = false;
 		foreach(u; world.units)  // le oof algorithm complexity
 			{
 			assert(u.team != 0);
@@ -312,7 +312,7 @@ class unit_t : drawable_object_t
 				if( to!int(u.x/32) == to!int(x/32) && (to!int(u.y/32) == to!int(y/32)) )
 					{
 					attack(u);
-					is_attacking=true;
+					isAttacking=true;
 					break;
 					}
 				}
@@ -331,24 +331,24 @@ class unit_t : drawable_object_t
 			if(team != s.team)
 			if(to!int(s.x/32) == to!int(x/32) && (to!int(s.y/32) == to!int(y/32)))
 				{
-				attack_structure(s);
-				is_attacking=true;
+				attackStructure(s);
+				isAttacking=true;
 				break;
 				}
 			}
 		}
 	
-	void attack_structure(structure_t s)
+	void attackStructure(structure_t s)
 		{
-		s.on_attack(this, weapon_damage);
+		s.onAttack(this, weapon_damage);
 		}
 
 	void attack(unit_t u)
 		{
-		u.on_attack(this, weapon_damage);
+		u.onAttack(this, weapon_damage);
 		}
 		
-	void on_attack(unit_t from, float amount) /// I've been attacked!
+	void onAttack(unit_t from, float amount) /// I've been attacked!
 		{
 		hp -= amount;
 		}
@@ -409,7 +409,7 @@ class dwarf_t : unit_t
 	
 	int use_cooldown = 0;
 
-	override void action_use() //does this need some sort of delay / anim delay / cooldown
+	override void actionUse() //does this need some sort of delay / anim delay / cooldown
 		{
 		if(use_cooldown == 0)
 			{
@@ -539,7 +539,7 @@ class dwarf_t : unit_t
 			}
 		}
 
-	override void action_attack()
+	override void actionAttack()
 		{
 		if(state == STATE.WALKING && hasSword)
 			{
@@ -548,7 +548,7 @@ class dwarf_t : unit_t
 			}
 		
 		}
-	override void action_jump()
+	override void actionJump()
 		{
 		if(state == STATE.WALKING)
 			{
@@ -607,7 +607,7 @@ class structure_t : drawable_object_t
 		draw_hp_bar(x, y, v, hp, maxHP);		
 		}
 
-	void on_attack(unit_t u, float weapon_damage)
+	void onAttack(unit_t u, float weapon_damage)
 		{
 		hp -= weapon_damage;
 		}
@@ -721,14 +721,13 @@ class object_t
 	void down(){y+= 10;}
 	void left(){x-= 10;}
 	void right(){x+= 10;}
-	void action(){}
-	void action_attack()
+	void actionAttack()
 		{
 		}
-	void action_jump()
+	void actionJump()
 		{
 		}
-	void action_dodge()
+	void actionDodge()
 		{
 		}
 	void click_at(float relative_x, float relative_y){} //maybe? relative to object coordinate.

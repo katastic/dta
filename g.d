@@ -165,17 +165,19 @@ class world_t
 		
 	void logic()
 		{
-		units[0].is_player_controlled = true;
+		unit_t p = units[0]; // player
+			
+		p.isPlayerControlled  = true;
 
-		if(key_w_down)units[0].up();
-		if(key_s_down)units[0].down();
-		if(key_a_down)units[0].left();
-		if(key_d_down)units[0].right();
+		if(key_w_down)p.up();
+		if(key_s_down)p.down();
+		if(key_a_down)p.left();
+		if(key_d_down)p.right();
 		
-		if(key_q_down)units[0].action_attack();
-		if(key_e_down)units[0].action_use();
+		if(key_q_down)p.actionAttack();
+		if(key_e_down)p.actionUse();
 
-		if(key_space_down)units[0].action_jump();
+		if(key_space_down)p.actionJump();
 
 		map.logic();
 		
