@@ -202,6 +202,17 @@ class treasure_chest : drawable_object_t
 		}
 	}
 
+
+class boss_t : monster_t
+	{
+	this(float _x, float _y, float  _vx, float _vy)
+		{
+		super(_x, _y, _vx, _vy);
+		bmp = g.boss_bmp;
+		hp = 300;
+		}
+	}
+
 class monster_t : unit_t
 	{
 	this(float _x, float _y, float  _vx, float _vy)
@@ -293,10 +304,6 @@ class unit_t : drawable_object_t
 			}
 		}
 
-	
-	
-	
-	
 	bool isPlayerControlled=false;
 	
 	void actionUse(){}
@@ -371,7 +378,7 @@ class unit_t : drawable_object_t
 			y - v.oy + v.y - bmp.h/2, 
 			0);			
 		
-		draw_hp_bar(x, y, v, hp, 100);		
+		draw_hp_bar(x, y - bmp.w/2, v, hp, 100);		
 		}
 
 	override void onTick()

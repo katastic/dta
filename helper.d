@@ -57,9 +57,9 @@ void draw_hp_bar(float x, float y, viewport_t v, float hp, float max)
 	if(hp != max)
 		al_draw_filled_rectangle(
 			_x - 20/2, 
-			_y - 10, 
+			_y, 
 			_x + _hp/2, 
-			_y - 10 + 5, 
+			_y + 5, 
 			ALLEGRO_COLOR(1, 0, 0, 0.70));
 	}
 

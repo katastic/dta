@@ -82,6 +82,7 @@ class world_t
 		monsters ~= new monster_t(220, 220, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5));
 		monsters ~= new monster_t(220, 220, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5));
 		monsters ~= new monster_t(220, 220, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5));	
+		monsters ~= new boss_t(420, 320, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5));	
 		
 		int x = 300;
 		int y = 300;
@@ -234,6 +235,7 @@ class world_t
 
 	ALLEGRO_BITMAP* dwarf_bmp;
 	ALLEGRO_BITMAP* goblin_bmp;
+	ALLEGRO_BITMAP* boss_bmp;
 
 	ALLEGRO_BITMAP* fountain_bmp;
 
@@ -274,6 +276,7 @@ void load_resources()
 
 	g.dwarf_bmp  	= getBitmap("./data/dwarf.png");
 	g.goblin_bmp  	= getBitmap("./data/goblin.png");
+	g.boss_bmp  	= getBitmap("./data/boss.png");
 
 	g.wall_bmp  	= getBitmap("./data/wall.png");
 	g.grass_bmp  	= getBitmap("./data/grass.png");
