@@ -373,7 +373,7 @@ class unit_t : drawable_object_t
 	override void draw(viewport_t v)
 		{
 		al_draw_tinted_bitmap(bmp,
-			ALLEGRO_COLOR(1.0, 0.5, 0.5, 1.0),
+			ALLEGRO_COLOR(1.0, 1.0, 1.0, 1.0),
 			x - v.ox + v.x - bmp.w/2, 
 			y - v.oy + v.y - bmp.h/2, 
 			0);			
@@ -557,7 +557,6 @@ class dwarf_t : unit_t
 			}else{
 			g.guis[0].setFlicker();
 			}
-		
 		}
 	override void actionJump()
 		{
