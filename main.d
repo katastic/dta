@@ -332,6 +332,13 @@ static if (false) // MULTISAMPLING. Not sure if helpful.
 	viewports[0].h = g.SCREEN_H;
 	viewports[0].ox = 0;
 	viewports[0].oy = 0;
+		
+
+	dwarf_t p = cast(dwarf_t)(g.world.units[0]); 
+	guis[0] = new gui_t(&p.hasSword);
+	guis[0].x = 50;
+	guis[0].y = 200;
+	
 /*
 	viewports[1] = new viewport_t;
 	viewports[1].x = g.SCREEN_W/2;
@@ -405,6 +412,8 @@ struct display_t
 			al_clear_to_color(ALLEGRO_COLOR(.7, .7, .7, 1));
 		
 		world.draw(viewports[0]);
+		guis[0].onTick();
+		guis[0].draw(viewports[0]);
 		}
 
 	static if(false) //draw right viewport

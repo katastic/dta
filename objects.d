@@ -238,7 +238,7 @@ class monster_t : unit_t
 
 	override void onTick()
 		{
-		if(!isBeingHit && percent(1) )
+		if(!isBeingHit && percent(4) )
 			{			
 			import std.math;
 			float angle = atan2(g.world.units[0].y - y, g.world.units[0].x - x);
@@ -401,6 +401,7 @@ class dwarf_t : unit_t
 
 	override void draw(viewport_t v)
 		{
+		guis[0].hasSword = &hasSword;
 		super.draw(v);
 		string text;
 
@@ -548,10 +549,13 @@ class dwarf_t : unit_t
 
 	override void actionAttack()
 		{
-		if(state == STATE.WALKING && hasSword)
+		if(state == STATE.WALKING)
+			if(hasSword)
 			{
 			state = STATE.ATTACKING;
 			writeln("switching to STATE.ATTACKING");
+			}else{
+			g.guis[0].setFlicker();
 			}
 		
 		}

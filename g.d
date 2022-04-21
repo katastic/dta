@@ -15,8 +15,61 @@ import objects;
 import viewport;
 import map;
 
+
+class gui_t
+	{
+	float x=0, y=0;
+	bool* hasSword; // ref to someone's sword status boolean
+	int flicker_cooldown = 20;
+	
+	this(bool* _hasSword)
+		{
+		hasSword = _hasSword;
+		assert(hasSword != null);
+		}
+		
+	void onTick()
+		{
+		if(flicker_cooldown)flicker_cooldown--;
+		}
+		
+	void setFlicker()
+		{
+		flicker_cooldown = 20;
+		}
+	
+	//onTick() {}
+	void draw(viewport_t v)
+		{
+		assert(g.sword_bmp != null);
+		if(!*hasSword)
+			{
+			float x2 = x - v.ox + v.x - g.sword_bmp.w/2;
+			float y2 = y - v.oy + v.y - g.sword_bmp.h/2;
+				
+			if(flicker_cooldown)
+				al_draw_scaled_bitmap(g.sword_bmp,
+				   0, 0, g.sword_bmp.w, g.sword_bmp.h,
+				   x2 - 10, y2 - 10, g.sword_bmp.w + 20, g.sword_bmp.h + 20, 0);
+
+			al_draw_tinted_bitmap(g.sword_bmp,
+				ALLEGRO_COLOR(1.0, 0.5, 0.5, 1.0),
+				x - v.ox + v.x - g.sword_bmp.w/2, 
+				y - v.oy + v.y - g.sword_bmp.h/2, 
+				0);			
+
+		}else{
+			al_draw_bitmap(g.sword_bmp,
+				x - v.ox + v.x - g.sword_bmp.w/2, 
+				y - v.oy + v.y - g.sword_bmp.h/2, 
+				0);			
+		}
+		}
+	}
+
 world_t world;
 viewport_t [2] viewports;
+gui_t[2] guis; //todo: combine into viewports
 
 alias tile=ubyte;
 alias dir=direction;
