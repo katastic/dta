@@ -19,13 +19,14 @@ import map;
 class gui_t
 	{
 	float x=0, y=0;
-	bool* hasSword; // ref to someone's sword status boolean
+	//bool* hasSword; // ref to someone's sword status boolean
+	dwarf_t *p;
 	int flicker_cooldown = 20;
 	
-	this(bool* _hasSword)
+	this(dwarf_t *_p)
 		{
-		hasSword = _hasSword;
-		assert(hasSword != null);
+		p = _p;
+		assert(p != null);
 		}
 		
 	void onTick()
@@ -42,7 +43,7 @@ class gui_t
 	void draw(viewport_t v)
 		{
 		assert(g.sword_bmp != null);
-		if(!*hasSword)
+		if(!p.hasSword)
 			{
 			float x2 = x - v.ox + v.x - g.sword_bmp.w/2;
 			float y2 = y - v.oy + v.y - g.sword_bmp.h/2;
@@ -230,6 +231,7 @@ class world_t
 		
 		if(key_q_down)p.actionAttack();
 		if(key_e_down)p.actionUse();
+		if(key_f_down)p.actionSprint();
 
 		if(key_space_down)p.actionJump();
 
@@ -373,4 +375,5 @@ bool key_a_down = false;
 bool key_d_down = false;
 bool key_q_down = false;
 bool key_e_down = false;
+bool key_f_down = false;
 bool key_space_down = false;

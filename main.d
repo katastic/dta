@@ -335,7 +335,7 @@ static if (false) // MULTISAMPLING. Not sure if helpful.
 		
 
 	dwarf_t p = cast(dwarf_t)(g.world.units[0]); 
-	guis[0] = new gui_t(&p.hasSword);
+	guis[0] = new gui_t(&p);
 	guis[0].x = 50;
 	guis[0].y = 200;
 	
@@ -532,7 +532,8 @@ void execute()
 					isKeySet(ALLEGRO_KEY_S, key_s_down);
 					isKeySet(ALLEGRO_KEY_A, key_a_down);
 					isKeySet(ALLEGRO_KEY_D, key_d_down);
-
+					isKeySet(ALLEGRO_KEY_F, key_f_down);
+	
 					if(event.keyboard.keycode == ALLEGRO_KEY_1)
 						{
 						int i = mouse_x/32;
@@ -617,6 +618,7 @@ void execute()
 					isKeyRel(ALLEGRO_KEY_S, key_s_down);
 					isKeyRel(ALLEGRO_KEY_A, key_a_down);
 					isKeyRel(ALLEGRO_KEY_D, key_d_down);
+					isKeyRel(ALLEGRO_KEY_F, key_f_down);
 
 					break;
 					}

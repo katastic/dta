@@ -1,7 +1,7 @@
 
 
 
-enum STATE{	WALKING, JUMPING, LANDING, ATTACKING}
+enum STATE{	WALKING, SPRINTING, JUMPING, LANDING, ATTACKING}
 
 /*
 
@@ -288,6 +288,8 @@ class unit_t : drawable_object_t
 	bool isRunning=false;
 	uint team=0;
 	
+	void actionSprint(){}
+	
 	void attemptMoveRel(float dx, float dy)
 		{
 		float cx = x + dx;
@@ -401,12 +403,12 @@ class dwarf_t : unit_t
 
 	override void draw(viewport_t v)
 		{
-		guis[0].hasSword = &hasSword;
+		guis[0].p = cast(dwarf_t*)this; //this hurts my brain but it's normally a 'reference' which is just a pointer under the hood if this is to be believed https://forum.dlang.org/thread/woszqwrqtxgzanxuadav@forum.dlang.org
 		super.draw(v);
-		string text;
-
-		text = to!string(state);
+		draw_hp_bar(x, y - 10, v, stamina, 100);
 		
+		string text;
+		text = to!string(state);
 		al_draw_text(g.font, 
 			ALLEGRO_COLOR(0, 0, 0, 1), 
 			x, 
@@ -416,6 +418,25 @@ class dwarf_t : unit_t
 		}
 	
 	int use_cooldown = 0;
+
+	float stamina=100f;
+	immutable float SPRINT_SPEED=4;
+
+	override void actionSprint()
+		{
+		sprintWasHeld = true;
+		if(state == STATE.WALKING && stamina == 100)
+			{
+			state = STATE.SPRINTING;
+			
+			// up down left right
+			if(direction == 0){vx = 0; vy = -SPRINT_SPEED;}
+			if(direction == 1){vx = 0; vy = SPRINT_SPEED;}
+			if(direction == 2){vx = -SPRINT_SPEED; vy = 0;}
+			if(direction == 3){vx = SPRINT_SPEED; vy = 0;}
+			
+			}
+		}
 
 	override void actionUse() //does this need some sort of delay / anim delay / cooldown
 		{
@@ -456,15 +477,38 @@ class dwarf_t : unit_t
 			
 		}
 
+	bool sprintWasHeld = false;
+
 	override void onTick()
 		{		
 		if(use_cooldown > 0)use_cooldown--;
+		if(stamina < 100)stamina++; // we penalize you for holding stamina even when it runs out by not giving you stamina, also so it doesn't keep repeating.
+		if(stamina > 100)stamina = 100;
 //		super.onTick();
+
+		bool sprint2 = sprintWasHeld;
+		sprintWasHeld = false;	// we need this wierdness to ensure it gets reset even if not during STATE.SPRINTING, but STATE.SPRINTING also needs to reset it.
+		// we might be able to move the sprintwasheld = false to the bottom
+		// BUT here's a problem! OTHER STATES can TERMINATE EARLY.
+		// so AFTER_SWITCH_BLOCK() code never gets called.
+
 		switch(state)
 			{
 			case STATE.WALKING:
 //			x += vx;
 //			y += vy;
+			break;
+			
+			case STATE.SPRINTING:
+			if(sprint2 == true && stamina >= 2.5)
+				{
+				stamina -= 2.5;
+				attemptMoveRel(vx, vy);
+				sprintWasHeld = false;
+				}else{
+				stamina = 0;
+				state = STATE.WALKING;
+				}
 			break;
 			
 			case STATE.JUMPING:
@@ -550,8 +594,9 @@ class dwarf_t : unit_t
 	override void actionAttack()
 		{
 		if(state == STATE.WALKING)
-			if(hasSword)
+			if(hasSword && stamina > 50)
 			{
+			stamina -= 50;
 			state = STATE.ATTACKING;
 			writeln("switching to STATE.ATTACKING");
 			}else{
@@ -614,7 +659,7 @@ class structure_t : drawable_object_t
 	override void draw(viewport_t v)
 		{
 		super.draw(v);
-		draw_hp_bar(x, y, v, hp, maxHP);		
+		draw_hp_bar(x, y, v, hp, maxHP);
 		}
 
 	void onAttack(unit_t u, float weapon_damage)
