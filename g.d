@@ -127,6 +127,7 @@ class world_t
 	item[] items;
 	structure_t[] structures;
 	map_t map;
+	tree[] trees;
 
 	this()
 		{
@@ -137,6 +138,11 @@ class world_t
 		monsters ~= new monster_t(220, 220, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5));
 		monsters ~= new monster_t(220, 220, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5));	
 		monsters ~= new boss_t(420, 320, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5));	
+		
+		trees ~= new tree(200, 200, 0, 0, g.tree_bmp);
+		trees ~= new tree(232, 200, 0, 0, g.tree_bmp);
+		trees ~= new tree(200, 232, 0, 0, g.tree_bmp);
+		trees ~= new tree(232, 232, 0, 0, g.tree_bmp);
 		
 		int x = 300;
 		int y = 300;
@@ -193,8 +199,7 @@ class world_t
 
 
 */
-		draw(monsters);
-		
+		draw(monsters);		
 		drawStat(structures, stats.number_of_drawn_structures);
 	
 /*		foreach(s; structures)
@@ -205,6 +210,8 @@ class world_t
 			
 		draw(chests);
 		draw(items);
+		draw(trees);
+		
 /*		
 		foreach(c; chests)
 			{
@@ -252,6 +259,7 @@ class world_t
 		tick(structures);
 		tick(chests);
 		tick(items);
+		tick(trees);
 
 		//prune ready-to-delete entries
 		void prune(T)(ref T obj)
@@ -269,6 +277,7 @@ class world_t
 		prune(structures);
 		prune(chests);
 		prune(items);
+		prune(trees);
 		}
 	}
 
@@ -293,6 +302,8 @@ class world_t
 	ALLEGRO_BITMAP* boss_bmp;
 
 	ALLEGRO_BITMAP* fountain_bmp;
+	
+	ALLEGRO_BITMAP* tree_bmp;
 
 	ALLEGRO_BITMAP* wall_bmp;
 	ALLEGRO_BITMAP* grass_bmp;
@@ -340,6 +351,8 @@ void load_resources()
 	g.fountain_bmp  = getBitmap("./data/fountain.png");
 	g.wood_bmp  	= getBitmap("./data/wood.png");
 	g.stone_bmp  	= getBitmap("./data/brick.png");
+	
+	g.tree_bmp  	= getBitmap("./data/tree.png");
 	
 	g.reinforced_wall_bmp  	= getBitmap("./data/reinforced_wall.png");	
 	}

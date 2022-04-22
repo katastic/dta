@@ -276,6 +276,43 @@ class monster_t : unit_t
 		}
 	}
 
+
+class tree : drawable_object_t 
+	{
+	float waterPercent=50;
+	float growthPercent=0;
+	immutable float waterMinimum = 20;
+	
+	this(float _x, float _y, float _xv, float _yv, ALLEGRO_BITMAP* b)
+		{
+		super(g.tree_bmp);
+		x = _x;
+		y = _y;
+		vx = _xv;
+		vy = _yv;
+		}
+
+	override void onTick()
+		{
+		if(waterPercent > waterMinimum && growthPercent < 100)
+			{
+			growthPercent++;
+			}
+		}
+
+	override void draw(viewport_t v)
+		{
+//		super.draw(v);
+		float x2 = x - v.ox + v.x - bmp.w/2;
+		float y2 = y - v.oy + v.y - bmp.h/2;
+		draw_hp_bar(x2, y2, v, growthPercent, 100); 
+		al_draw_scaled_bitmap(bmp,
+		   0, 0, g.sword_bmp.w, bmp.h,
+		   x2, y2, bmp.w*growthPercent/100.0, bmp.h*growthPercent/100.0, 0);
+		}
+
+	}
+
 class unit_t : drawable_object_t 
 	{
 	immutable float maxHP=100.0; /// Maximum health points
