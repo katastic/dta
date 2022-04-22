@@ -440,7 +440,6 @@ class dwarf_t : unit_t
 
 	override void draw(viewport_t v)
 		{
-		guis[0].p = cast(dwarf_t*)this; //this hurts my brain but it's normally a 'reference' which is just a pointer under the hood if this is to be believed https://forum.dlang.org/thread/woszqwrqtxgzanxuadav@forum.dlang.org
 		super.draw(v);
 		draw_hp_bar(x, y - 10, v, stamina, 100);
 		

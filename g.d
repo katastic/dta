@@ -19,14 +19,12 @@ import map;
 class gui_t
 	{
 	float x=0, y=0;
-	//bool* hasSword; // ref to someone's sword status boolean
-	dwarf_t *p;
+	dwarf_t p;
 	int flicker_cooldown = 20;
 	
-	this(dwarf_t *_p)
+	this(ref dwarf_t _p)
 		{
 		p = _p;
-		assert(p != null);
 		}
 		
 	void onTick()

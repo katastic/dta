@@ -335,7 +335,7 @@ static if (false) // MULTISAMPLING. Not sure if helpful.
 		
 
 	dwarf_t p = cast(dwarf_t)(g.world.units[0]); 
-	guis[0] = new gui_t(&p);
+	guis[0] = new gui_t(p);
 	guis[0].x = 50;
 	guis[0].y = 200;
 	
