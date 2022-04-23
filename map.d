@@ -52,7 +52,7 @@ class map_t
 		data[16][16] = 3;
 		}
 	
-	void draw(viewport_t v)
+	void draw(viewport_t v, bool drawTopLayer) // so inefficient but it'll work for now.
 		{
 		long signed_start_i = cast(long) ((v.ox)/32.0)-1; //need signed to allow for negative
 		long signed_start_j = cast(long) ((v.oy)/32.0)-1;
@@ -70,31 +70,31 @@ class map_t
 		for(uint i = cast(uint) start_i; i < end_i; i++)
 		for(uint j = cast(uint) start_j; j < end_j; j++)
 			{
-			if(data[i][j] == 0)
+			if(data[i][j] == 0 && !drawTopLayer)
 				{
 				al_draw_bitmap(g.grass_bmp, v.x + i*32.0 - v.ox, v.y + j*32.0 - v.oy, 0);
 				}
-			if(data[i][j] == 1)
+			if(data[i][j] == 1 && drawTopLayer)
 				{
 				al_draw_bitmap(g.wall_bmp, v.x + i*32.0 - v.ox, v.y + j*32.0 - v.oy, 0);
 				}
-			if(data[i][j] == 2)
+			if(data[i][j] == 2 && !drawTopLayer)
 				{
 				al_draw_bitmap(g.water_bmp, v.x + i*32.0 - v.ox, v.y + j*32.0 - v.oy, 0);
 				}
-			if(data[i][j] == 3)
+			if(data[i][j] == 3 && !drawTopLayer)
 				{
 				al_draw_bitmap(g.lava_bmp, v.x + i*32.0 - v.ox, v.y + j*32.0 - v.oy, 0);
 				}
-			if(data[i][j] == 4)
+			if(data[i][j] == 4 && !drawTopLayer)
 				{
 				al_draw_bitmap(g.wood_bmp, v.x + i*32.0 - v.ox, v.y + j*32.0 - v.oy, 0);
 				}
-			if(data[i][j] == 5)
+			if(data[i][j] == 5 && !drawTopLayer)
 				{
 				al_draw_bitmap(g.stone_bmp, v.x + i*32.0 - v.ox, v.y + j*32.0 - v.oy, 0);
 				}
-			if(data[i][j] == 6)
+			if(data[i][j] == 6 && !drawTopLayer)
 				{
 				al_draw_bitmap(g.reinforced_wall_bmp, v.x + i*32.0 - v.ox, v.y + j*32.0 - v.oy, 0);
 				}

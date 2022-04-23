@@ -213,7 +213,7 @@ class world_t
 
 	void draw(viewport_t v)
 		{
-		map.draw(v);
+		map.draw(v, false);
 		
 		void draw(T)(ref T obj)
 			{
@@ -271,6 +271,8 @@ class world_t
 //			stats.number_of_drawn_structures++;
 			i.draw(v);
 			}*/
+			
+		map.draw(v, true);
 		}
 		
 	void logic()
