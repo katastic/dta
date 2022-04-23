@@ -234,6 +234,10 @@ class monster_t : unit_t
 		vy = -sin(angle)*vel;
 		writeln(angle, ",", vel, ",", vx, ",", vy);
 		hp -= damage;
+		writeln("monster hit. health is now:", hp);
+		if(hp <= 0){writeln("monster died!"); delete_me = true; 
+				g.world.blood.add(x, y);
+				}
 		}
 
 	override void onTick()
@@ -296,7 +300,7 @@ class tree : drawable_object_t
 		{
 		if(waterPercent > waterMinimum && growthPercent < 100)
 			{
-			growthPercent++;
+			growthPercent+=.5;
 			}
 		}
 
@@ -430,7 +434,7 @@ class dwarf_t : unit_t
 	STATE state = STATE.WALKING;
 	int state_delay=0;
 	item[] myInventory;
-	bool hasSword = false;
+	bool hasSword = true;
 	int direction=0;
 
 	this(float _x, float _y, float _xv, float _yv, ALLEGRO_BITMAP* b)
@@ -581,7 +585,7 @@ class dwarf_t : unit_t
 				
 				if(hasSword)
 					{
-					writeln("ATTACKED with sword.");
+					writeln("ATTACKING with sword.");
 					}else{
 					writeln("NO sword.");
 					return;
@@ -594,8 +598,8 @@ class dwarf_t : unit_t
 					if(i.y < y + 16 && i.y > y - 16)
 						{
 						writeln("I hit someone");
-						i.onHit(this, 10);
-						return; 
+						i.onHit(this, 90);
+//						return;  comment to allow hitting multiple here
 						}
 					}
 				}
@@ -682,6 +686,8 @@ class structure_t : drawable_object_t
 	int level=1; //ala upgrade level
 	int team=0;
 	int direction=0;
+	immutable int countdown_rate = 200; // 60 fps, 60 ticks = 1 second
+	int countdown = countdown_rate; // I don't like putting variables in the middle of classes but I ALSO don't like throwing 1-function-only variables at the top like the entire class uses them.
 	
 	this(float x, float y, ALLEGRO_BITMAP* b)
 		{
@@ -703,8 +709,6 @@ class structure_t : drawable_object_t
 		hp -= weapon_damage;
 		}
 
-	immutable int countdown_rate = 30; // 60 fps, 60 ticks = 1 second
-	int countdown = countdown_rate; // I don't like putting variables in the middle of classes but I ALSO don't like throwing 1-function-only variables at the top like the entire class uses them.
 	override void onTick()
 		{
 		if(hp <= 0)delete_me = true;
@@ -763,7 +767,7 @@ class monster_structure_t : structure_t
 		if(countdown == 0)
 			{
 			auto d = new monster_t(x, y, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5));
-			world.units ~= d;
+			world.monsters ~= d;
 			countdown = countdown_rate;
 			}			
 		}

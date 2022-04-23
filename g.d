@@ -15,6 +15,51 @@ import objects;
 import viewport;
 import map;
 
+struct blood_t
+	{
+	int x=0, y=0;
+	int lifetime=100;
+	int bloodtype=0; // or use bmp
+	bool deleteMe=false;
+	} 
+	// ideally we sort this by bloodtype to reduce contextswitches
+	// we could use a pointer to bmp but that would be slower?
+
+class blood_handler_t
+	{
+	blood_t[] data;
+
+	void add(float x, float y)
+		{
+		blood_t b = blood_t(cast(int)x, cast(int)y, 100, 0, false);
+		data ~= b;
+		}
+	
+	void draw(viewport_t v)
+		{
+		foreach(b; data)
+			{
+			assert(g.blood_bmp != null);
+			if(b.bloodtype == 0)
+				{
+				al_draw_bitmap(g.blood_bmp,
+					b.x - v.ox + v.x - g.blood_bmp.w/2, 
+					b.y - v.oy + v.y - g.blood_bmp.h/2, 
+					0);
+				}
+			}
+		}
+		
+	void onTick()
+		{
+		foreach(b; data)
+			{
+			b.lifetime--;
+			if(b.lifetime < 0)b.deleteMe = true;
+			}
+		}
+	}
+
 
 class gui_t
 	{
@@ -126,26 +171,32 @@ class world_t
 	structure_t[] structures;
 	map_t map;
 	tree[] trees;
+	blood_handler_t blood;
 
 	this()
 		{
 		map = new map_t;
+		blood = new blood_handler_t;
 		units ~= new dwarf_t(120, 120, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5), g.stone_bmp);
 		monsters ~= new monster_t(220, 220, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5));
 		monsters ~= new monster_t(220, 220, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5));
 		monsters ~= new monster_t(220, 220, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5));
 		monsters ~= new monster_t(220, 220, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5));	
 		monsters ~= new boss_t(420, 320, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5));	
+	
+		structures ~= new monster_structure_t(500, 200);
 		
 		trees ~= new tree(200, 200, 0, 0, g.tree_bmp);
 		trees ~= new tree(232, 200, 0, 0, g.tree_bmp);
 		trees ~= new tree(200, 232, 0, 0, g.tree_bmp);
 		trees ~= new tree(232, 232, 0, 0, g.tree_bmp);
+		trees ~= new tree(264, 200, 0, 0, g.tree_bmp);
+		trees ~= new tree(264, 232, 0, 0, g.tree_bmp);
 		
 		int x = 300;
 		int y = 300;
 		chests ~= new treasure_chest(0, x, y, 0, 0);
-		
+			{
 			item i = new item(0,x,y,uniform!"[]"(-.5,.5),uniform!"[]"(-.5,.5), g.sword_bmp);
 			chests[0].itemsInside ~= i; 
 			items ~= i;
@@ -157,8 +208,7 @@ class world_t
 			item i3 = new item(0,x,y,uniform!"[]"(-.5,.5),uniform!"[]"(-.5,.5), g.potion_bmp);
 			chests[0].itemsInside ~= i3; 
 			items ~= i3;
-			
-			writeln("chests size", chests.length);
+			}
 		}
 
 	void draw(viewport_t v)
@@ -194,8 +244,6 @@ class world_t
 			stats.number_of_drawn_dwarves++;
 			d.draw(v);
 			}
-
-
 */
 		draw(monsters);		
 		drawStat(structures, stats.number_of_drawn_structures);
@@ -206,9 +254,11 @@ class world_t
 			s.draw(v);
 			}*/
 			
+		blood.draw(v);
 		draw(chests);
 		draw(items);
 		draw(trees);
+		
 		
 /*		
 		foreach(c; chests)
@@ -315,6 +365,8 @@ class world_t
 	ALLEGRO_BITMAP* sword_bmp;
 	ALLEGRO_BITMAP* carrot_bmp;
 	ALLEGRO_BITMAP* potion_bmp;
+	
+	ALLEGRO_BITMAP* blood_bmp;
 
 	int SCREEN_W = 1200;
 	int SCREEN_H = 600;
@@ -351,6 +403,8 @@ void load_resources()
 	g.stone_bmp  	= getBitmap("./data/brick.png");
 	
 	g.tree_bmp  	= getBitmap("./data/tree.png");
+	
+	g.blood_bmp  	= getBitmap("./data/blood.png");
 	
 	g.reinforced_wall_bmp  	= getBitmap("./data/reinforced_wall.png");	
 	}
