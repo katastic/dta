@@ -235,8 +235,15 @@ class monster_t : unit_t
 		writeln(angle, ",", vel, ",", vx, ",", vy);
 		hp -= damage;
 		writeln("monster hit. health is now:", hp);
-		if(hp <= 0){writeln("monster died!"); delete_me = true; 
 				g.world.blood.add(x, y);
+
+
+		if(hp <= 0){writeln("monster died!"); delete_me = true; 
+				g.world.blood.add(x + uniform(-5, 5), y + uniform(-5, 5));
+				g.world.blood.add(x + uniform(-5, 5), y + uniform(-5, 5));
+				g.world.blood.add(x + uniform(-5, 5), y + uniform(-5, 5));
+				g.world.blood.add(x + uniform(-5, 5), y + uniform(-5, 5));
+				g.world.blood.add(x + uniform(-5, 5), y + uniform(-5, 5));
 				}
 		}
 

@@ -78,11 +78,11 @@ class map_t
 				{
 				al_draw_bitmap(g.wall_bmp, v.x + i*32.0 - v.ox, v.y + j*32.0 - v.oy, 0);
 				}
-			if(data[i][j] == 2 && !drawTopLayer)
+			if(data[i][j] == 2 && drawTopLayer)
 				{
 				al_draw_bitmap(g.water_bmp, v.x + i*32.0 - v.ox, v.y + j*32.0 - v.oy, 0);
 				}
-			if(data[i][j] == 3 && !drawTopLayer)
+			if(data[i][j] == 3 && drawTopLayer)
 				{
 				al_draw_bitmap(g.lava_bmp, v.x + i*32.0 - v.ox, v.y + j*32.0 - v.oy, 0);
 				}
@@ -94,7 +94,7 @@ class map_t
 				{
 				al_draw_bitmap(g.stone_bmp, v.x + i*32.0 - v.ox, v.y + j*32.0 - v.oy, 0);
 				}
-			if(data[i][j] == 6 && !drawTopLayer)
+			if(data[i][j] == 6 && drawTopLayer)
 				{
 				al_draw_bitmap(g.reinforced_wall_bmp, v.x + i*32.0 - v.ox, v.y + j*32.0 - v.oy, 0);
 				}

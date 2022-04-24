@@ -1,6 +1,15 @@
 /*
 
-		
+	DRAW QUESTION:
+		Do we want to draw layers IN ORDER? That is, objects have to be drawn
+		in order too?
+
+			OOOH. draw tiles like the same layer but only split for blood and other 'floor' 
+			decals whereas sprites are still on top.
+
+
+
+
 
 	Look at bosses from METAL SLUG etc
 

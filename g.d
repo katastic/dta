@@ -20,6 +20,7 @@ struct blood_t
 	int x=0, y=0;
 	int lifetime=100;
 	int bloodtype=0; // or use bmp
+	int rotation=0;
 	bool deleteMe=false;
 	} 
 	// ideally we sort this by bloodtype to reduce contextswitches
@@ -31,8 +32,9 @@ class blood_handler_t
 
 	void add(float x, float y)
 		{
-		blood_t b = blood_t(cast(int)x, cast(int)y, 100, 0, false);
+		blood_t b = blood_t(cast(int)x, cast(int)y, 100, 0, uniform!"[]"(0, 4), false);
 		data ~= b;
+		
 		}
 	
 	void draw(viewport_t v)
@@ -42,10 +44,12 @@ class blood_handler_t
 			assert(g.blood_bmp != null);
 			if(b.bloodtype == 0)
 				{
-				al_draw_bitmap(g.blood_bmp,
+				al_draw_tinted_bitmap(
+					g.blood_bmp,
+					ALLEGRO_COLOR(1.0, 1.0, 1.0, 0.9),
 					b.x - v.ox + v.x - g.blood_bmp.w/2, 
 					b.y - v.oy + v.y - g.blood_bmp.h/2, 
-					0);
+					b.rotation);
 				}
 			}
 		}
@@ -177,6 +181,14 @@ class world_t
 		{
 		map = new map_t;
 		blood = new blood_handler_t;
+		
+		for(int i = 0; i < 200; i++)
+			{
+			float x1 = uniform!"[]"(0, 32*(50-1));
+			float y1 = uniform!"[]"(0, 32*(50-1));
+			blood.add(x1, y1);
+			}
+		
 		units ~= new dwarf_t(120, 120, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5), g.stone_bmp);
 		monsters ~= new monster_t(220, 220, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5));
 		monsters ~= new monster_t(220, 220, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5));
@@ -213,7 +225,6 @@ class world_t
 
 	void draw(viewport_t v)
 		{
-		map.draw(v, false);
 		
 		void draw(T)(ref T obj)
 			{
@@ -232,7 +243,12 @@ class world_t
 				}
 			}
 		
+		map.draw(v, false);
+		blood.draw(v);
+		map.draw(v, true);
 		drawStat(units, stats.number_of_drawn_objects);
+		draw(monsters);		
+		drawStat(structures, stats.number_of_drawn_structures);
 		
 /*		foreach(u; units)
 			{
@@ -245,8 +261,6 @@ class world_t
 			d.draw(v);
 			}
 */
-		draw(monsters);		
-		drawStat(structures, stats.number_of_drawn_structures);
 	
 /*		foreach(s; structures)
 			{
@@ -254,7 +268,9 @@ class world_t
 			s.draw(v);
 			}*/
 			
-		blood.draw(v);
+
+
+
 		draw(chests);
 		draw(items);
 		draw(trees);
@@ -272,7 +288,6 @@ class world_t
 			i.draw(v);
 			}*/
 			
-		map.draw(v, true);
 		}
 		
 	void logic()
