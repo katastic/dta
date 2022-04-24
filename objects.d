@@ -458,8 +458,8 @@ class dwarf_t : unit_t
 		text = to!string(state);
 		al_draw_text(g.font, 
 			ALLEGRO_COLOR(0, 0, 0, 1), 
-			x, 
-			y, 
+			x - v.ox, 
+			y - v.oy, 
 			ALLEGRO_ALIGN_CENTER, 
 			text.toStringz());
 		}

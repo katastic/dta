@@ -418,7 +418,7 @@ struct display_t
 			viewports[0].y + viewports[0].h); //-1
 		
 		static if(DEBUG_NO_BACKGROUND)
-			al_clear_to_color(ALLEGRO_COLOR(.7, .7, .7, 1));
+			al_clear_to_color(ALLEGRO_COLOR(.05, .05, .05, 1));
 		
 		world.draw(viewports[0]);
 		guis[0].onTick();

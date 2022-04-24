@@ -51,6 +51,7 @@ class blood_handler_t
 					b.y - v.oy + v.y - g.blood_bmp.h/2, 
 					b.rotation);
 				}
+			stats.number_of_drawn_particles++;
 			}
 		}
 		
@@ -246,8 +247,8 @@ class world_t
 		map.draw(v, false);
 		blood.draw(v);
 		map.draw(v, true);
-		drawStat(units, stats.number_of_drawn_objects);
-		draw(monsters);		
+		drawStat(units, stats.number_of_drawn_dwarves);
+		drawStat(monsters, stats.number_of_drawn_dwarves);		
 		drawStat(structures, stats.number_of_drawn_structures);
 		
 /*		foreach(u; units)
@@ -268,12 +269,10 @@ class world_t
 			s.draw(v);
 			}*/
 			
-
-
-
-		draw(chests);
-		draw(items);
-		draw(trees);
+		
+		drawStat(chests, stats.number_of_drawn_objects);
+		drawStat(items, stats.number_of_drawn_objects);
+		drawStat(trees, stats.number_of_drawn_objects);
 		
 		
 /*		
@@ -294,6 +293,9 @@ class world_t
 		{
 		unit_t p = units[0]; // player
 			
+		viewports[0].ox = units[0].x - viewports[0].w/2;
+		viewports[0].oy = units[0].y - viewports[0].h/2;
+
 		p.isPlayerControlled  = true;
 
 		if(key_w_down)p.up();
