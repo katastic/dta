@@ -1,3 +1,5 @@
 #!/bin/sh
-dmd -profile -profile=gc -debug -gs -g -ofmain main.d helper.d objects.d viewport.d g.d -L-L. $@
-
+#dmd -profile -profile=gc -debug -gs -g -ofmain main.d helper.d objects.d viewport.d g.d -L-L. $@
+dmd -profile -profile=gc -debug -gs -g -ofmain main.d helper.d objects.d viewport.d map.d g.d -L-L. $@
+echo "deleting old trace.log because it's additive."
+rm trace.log

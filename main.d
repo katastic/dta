@@ -545,32 +545,32 @@ void execute()
 	
 					if(event.keyboard.keycode == ALLEGRO_KEY_1)
 						{
-						int i = mouse_x/32;
-						int j = mouse_y/32;
+						int i = cast(int)((mouse_x + viewports[0].ox)/32);
+						int j = cast(int)((mouse_y + viewports[0].oy)/32);
 						if(i >= 0 && j >= 0 && i < 50 && j < 50)g.world.map.data[i][j] = 0;	
 						}
 					if(event.keyboard.keycode == ALLEGRO_KEY_2)
 						{
-						int i = mouse_x/32;
-						int j = mouse_y/32;
+						int i = cast(int)((mouse_x + viewports[0].ox)/32);
+						int j = cast(int)((mouse_y + viewports[0].oy)/32);
 						if(i >= 0 && j >= 0 && i < 50 && j < 50)g.world.map.data[i][j] = 1;	
 						}
 					if(event.keyboard.keycode == ALLEGRO_KEY_3)
 						{
-						int i = mouse_x/32;
-						int j = mouse_y/32;
+						int i = cast(int)((mouse_x + viewports[0].ox)/32);
+						int j = cast(int)((mouse_y + viewports[0].oy)/32);
 						if(i >= 0 && j >= 0 && i < 50 && j < 50)g.world.map.data[i][j] = 4;	
 						}
 					if(event.keyboard.keycode == ALLEGRO_KEY_4)
 						{
-						int i = mouse_x/32;
-						int j = mouse_y/32;
+						int i = cast(int)((mouse_x + viewports[0].ox)/32);
+						int j = cast(int)((mouse_y + viewports[0].oy)/32);
 						if(i >= 0 && j >= 0 && i < 50 && j < 50)g.world.map.data[i][j] = 5;	
 						}
 					if(event.keyboard.keycode == ALLEGRO_KEY_5)
 						{
-						int i = mouse_x/32;
-						int j = mouse_y/32;
+						int i = cast(int)((mouse_x + viewports[0].ox)/32);
+						int j = cast(int)((mouse_y + viewports[0].oy)/32);
 						if(i >= 0 && j >= 0 && i < 50 && j < 50)g.world.map.data[i][j] = 6;	
 						}
 

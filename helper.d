@@ -63,8 +63,6 @@ void draw_hp_bar(float x, float y, viewport_t v, float hp, float max)
 			ALLEGRO_COLOR(1, 0, 0, 0.70));
 	}
 
-
-
 // Helper functions
 //=============================================================================
 
