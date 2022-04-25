@@ -7,6 +7,7 @@ import allegro5.allegro_color;
 
 import std.stdio;
 import std.conv;
+import std.string;
 import std.random;
 import std.algorithm : remove;
 
@@ -14,6 +15,64 @@ import helper;
 import objects;
 import viewport;
 import map;
+
+alias BITMAP = ALLEGRO_BITMAP;
+alias tile=ubyte;
+alias dir=direction;
+
+struct meta_t
+	{
+	bool isPassable;
+	bool isSlowing;
+	bool isLiquid;
+	bool isPainful; // lava  
+	}
+	
+meta_t path = {true, false, false, false};
+meta_t solid = {false, false, false, false};
+meta_t water = {false, false, true, false};
+meta_t lava  = {false, false, true, true};
+
+struct atlas_t
+	{
+	meta_t*	[] meta;
+	BITMAP* [] data;
+	alias data this;
+	
+	void load(string filepath)
+		{
+		writeln("loading atlas at ", filepath);
+		BITMAP* atl = al_load_bitmap(filepath.toStringz());
+		assert(atl != null, "ATLAS " ~ filepath ~ " NOT FOUND/LOADABLE");
+		
+		int w = atl.w;
+		int h = atl.h;
+		
+		assert(w % 32 == 0, "ATLAS ISNT 32-byte ALIGNED."); 
+		
+		// TODO FIX. consider making a sub-bitmap based one
+		// so we're not constantly changing textures while drawing
+		// (one for each layer would work.)
+		
+		for(int i = 0; i < 10; i++)
+			{
+			BITMAP* b = al_create_sub_bitmap(atl, 32*i, 32*0, 32, 32);
+			assert(b != null);
+			data ~= b;
+			
+			if(i == 1)
+				{
+				meta ~= &solid;
+				}else{
+				meta ~= &path;
+				}
+			
+			}
+		writeln("data.length = ", data.length);
+		}
+	}
+
+atlas_t atlas;
 
 struct blood_t
 	{
@@ -119,9 +178,6 @@ class gui_t
 world_t world;
 viewport_t [2] viewports;
 gui_t[2] guis; //todo: combine into viewports
-
-alias tile=ubyte;
-alias dir=direction;
 
 enum direction { down, up, left, right, upleft, upright, downright, downleft} // do we support diagonals. 
 // everyone supports at least down. [for signs]
@@ -244,9 +300,10 @@ class world_t
 				}
 			}
 		
-		map.draw(v, false);
+//		map.draw(v, false);
+		map.draw2(v, false);
 		blood.draw(v);
-		map.draw(v, true);
+//		map.draw(v, true);
 		drawStat(units, stats.number_of_drawn_dwarves);
 		drawStat(monsters, stats.number_of_drawn_dwarves);		
 		drawStat(structures, stats.number_of_drawn_structures);
@@ -395,6 +452,8 @@ class world_t
 import std.format;
 void load_resources()	
 	{
+	g.atlas.load("./data/atlas.png");
+		
 	g.font = al_load_font("./data/DejaVuSans.ttf", 18, 0);
 
 	g.dude_up_bmp  	= getBitmap("./data/dude_up.png");

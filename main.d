@@ -362,7 +362,7 @@ static if (false) // MULTISAMPLING. Not sure if helpful.
 	// FPS Handling
 	// --------------------------------------------------------
 	fps_timer = al_create_timer(1.0f);
-	screencap_timer = al_create_timer(7.5f);
+	screencap_timer = al_create_timer(10f);
 	al_register_event_source(queue, al_get_timer_event_source(fps_timer));
 	al_register_event_source(queue, al_get_timer_event_source(screencap_timer));
 	al_start_timer(fps_timer);
@@ -554,7 +554,17 @@ void execute()
 							if(i >= 0 && j >= 0 && i < 50 && j < 50)g.world.map.data[i][j] = mapValue;	
 							}
 						}
-	
+						
+					/*
+					0 Grass
+					1 Wall/Ground
+					2 Water
+					3 Lava
+					4 Wood Road
+					5 Stone Road
+					6 REINFORCED WALL
+					*/
+
 					mouseSetTile(ALLEGRO_KEY_1, 0);
 					mouseSetTile(ALLEGRO_KEY_2, 1);
 					mouseSetTile(ALLEGRO_KEY_3, 2);
@@ -562,6 +572,9 @@ void execute()
 					mouseSetTile(ALLEGRO_KEY_5, 4);
 					mouseSetTile(ALLEGRO_KEY_6, 5);
 					mouseSetTile(ALLEGRO_KEY_7, 6);
+					mouseSetTile(ALLEGRO_KEY_8, 7);
+					mouseSetTile(ALLEGRO_KEY_9, 8);
+					mouseSetTile(ALLEGRO_KEY_0, 9);
 
 					//https://forum.dlang.org/post/t3ljgm$16du$1@digitalmars.com
 					//big 'ol wtf case.
@@ -574,8 +587,6 @@ void execute()
 						{
 						auto f = File("save.map", "w");
 						rawWriteValue(f, g.world.map.data);
-//						std.file.write("save.map", world.map.data);
-//				        auto writeBytes = fwrite(&world.map.data, byte.sizeof, world.map.data.sizeof, file.getFP());
 				        //https://forum.dlang.org/post/mailman.113.1330209587.24984.digitalmars-d-learn@puremagic.com
 						writeln("SAVING MAP");
 						}	
@@ -584,22 +595,6 @@ void execute()
 						{
 						writeln("LOADING MAP");
 						auto read = File("save.map").rawRead(g.world.map.data[]);
-			
-					/*
-						union conv
-							{
-							void [50*50] x;
-							tile[50][50] y;
-							}
-						conv c;
-						c.x = std.file.read("save.map", world.map.data.sizeof);
-						g.world.map.data = c.y;
-						//core.exception.ArrayIndexError@main.d(556): index [16] exceeds array of length 2500
-
-						*/
-//						
-//auto file = File("save.map", g.world.map.data, "r");
-//						auto readBytes = fread(&g.world.map.data, byte.sizeof, dup.sizeof, file.getFP());
 						}
 
 					break;

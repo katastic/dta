@@ -344,8 +344,10 @@ class unit_t : drawable_object_t
 		float cy = y + dy;
 		if(cx > 0 && cy > 0 && cx < 50*32 && cy < 50*32)
 			{
-			tile t = g.world.map.data[cast(int)cx/32][cast(int)cy/32];
-			if(t == 0 || t == 4 || t == 5)
+			tile type = g.world.map.data[cast(int)cx/32][cast(int)cy/32];
+			
+			if( atlas.meta[type].isPassable)
+//			if(t == 0 || t == 4 || t == 5)
 				{
 				x = cx;
 				y = cy;
@@ -428,7 +430,10 @@ class unit_t : drawable_object_t
 			y - v.oy + v.y - bmp.h/2, 
 			0);			
 		
-		draw_hp_bar(x, y - bmp.w/2, v, hp, 100);		
+		draw_hp_bar(
+			x - v.ox + v.x, 
+			y - v.oy + v.y - bmp.w/2, 
+			v, hp, 100);		
 		}
 
 	override void onTick()
@@ -452,10 +457,14 @@ class dwarf_t : unit_t
 	override void draw(viewport_t v)
 		{
 		super.draw(v);
-		draw_hp_bar(x, y - 10, v, stamina, 100);
+		draw_hp_bar(
+			x - v.ox + v.x, 
+			y - v.oy + v.y - 10, 
+			v, stamina, 100);
 		
 		string text;
 		text = to!string(state);
+		
 		al_draw_text(g.font, 
 			ALLEGRO_COLOR(0, 0, 0, 1), 
 			x - v.ox, 

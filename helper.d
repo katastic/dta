@@ -50,8 +50,8 @@ int text_helper(bool do_reset)
 
 void draw_hp_bar(float x, float y, viewport_t v, float hp, float max)
 	{
-	float _x = x - v.ox + v.x;
-	float _y = y - v.oy + v.y - 10;
+	float _x = x;
+	float _y = y - 10;
 	float _hp = hp/max*20.0;
 
 	if(hp != max)

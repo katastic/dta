@@ -34,22 +34,18 @@ class map_t
 		for(int i = 0; i < w; i++)
 		for(int j = 0; j < h; j++)
 			{
-			if(percent(35))
+			if(percent(5))
 				{
-				data[i][j] = 1;
-				}
-			if(percent(25))
-				{
-				data[i][j] = 4;
-				}
-			if(percent(15))
-				{
-				data[i][j] = 5;
+				data[i][j] = 9;
 				}
 			}
 			
-		data[10][10] = 2;
-		data[16][16] = 3;
+		for(ubyte i = 0; i < g.atlas.data.length; i++)
+			{
+			data[i][0] = i;
+			}
+
+
 		}
 	
 	void draw(viewport_t v, bool drawTopLayer) // so inefficient but it'll work for now.
@@ -82,7 +78,7 @@ class map_t
 				{
 				al_draw_bitmap(g.water_bmp, v.x + i*32.0 - v.ox, v.y + j*32.0 - v.oy, 0);
 				}
-			if(data[i][j] == 3 && drawTopLayer)
+			if(data[i][j] == 3 && !drawTopLayer)
 				{
 				al_draw_bitmap(g.lava_bmp, v.x + i*32.0 - v.ox, v.y + j*32.0 - v.oy, 0);
 				}
@@ -102,12 +98,39 @@ class map_t
 			}
 		}
 
+	void draw2(viewport_t v, bool drawTopLayer) // so inefficient but it'll work for now.
+		{
+		long signed_start_i = cast(long) ((v.ox)/32.0)-1; //need signed to allow for negative
+		long signed_start_j = cast(long) ((v.oy)/32.0)-1;
+		uint start_i=0;
+		uint start_j=0;
+		uint end_i = cast(uint) ((v.w + v.ox + v.x)/32.0)+1; // v.ox should be negative shouldn't it??sd
+		uint end_j = cast(uint) ((v.h + v.oy + v.y)/32.0)+1;
+
+		if(signed_start_i < 0){start_i = 0;}else{start_i = to!uint(signed_start_i);}
+		if(signed_start_j < 0){start_j = 0;}else{start_j = to!uint(signed_start_j);}
+		if(end_i > w-1)end_i = w-1;
+		if(end_j > h-1)end_j = h-1;
+				
+//		writeln("start:", start_i, "/", start_j, " offset", v.ox, "/" , v.oy, " = end: ", end_i, "/",end_j);				
+		for(uint i = cast(uint) start_i; i < end_i; i++)
+		for(uint j = cast(uint) start_j; j < end_j; j++)
+			{
+			ubyte index = data[i][j];
+			assert(index >= 0);
+			assert(index < 25);
+			al_draw_bitmap(g.atlas[index], v.x + i*32.0 - v.ox, v.y + j*32.0 - v.oy, 0);
+			stats.number_of_drawn_background_tiles++;
+			}
+		}
+
 	int frames_passed=0;
 	
 	void logic()
 		{
-		if(frames_passed > 60){fluid_logic(); frames_passed=0;}
-		frames_passed++;
+		return;
+//		if(frames_passed > 60){fluid_logic(); frames_passed=0;}
+//		frames_passed++;
 		}
 		
 	void fluid_logic() /// Called at different tick rate
