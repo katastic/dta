@@ -534,6 +534,8 @@ void execute()
 					}
 				case ALLEGRO_EVENT_KEY_DOWN:
 					{
+					isKeySet(ALLEGRO_KEY_ESCAPE, exit);
+
 					isKeySet(ALLEGRO_KEY_SPACE, key_space_down);
 					isKeySet(ALLEGRO_KEY_Q, key_q_down);
 					isKeySet(ALLEGRO_KEY_E, key_e_down);
@@ -542,46 +544,31 @@ void execute()
 					isKeySet(ALLEGRO_KEY_A, key_a_down);
 					isKeySet(ALLEGRO_KEY_D, key_d_down);
 					isKeySet(ALLEGRO_KEY_F, key_f_down);
+					
+					void mouseSetTile(ALLEGRO_KEY key, ubyte mapValue)
+						{
+						if(event.keyboard.keycode == key)
+							{
+							int i = cast(int)((mouse_x + viewports[0].ox)/32);
+							int j = cast(int)((mouse_y + viewports[0].oy)/32);
+							if(i >= 0 && j >= 0 && i < 50 && j < 50)g.world.map.data[i][j] = mapValue;	
+							}
+						}
 	
-					if(event.keyboard.keycode == ALLEGRO_KEY_1)
-						{
-						int i = cast(int)((mouse_x + viewports[0].ox)/32);
-						int j = cast(int)((mouse_y + viewports[0].oy)/32);
-						if(i >= 0 && j >= 0 && i < 50 && j < 50)g.world.map.data[i][j] = 0;	
-						}
-					if(event.keyboard.keycode == ALLEGRO_KEY_2)
-						{
-						int i = cast(int)((mouse_x + viewports[0].ox)/32);
-						int j = cast(int)((mouse_y + viewports[0].oy)/32);
-						if(i >= 0 && j >= 0 && i < 50 && j < 50)g.world.map.data[i][j] = 1;	
-						}
-					if(event.keyboard.keycode == ALLEGRO_KEY_3)
-						{
-						int i = cast(int)((mouse_x + viewports[0].ox)/32);
-						int j = cast(int)((mouse_y + viewports[0].oy)/32);
-						if(i >= 0 && j >= 0 && i < 50 && j < 50)g.world.map.data[i][j] = 4;	
-						}
-					if(event.keyboard.keycode == ALLEGRO_KEY_4)
-						{
-						int i = cast(int)((mouse_x + viewports[0].ox)/32);
-						int j = cast(int)((mouse_y + viewports[0].oy)/32);
-						if(i >= 0 && j >= 0 && i < 50 && j < 50)g.world.map.data[i][j] = 5;	
-						}
-					if(event.keyboard.keycode == ALLEGRO_KEY_5)
-						{
-						int i = cast(int)((mouse_x + viewports[0].ox)/32);
-						int j = cast(int)((mouse_y + viewports[0].oy)/32);
-						if(i >= 0 && j >= 0 && i < 50 && j < 50)g.world.map.data[i][j] = 6;	
-						}
-
-					isKeySet(ALLEGRO_KEY_ESCAPE, exit);
+					mouseSetTile(ALLEGRO_KEY_1, 0);
+					mouseSetTile(ALLEGRO_KEY_2, 1);
+					mouseSetTile(ALLEGRO_KEY_3, 2);
+					mouseSetTile(ALLEGRO_KEY_4, 3);
+					mouseSetTile(ALLEGRO_KEY_5, 4);
+					mouseSetTile(ALLEGRO_KEY_6, 5);
+					mouseSetTile(ALLEGRO_KEY_7, 6);
 
 					//https://forum.dlang.org/post/t3ljgm$16du$1@digitalmars.com
 					//big 'ol wtf case.
 					void rawWriteValue(T)(File file, T value)
-					{
-					  file.rawWrite((&value)[0..1]);
-					}
+						{
+						file.rawWrite((&value)[0..1]);
+						}
 
 					if(event.keyboard.keycode == ALLEGRO_KEY_O)
 						{
