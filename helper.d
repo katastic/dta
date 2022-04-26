@@ -165,11 +165,66 @@ int h(ALLEGRO_BITMAP *b)
 	return al_get_bitmap_height(b);
 	}
 
-
+/// Same as al_draw_bitmap but center the sprite
 /// we can also chop off the last item.
 /// we could also throw an assert!null in here but maybe not for performance reasons.
-
 void al_draw_centered_bitmap(ALLEGRO_BITMAP* b, float x, float y, int flags=0)
 	{
 	al_draw_bitmap(b, x - b.w/2, y - b.h/2, flags);
 	}
+	
+/// Set texture target back to normal (the screen)
+void al_reset_target() 
+	{
+	al_set_target_backbuffer(al_get_current_display());
+	}
+	
+// you know, we could do some sort of scoped lambda like thing that auto resets the target
+/*
+	DAllegro might already have that somewhere...
+	
+	foo();
+	al_target(my_bitmap)
+		{
+		al_clear_to_color(...);
+		al_draw_filled_rectangle(...);
+		} // calls al_reset_target at end
+	bar();
+
+	al_target would be a class
+		this
+
+*/
+//ALLEGRO_BITMAP* target, 
+
+void al_target2(ALLEGRO_BITMAP* target, scope void delegate() func)
+	{
+	al_set_target_bitmap(target);
+	func();
+	al_reset_target();
+	}
+	
+import std.stdio;
+void test2()
+	{
+	ALLEGRO_BITMAP* bmp;
+	al_target2(bmp, { al_draw_pixel(5, 5, ALLEGRO_COLOR(1,1,1,1)); });
+	}
+
+struct al_target()
+	{
+	this(ALLEGRO_BITMAP* target)
+		{
+		al_set_target(target);
+		}
+		
+		//wheres the middle???
+		
+	~this()
+		{
+		al_reset_target();
+		}
+	}
+
+
+

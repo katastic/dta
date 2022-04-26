@@ -202,7 +202,7 @@ class static_blood_handler_t
 		{
 		al_set_target_bitmap(data);
 		al_draw_centered_bitmap(g.blood_bmp, x, y, uniform!"[]"(0,3));
-		al_set_target_backbuffer(al_get_current_display()); // is there an Allegro function that already does this?
+		al_reset_target();
 		}
 		
 	void draw(viewport_t v)
