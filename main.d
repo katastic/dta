@@ -1,4 +1,21 @@
 /*
+	-> TO TEST: benchmark blood decal maps of various sizes vs drawing.
+		Also benchmark write performance (adding a new blood spot)
+		 - one benefit of blits is they can move if necessary 
+		 but will that ever be necessary? For static decals like blood
+		 we can likely benefit from one gigantic (or subsectioned) 
+		 blood maps.
+
+
+
+	-> Basic tiled and lightmap lighting?
+
+
+
+
+
+
+
 	-> THERE IS some allegro bullshit
 		-> al_draw_bitmap ALWAYS calls al_draw_tinted_bitmap
 		which calls _draw_tinted_rotated_scaled_bitmap_region 

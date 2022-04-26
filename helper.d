@@ -164,3 +164,12 @@ int h(ALLEGRO_BITMAP *b)
 	{
 	return al_get_bitmap_height(b);
 	}
+
+
+/// we can also chop off the last item.
+/// we could also throw an assert!null in here but maybe not for performance reasons.
+
+void al_draw_centered_bitmap(ALLEGRO_BITMAP* b, float x, float y, int flags=0)
+	{
+	al_draw_bitmap(b, x - b.w/2, y - b.h/2, flags);
+	}

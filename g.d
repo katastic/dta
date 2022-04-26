@@ -168,6 +168,50 @@ struct blood_t
 	// -> The fact we're drawing HUNDREDS of these adds up to a significant amount of
 	// our current draw time (like 11% and we're not doing much!) on my netbook
 
+
+/*
+	welp it's like infinitely faster it seems to do one draw call
+	
+	HOWEVER, what about the WRITE SPEED. how many WRITES per frame can we do
+	before it gets slower to simply DRAW them all?
+	
+	HOWEVER HOWEVER, most decals are NOT MOVING. So a constant "stream of blood" (ahah) 
+	is okay as long as it doesn't exceed a certain amount per second. The total amount
+	doesn't matter so eventually, with time, the static method will ALWAYS exceed the
+	live method. 
+	
+	Quick test: 15 constant additions of blood have no discernable impact on framerate!
+		"PEOPLE ARE ICE SKATING ON A RIVER OF BLOOD OUT HERE."
+*/
+class static_blood_handler_t
+	{
+	BITMAP* data;
+	BITMAP*[4][4] chunks; //lmfao pun
+	
+	this(ref map_t m)
+		{
+		data = al_create_bitmap(m.w*32, m.h*32); //ideally power of 2? TEST THAT.
+	// WORKS
+	//	al_set_target_bitmap(data);
+	//	al_clear_to_color(COLOR(1,0,1,1));
+	//	al_set_target_backbuffer(al_get_current_display()); // is there an Allegro function that already does this?
+		assert(data != null);
+		}
+	
+	void add(float x, float y)
+		{
+		al_set_target_bitmap(data);
+		al_draw_centered_bitmap(g.blood_bmp, x, y, uniform!"[]"(0,3));
+		al_set_target_backbuffer(al_get_current_display()); // is there an Allegro function that already does this?
+		}
+		
+	void draw(viewport_t v)
+		{
+		al_draw_bitmap(data, 0 - v.ox + v.x, 0 - v.oy + v.y, 0);
+		}
+	}
+
+
 class blood_handler_t
 	{
 	blood_t[] data;
@@ -385,11 +429,13 @@ class world_t
 	map_t map;
 	tree[] trees;
 	blood_handler_t blood;
+	static_blood_handler_t blood2;
 
 	this()
 		{
 		map = new map_t;
 		blood = new blood_handler_t();
+		blood2 = new static_blood_handler_t(map);
 		
 		units ~= new dwarf_t(680, 360, 0, 0, g.stone_bmp);
 		monsters ~= new monster_t(220, 220, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5));
@@ -445,10 +491,9 @@ class world_t
 				}
 			}
 		
-//		map.draw(v, false);
 		map.draw2(v, false);
-		blood.draw(v);
-//		map.draw(v, true);
+//		blood.draw(v);
+		blood2.draw(v);
 		drawStat(units, stats.number_of_drawn_dwarves);
 		drawStat(monsters, stats.number_of_drawn_dwarves);		
 		drawStat(structures, stats.number_of_drawn_structures);
