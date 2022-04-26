@@ -40,12 +40,10 @@ class map_t
 				}
 			}
 			
-		for(ubyte i = 0; i < g.atlas.data.length; i++)
+		for(ubyte i = 0; i < 50; i++)
 			{
 			data[i][0] = i;
 			}
-
-
 		}
 	
 	void draw(viewport_t v, bool drawTopLayer) // so inefficient but it'll work for now.
@@ -98,7 +96,7 @@ class map_t
 			}
 		}
 
-	void draw2(viewport_t v, bool drawTopLayer) // so inefficient but it'll work for now.
+	void draw2(viewport_t v, bool drawTopLayer)
 		{
 		long signed_start_i = cast(long) ((v.ox)/32.0)-1; //need signed to allow for negative
 		long signed_start_j = cast(long) ((v.oy)/32.0)-1;
@@ -118,7 +116,6 @@ class map_t
 			{
 			ubyte index = data[i][j];
 			assert(index >= 0);
-			assert(index < 25);
 			al_draw_bitmap(g.atlas[index], v.x + i*32.0 - v.ox, v.y + j*32.0 - v.oy, 0);
 			stats.number_of_drawn_background_tiles++;
 			}

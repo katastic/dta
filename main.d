@@ -484,7 +484,22 @@ if(stats.fps != 0)			al_draw_textf(g.font, ALLEGRO_COLOR(0, 0, 0, 1), 20, text_h
 		// DRAW MOUSE PIXEL HELPER/FINDER
 		draw_target_dot(mouse_x, mouse_y);
 //		draw_target_dot(target.x, target.y);
-		al_draw_textf(g.font, ALLEGRO_COLOR(0, 0, 0, 1), mouse_x, mouse_y - 30, ALLEGRO_ALIGN_CENTER, "mouse [%d, %d]", mouse_x, mouse_y);
+
+		int val = -1;
+		int mouse_xi = (mouse_x + cast(int)viewports[0].ox + cast(int)viewports[0].x)/32;
+		int mouse_yi = (mouse_y + cast(int)viewports[0].oy + cast(int)viewports[0].x)/32;
+		if(mouse_xi >= 0 && mouse_yi >= 0
+			&& mouse_xi < 50 && mouse_yi < 50)
+			{
+			val = g.world.map.data[mouse_xi][mouse_yi];
+			}
+			
+		al_draw_textf(
+			g.font, 
+			ALLEGRO_COLOR(0, 0, 0, 1), 
+			mouse_x, 
+			mouse_y - 30, 
+			ALLEGRO_ALIGN_CENTER, "mouse [%d, %d] = %d", mouse_x, mouse_y, val);
 		}
 	}
 
@@ -551,17 +566,53 @@ void execute()
 							{
 							int i = cast(int)((mouse_x + viewports[0].ox)/32);
 							int j = cast(int)((mouse_y + viewports[0].oy)/32);
-							if(i >= 0 && j >= 0 && i < 50 && j < 50)g.world.map.data[i][j] = mapValue;	
+							if(i >= 0 && j >= 0 && i < 50 && j < 50)g.world.map.data[i][j] = mapValue;
+							}
+						}
+
+					void mouseChangeTile(ALLEGRO_KEY key, byte relMapValue)
+						{
+						if(event.keyboard.keycode == key)
+							{
+							int i = cast(int)((mouse_x + viewports[0].ox)/32);
+							int j = cast(int)((mouse_y + viewports[0].oy)/32);
+							if(i >= 0 && j >= 0 && i < 50 && j < 50)
+								{
+								if(cast(short)g.world.map.data[i][j] + cast(short)relMapValue >= 0
+								 &&
+								 g.world.map.data[i][j] <= g.atlas.data.length
+								 )
+									g.world.map.data[i][j] += relMapValue;
+								}
 							}
 						}
 						
+					void mouseChangeCursorTile(ALLEGRO_KEY key, int relMapValue)
+						{
+						if(event.keyboard.keycode == key)
+							{
+							int i = cast(int)((mouse_x + viewports[0].ox)/32);
+							int j = cast(int)((mouse_y + viewports[0].oy)/32);
+							if(i >= 0 && j >= 0 && i < 50 && j < 50)
+								{
+								if(cast(short)g.atlas.currentCursor + relMapValue >= 0
+								 &&
+								 g.atlas.currentCursor <= g.atlas.data.length
+								 )
+									g.atlas.currentCursor += relMapValue;
+									writeln(g.atlas.currentCursor);
+								}
+							}
+						}
+
+
 					/*
 					0 Grass
 					1 Wall/Ground
 					2 Water
 					3 Lava
 					4 Wood Road
-					5 Stone Road
+					5 Stone Road090
 					6 REINFORCED WALL
 					*/
 
@@ -573,8 +624,10 @@ void execute()
 					mouseSetTile(ALLEGRO_KEY_6, 5);
 					mouseSetTile(ALLEGRO_KEY_7, 6);
 					mouseSetTile(ALLEGRO_KEY_8, 7);
-					mouseSetTile(ALLEGRO_KEY_9, 8);
-					mouseSetTile(ALLEGRO_KEY_0, 9);
+					mouseChangeCursorTile(ALLEGRO_KEY_LEFT, -1);
+					mouseChangeCursorTile(ALLEGRO_KEY_RIGHT, 1);
+					mouseChangeCursorTile(ALLEGRO_KEY_UP, -g.atlas.atl.w/32);
+					mouseChangeCursorTile(ALLEGRO_KEY_DOWN, g.atlas.atl.w/32);
 
 					//https://forum.dlang.org/post/t3ljgm$16du$1@digitalmars.com
 					//big 'ol wtf case.
@@ -638,12 +691,16 @@ void execute()
 
 				case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
 					{
-					ulong px = to!ulong(mouse_x + viewports[0].ox)/32;
-					ulong py = to!ulong(mouse_y + viewports[0].oy)/32;
+					long px = to!long(mouse_x + viewports[0].ox + viewports[0].x)/32;
+					long py = to!long(mouse_y + viewports[0].oy + viewports[0].y)/32;
+					writeln(viewports[0].ox, ",", viewports[0].oy);
+					writeln("mouse click at coordinate[", mouse_x, ",", mouse_y, "] and tile [", px, ",", py, "]");
+					if(px < 0 || py < 0)break;
+					
 					if(event.mouse.button == 1)
 						{
 						mouse_lmb = true;
-//						world.map.data[px][py] = 0;
+						world.map.data[px][py] = cast(ubyte)g.atlas.currentCursor;
 						}
 					if(event.mouse.button == 2)
 						{

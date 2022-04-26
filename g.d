@@ -20,6 +20,47 @@ alias BITMAP = ALLEGRO_BITMAP;
 alias tile=ubyte;
 alias dir=direction;
 
+struct pair
+	{
+	float x;
+	float y;
+
+	this(float _x, float _y)
+		{
+		x = _x;
+		y = _y;
+		}
+	this(double _x, double _y)
+		{
+		x = _x;
+		y = _y;
+		}
+	}
+
+/*
+import std.typecons;
+
+// https://dlang.org/library/std/typecons/typedef.html
+//  Unlike the alias feature, Typedef ensures the two types are
+//  not considered as equals. 
+alias sPair = Typedef!(pair, pair.init, "screen"); // screen pair?
+alias wPair = Typedef!(pair, pair.init, "world"); // world pair?
+alias vPair = Typedef!(pair, pair.init, "viewport"); // viewport pair?
+
+//alias s2v = screenToViewport;
+alias v2s = viewportToScreen;
+sPair viewportToScreen(vPair s, viewport_t v)
+	{
+	return cast(sPair)pair(s.x - v.ox + v.x, s.y - v.oy + v.y);
+	} //but what if our functions want only the x or y? Is there a template way?
+
+void test1()
+	{
+//	pair v4 = pair(1f, 2f); // works fine
+	vPair v5 = vPair(pair(1f, 2f));
+	return;
+	}*/
+
 struct meta_t
 	{
 	bool isPassable;
@@ -38,35 +79,64 @@ struct atlas_t
 	meta_t*	[] meta;
 	BITMAP* [] data;
 	alias data this;
-	
+	BITMAP* atl;
+
+	int currentCursor=0;
+
+	void drawAtlas(float x, float y)
+		{
+		al_draw_filled_rectangle(x, y, x + atl.w-1, y + atl.h-1, ALLEGRO_COLOR(.7,.7,.7,.7));
+		al_draw_bitmap(atl, x, y, 0);
+
+		int i = 0;
+		float x2 = 0;
+		float y2 = 0;
+		
+		do{
+			if(i >= currentCursor)break;
+			i++;
+			x2+=32;
+			if(x2 >= atl.w)
+				{
+				x2 = 0;
+				y2 += 32;
+				}
+			}while(true);
+				
+		al_draw_rectangle(x + x2, y + y2, x + x2 + 31, y + y2 + 31, ALLEGRO_COLOR(1,0,0,1), 3);
+		}
+
 	void load(string filepath)
 		{
 		writeln("loading atlas at ", filepath);
-		BITMAP* atl = al_load_bitmap(filepath.toStringz());
+		atl = al_load_bitmap(filepath.toStringz());
 		assert(atl != null, "ATLAS " ~ filepath ~ " NOT FOUND/LOADABLE");
 		
 		int w = atl.w;
 		int h = atl.h;
 		
-		assert(w % 32 == 0, "ATLAS ISNT 32-byte ALIGNED."); 
+		assert(w % 32 == 0, "ATLAS ISNT 32-byte ALIGNED. ZEUS IS FURIOUS."); 
 		
 		// TODO FIX. consider making a sub-bitmap based one
 		// so we're not constantly changing textures while drawing
 		// (one for each layer would work.)
 		
-		for(int i = 0; i < 10; i++)
+		int z = 0;
+		for(int j = 0; j < 16; j++) //order important
+		for(int i = 0; i < 16; i++)
 			{
-			BITMAP* b = al_create_sub_bitmap(atl, 32*i, 32*0, 32, 32);
+			writeln("i, j, z = ", i, " ", j, " ", z);
+			BITMAP* b = al_create_sub_bitmap(atl, 32*i, 32*j, 32, 32);
 			assert(b != null);
 			data ~= b;
 			
-			if(i == 1)
+			if(z == 1 || z == 9)
 				{
 				meta ~= &solid;
 				}else{
 				meta ~= &path;
 				}
-			
+			z++;
 			}
 		writeln("data.length = ", data.length);
 		}
@@ -93,7 +163,6 @@ class blood_handler_t
 		{
 		blood_t b = blood_t(cast(int)x, cast(int)y, 100, 0, uniform!"[]"(0, 4), false);
 		data ~= b;
-		
 		}
 	
 	void draw(viewport_t v)
@@ -343,6 +412,8 @@ class world_t
 //			stats.number_of_drawn_structures++;
 			i.draw(v);
 			}*/
+		
+		g.atlas.drawAtlas( g.SCREEN_W - g.atlas.atl.w, 200);
 			
 		}
 		
@@ -444,8 +515,8 @@ class world_t
 	
 	ALLEGRO_BITMAP* blood_bmp;
 
-	int SCREEN_W = 1200;
-	int SCREEN_H = 600;
+	int SCREEN_W = 1360;
+	int SCREEN_H = 720;
 //	}
 //globals_t g;
 
@@ -520,3 +591,4 @@ bool key_q_down = false;
 bool key_e_down = false;
 bool key_f_down = false;
 bool key_space_down = false;
+
