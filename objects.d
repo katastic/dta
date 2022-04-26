@@ -399,7 +399,7 @@ class unit_t : drawable_object_t
 	
 	void attackStructure(structure_t s)
 		{
-		s.onAttack(this, weapon_damage);
+		s.onHit(this, weapon_damage);
 		}
 
 	void attack(unit_t u)
@@ -620,6 +620,21 @@ class dwarf_t : unit_t
 //						return;  comment to allow hitting multiple here
 						}
 					}
+
+				foreach(i; g.world.structures)
+					{
+					if(i.x < x + 16 && i.x > x - 16)
+					if(i.x < x + 16 && i.x > x - 16)
+					if(i.y < y + 16 && i.y > y - 16)
+						{
+						writeln("I hit a structure");
+						i.onHit(this, 90);
+//						return;  comment to allow hitting multiple here
+						}
+					}
+
+
+
 				}
 			break;		
 			
@@ -722,7 +737,7 @@ class structure_t : drawable_object_t
 		draw_hp_bar(x, y, v, hp, maxHP);
 		}
 
-	void onAttack(unit_t u, float weapon_damage)
+	void onHit(unit_t u, float weapon_damage)
 		{
 		hp -= weapon_damage;
 		}
