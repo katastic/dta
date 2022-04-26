@@ -17,6 +17,8 @@ import allegro5.allegro_color;
 
 import std.conv;
 import std.random;
+import std.file;
+import std.stdio;
 
 import helper;
 import g;
@@ -31,6 +33,7 @@ class map_t
 	
 	this()
 		{
+			/*
 		for(int i = 0; i < w; i++)
 		for(int j = 0; j < h; j++)
 			{
@@ -44,6 +47,8 @@ class map_t
 			{
 			data[i][0] = i;
 			}
+			*/
+		load("world.map");
 		}
 	
 	void draw(viewport_t v, bool drawTopLayer) // so inefficient but it'll work for now.
@@ -224,4 +229,26 @@ class map_t
 		spread(2);
 		spread_and_burn(3);	
 		}
+		
+	//https://forum.dlang.org/post/t3ljgm$16du$1@digitalmars.com
+	//big 'ol wtf case.
+	void rawWriteValue(T)(File file, T value)
+		{
+		file.rawWrite((&value)[0..1]);
+		}
+
+	void save(string path="world.map")
+		{
+		auto f = File(path, "w");
+		rawWriteValue(f, g.world.map.data);
+		//https://forum.dlang.org/post/mailman.113.1330209587.24984.digitalmars-d-learn@puremagic.com
+		writeln("SAVING MAP");
+		}
+
+	void load(string path="world.map")
+		{
+		writeln("LOADING MAP");
+		auto read = File(path).rawRead(g.world.map.data[]);
+		}
+
 	}	

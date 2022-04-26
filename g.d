@@ -428,23 +428,27 @@ class world_t
 	structure_t[] structures;
 	map_t map;
 	tree[] trees;
-	blood_handler_t blood;
+	//blood_handler_t blood;
 	static_blood_handler_t blood2;
 
 	this()
 		{
 		map = new map_t;
-		blood = new blood_handler_t();
+		//blood = new blood_handler_t();
 		blood2 = new static_blood_handler_t(map);
 		
 		units ~= new dwarf_t(680, 360, 0, 0, g.stone_bmp);
-		monsters ~= new monster_t(220, 220, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5));
-		monsters ~= new monster_t(220, 220, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5));
-		monsters ~= new monster_t(220, 220, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5));
-		monsters ~= new monster_t(220, 220, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5));	
+		monsters ~= new monster_t(220 + uniform!"[]"(-100, 100), 220, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5));
+		monsters ~= new monster_t(220 + uniform!"[]"(-100, 100), 220, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5));
+		monsters ~= new monster_t(220 + uniform!"[]"(-100, 100), 220, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5));
+		monsters ~= new monster_t(220 + uniform!"[]"(-100, 100), 220, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5));
+		monsters ~= new monster_t(220 + uniform!"[]"(-100, 100), 220, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5));
 		monsters ~= new boss_t(420, 320, uniform!"[]"(-.5, .5), uniform!"[]"(-.5, .5));	
 	
 		structures ~= new monster_structure_t(500, 200);
+		structures ~= new monster_structure_t(600, 200);
+		structures ~= new monster_structure_t(700, 200);
+		structures ~= new monster_structure_t(800, 200);
 		
 		trees ~= new tree(200, 200, 0, 0, g.tree_bmp);
 		trees ~= new tree(232, 200, 0, 0, g.tree_bmp);
@@ -498,41 +502,9 @@ class world_t
 		drawStat(monsters, stats.number_of_drawn_dwarves);		
 		drawStat(structures, stats.number_of_drawn_structures);
 		
-/*		foreach(u; units)
-			{
-			stats.number_of_drawn_objects++;
-			u.draw(v);
-			}*/
-/*		foreach(d; dwarves)
-			{
-			stats.number_of_drawn_dwarves++;
-			d.draw(v);
-			}
-*/
-	
-/*		foreach(s; structures)
-			{
-			stats.number_of_drawn_structures++;
-			s.draw(v);
-			}*/
-			
-		
 		drawStat(chests, stats.number_of_drawn_objects);
 		drawStat(items, stats.number_of_drawn_objects);
 		drawStat(trees, stats.number_of_drawn_objects);
-		
-		
-/*		
-		foreach(c; chests)
-			{
-//			stats.number_of_drawn_structures++;
-			c.draw(v);
-			}
-		foreach(i; items)
-			{
-//			stats.number_of_drawn_structures++;
-			i.draw(v);
-			}*/
 		
 		if(!g.atlas.isHidden)g.atlas.drawAtlas( g.SCREEN_W - g.atlas.atl.w, 200);
 			

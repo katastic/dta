@@ -219,7 +219,6 @@ import std.format;
 import std.random;
 import std.algorithm;
 import std.traits; // EnumMembers
-import std.file;
 //thread yielding?
 //-------------------------------------------
 //import core.thread; //for yield... maybe?
@@ -624,7 +623,6 @@ void execute()
 							}
 						}
 
-
 					/*
 					0 Grass
 					1 Wall/Ground
@@ -648,25 +646,14 @@ void execute()
 					mouseChangeCursorTile(ALLEGRO_KEY_UP, -g.atlas.atl.w/32);
 					mouseChangeCursorTile(ALLEGRO_KEY_DOWN, g.atlas.atl.w/32);
 
-					//https://forum.dlang.org/post/t3ljgm$16du$1@digitalmars.com
-					//big 'ol wtf case.
-					void rawWriteValue(T)(File file, T value)
-						{
-						file.rawWrite((&value)[0..1]);
-						}
-
 					if(event.keyboard.keycode == ALLEGRO_KEY_O)
 						{
-						auto f = File("save.map", "w");
-						rawWriteValue(f, g.world.map.data);
-				        //https://forum.dlang.org/post/mailman.113.1330209587.24984.digitalmars-d-learn@puremagic.com
-						writeln("SAVING MAP");
+						world.map.save();
 						}	
 				
 					if(event.keyboard.keycode == ALLEGRO_KEY_P)
 						{
-						writeln("LOADING MAP");
-						auto read = File("save.map").rawRead(g.world.map.data[]);
+						world.map.load();
 						}
 
 					break;
