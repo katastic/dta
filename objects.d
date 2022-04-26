@@ -459,11 +459,11 @@ class dwarf_t : unit_t
 	override void draw(viewport_t v)
 		{
 		super.draw(v);
-		draw_hp_bar(
+/*		draw_hp_bar(
 			x - v.ox + v.x, 
 			y - v.oy + v.y - 10, 
 			v, stamina, 100);
-		
+	*/	
 		string text;
 		text = to!string(state);
 		
@@ -480,7 +480,7 @@ class dwarf_t : unit_t
 	float stamina=100f;
 	immutable float SPRINT_SPEED=4;
 
-	override void actionSprint()
+	override void actionSprint() // FIX: How does spamming sprint quickly deplete our stamina if we can only start it with a full bar??  
 		{
 		sprintWasHeld = true;
 		if(state == STATE.WALKING && stamina == 100)
@@ -492,7 +492,6 @@ class dwarf_t : unit_t
 			if(direction == 1){vx = 0; vy = SPRINT_SPEED;}
 			if(direction == 2){vx = -SPRINT_SPEED; vy = 0;}
 			if(direction == 3){vx = SPRINT_SPEED; vy = 0;}
-			
 			}
 		}
 
@@ -678,8 +677,9 @@ class dwarf_t : unit_t
 		}
 	override void actionJump()
 		{
-		if(state == STATE.WALKING)
+		if(state == STATE.WALKING && stamina >= 50)
 			{
+			stamina -= 50;
 			state = STATE.JUMPING;
 			if(direction == 0){vx = 0; vy = -JUMP_SPEED;}
 			if(direction == 1){vx = 0; vy =  JUMP_SPEED;}

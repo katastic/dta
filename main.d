@@ -240,8 +240,8 @@ alias BITMAP=ALLEGRO_BITMAP;
 //ALLEGRO_CONFIG* 		cfg;  //whats this used for?
 ALLEGRO_DISPLAY* 		al_display;
 ALLEGRO_EVENT_QUEUE* 	queue;
-ALLEGRO_TIMER *fps_timer;
-ALLEGRO_TIMER *screencap_timer;
+ALLEGRO_TIMER* 			fps_timer;
+ALLEGRO_TIMER* 			screencap_timer;
 display_t display;
 
 //=============================================================================
@@ -301,8 +301,8 @@ static if (false) // MULTISAMPLING. Not sure if helpful.
 		}
 	}
 
-	al_display = al_create_display(g.SCREEN_W, g.SCREEN_H);
-	queue	= al_create_event_queue();
+	al_display 	= al_create_display(g.SCREEN_W, g.SCREEN_H);
+	queue		= al_create_event_queue();
 
 	if (!al_install_keyboard())      assert(0, "al_install_keyboard failed!");
 	if (!al_install_mouse())         assert(0, "al_install_mouse failed!");
@@ -361,8 +361,8 @@ static if (false) // MULTISAMPLING. Not sure if helpful.
 	
 	// FPS Handling
 	// --------------------------------------------------------
-	fps_timer = al_create_timer(1.0f);
-	screencap_timer = al_create_timer(10f);
+	fps_timer 		= al_create_timer(1.0f);
+	screencap_timer = al_create_timer(10.0f);
 	al_register_event_source(queue, al_get_timer_event_source(fps_timer));
 	al_register_event_source(queue, al_get_timer_event_source(screencap_timer));
 	al_start_timer(fps_timer);
@@ -456,7 +456,8 @@ struct display_t
 
 		al_draw_filled_rounded_rectangle(16, 32, 64+650, 105+32, 8, 8, ALLEGRO_COLOR(.7, .7, .7, .7));
 
-if(stats.fps != 0)			al_draw_textf(g.font, ALLEGRO_COLOR(0, 0, 0, 1), 20, text_helper(false), ALLEGRO_ALIGN_LEFT, "fps[%d] objrate[%d]", stats.fps, 
+if(stats.fps != 0)	
+		al_draw_textf(g.font, ALLEGRO_COLOR(0, 0, 0, 1), 20, text_helper(false), ALLEGRO_ALIGN_LEFT, "fps[%d] objrate[%d]", stats.fps, 
 					(stats.number_of_drawn_objects +
 					stats.number_of_drawn_dwarves + 
 					stats.number_of_drawn_background_tiles + 
@@ -467,10 +468,8 @@ if(stats.fps != 0)			al_draw_textf(g.font, ALLEGRO_COLOR(0, 0, 0, 1), 20, text_h
 					// should be approx constant for a cpu once you have enough objects and, are 
 					// no longer limited by screen VSYNC.
 					
-			al_draw_textf(g.font, ALLEGRO_COLOR(0, 0, 0, 1), 20, text_helper(false), ALLEGRO_ALIGN_LEFT, "mouse [%d, %d][%d]", mouse_x, mouse_y, mouse_lmb);
-			
+			al_draw_textf(g.font, ALLEGRO_COLOR(0, 0, 0, 1), 20, text_helper(false), ALLEGRO_ALIGN_LEFT, "mouse [%d, %d][%d]", mouse_x, mouse_y, mouse_lmb);			
 			al_draw_textf(g.font, ALLEGRO_COLOR(0, 0, 0, 1), 20, text_helper(false), ALLEGRO_ALIGN_LEFT, "money [%d] deaths [%d]", g.players[0].money, g.players[0].deaths);
-
 			al_draw_textf(g.font, ALLEGRO_COLOR(0, 0, 0, 1), 20, text_helper(false), ALLEGRO_ALIGN_LEFT, 
 				"drawn: objects [%d] dwarves [%d] structs [%d] bg_tiles [%d] particles [%d]", 
 				stats.number_of_drawn_objects, 
@@ -559,6 +558,9 @@ void execute()
 					isKeySet(ALLEGRO_KEY_A, key_a_down);
 					isKeySet(ALLEGRO_KEY_D, key_d_down);
 					isKeySet(ALLEGRO_KEY_F, key_f_down);
+					
+					isKeySet(ALLEGRO_KEY_N, g.atlas.isHidden);
+					isKeyRel(ALLEGRO_KEY_M, g.atlas.isHidden);
 					
 					void mouseSetTile(ALLEGRO_KEY key, ubyte mapValue)
 						{
