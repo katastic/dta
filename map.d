@@ -40,7 +40,7 @@ class map_t
 				}
 			}
 			
-		for(ubyte i = 0; i < 50; i++)
+		for(ubyte i = 0; i < w; i++)
 			{
 			data[i][0] = i;
 			}

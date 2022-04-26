@@ -13,6 +13,19 @@ import viewport;
 // Graphical helper functions
 //=============================================================================
 
+bool isInsideScreen(float x, float y, viewport_t v) /// For bitmap culling. Is this point inside the screen?
+	{
+	if(x > 0 && x < v.w && y > 0 && y < v.h)
+		{return true;} else{ return false;}
+	}
+
+bool isWideInsideScreen(float x, float y, ALLEGRO_BITMAP* b, viewport_t v) /// Same as above but includes a bitmaps width/height instead of a single point
+	{
+	if(x >= -b.w/2 && x - b.w/2 < v.w && y - b.h/2 >= -b.w/2 && y < v.h)
+		{return true;} else{ return false;} //fixme
+	}
+
+
 /*
 //inline this? or template...
 void draw_target_dot(xy_pair xy)
@@ -47,7 +60,6 @@ int text_helper(bool do_reset)
 	return starting_height + text_height*number_of_entries;
 	}
 
-
 void draw_hp_bar(float x, float y, viewport_t v, float hp, float max)
 	{
 	float _x = x;
@@ -71,7 +83,7 @@ bool percent(float chance)
 	return uniform!"[]"(0.0, 100.0) < chance;
 	}
 
-// can't remember the best name for this.
+// can't remember the best name for this. How about clampToMax? <-----
 void clampUpper(T)(ref T val, T max)
 	{
 	if(val > max)
@@ -99,6 +111,25 @@ void clampBoth(T)(ref T val, T min, T max)
 		val = max;
 		}
 	}	
+
+// <------------ Duplicates??
+void cap(T)(ref T val, T low, T high)
+	{
+	if(val < low){val = low; return;}
+	if(val > high){val = high; return;}
+	}
+
+// Cap and return value.
+// better name for this? 
+pure T cap_ret(T)(T val, T low, T high)
+	{
+	if(val < low){val = low; return val;}
+	if(val > high){val = high; return val;}
+	return val;
+	}
+
+
+
 
 /// UFCS - Helper functions 
 /// see https://www.allegro.cc/manual/5/al_get_font_line_height
@@ -132,19 +163,4 @@ int w(ALLEGRO_BITMAP *b)
 int h(ALLEGRO_BITMAP *b)
 	{
 	return al_get_bitmap_height(b);
-	}
-
-void cap(T)(ref T val, T low, T high)
-	{
-	if(val < low){val = low; return;}
-	if(val > high){val = high; return;}
-	}
-
-// Cap and return value.
-// better name for this? 
-pure T cap_ret(T)(T val, T low, T high)
-	{
-	if(val < low){val = low; return val;}
-	if(val > high){val = high; return val;}
-	return val;
 	}

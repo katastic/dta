@@ -9,4 +9,7 @@ class viewport_t
 	/// Camera position
 	float ox; /// offset_x, how much scrolling. subtracted from drawing calls.
 	float oy; /// offset_y
+	
+	int* screen_w; //mirror of g.screen_w 
+	int* screen_h;
 	}

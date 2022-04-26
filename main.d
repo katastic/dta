@@ -1,4 +1,19 @@
 /*
+	-> THERE IS some allegro bullshit
+		-> al_draw_bitmap ALWAYS calls al_draw_tinted_bitmap
+		which calls _draw_tinted_rotated_scaled_bitmap_region 
+
+		https://github.com/liballeg/allegro5/blob/aeb6c4f4f81773b45c249bfec055c5351d184617/src/bitmap_draw.c#L62
+		https://github.com/liballeg/allegro5/blob/c9bc8d5dd787395f25c2de1a84cd986dbcd453e3/src/opengl/ogl_bitmap.c#L295
+
+		It may really be faster for us to clip natively before 
+		going into the insane callstack that is allegro.
+		
+		worst case, do this magical thing called a BENCHMARK.
+		
+		
+		
+		
 
 	DRAW QUESTION:
 		Do we want to draw layers IN ORDER? That is, objects have to be drawn
@@ -173,21 +188,6 @@
 		
 
 */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // GLOBAL CONSTANTS
 // =============================================================================
@@ -725,24 +725,17 @@ void execute()
 						writeln("saving screenshot [screen.png]");
 						al_save_bitmap("screen.png", al_get_backbuffer(al_display));	
 						al_stop_timer(screencap_timer);
-						}
-						
+						}						
 					if(event.timer.source == fps_timer) //ONCE per second
 						{
-
 						stats.fps = stats.frames_passed;
 						stats.frames_passed = 0;
-
-						// do something once per second.
-
-						// n/t
 						}
 					break;
 					}
-				
 				default:
+				}
 			}
-		}
 
 		logic();
 		display.draw_frame();

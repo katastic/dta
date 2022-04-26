@@ -342,17 +342,14 @@ class unit_t : drawable_object_t
 		{
 		float cx = x + dx;
 		float cy = y + dy;
-		if(cx > 0 && cy > 0 && cx < 50*32 && cy < 50*32)
+		if(cx > 0 && cy > 0 && cx < g.world.map.w*32-1 && cy < g.world.map.h*32-1)
 			{
 			tile type = g.world.map.data[cast(int)cx/32][cast(int)cy/32];
-			
-			if( atlas.meta[type].isPassable)
-//			if(t == 0 || t == 4 || t == 5)
+			if(atlas.meta[type].isPassable)
 				{
 				x = cx;
 				y = cy;
 				}
-//			writeln(t);
 			}
 		}
 
