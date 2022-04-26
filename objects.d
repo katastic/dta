@@ -452,6 +452,8 @@ class dwarf_t : unit_t
 	this(float _x, float _y, float _xv, float _yv, ALLEGRO_BITMAP* b)
 		{
 		super(1, _x, _y, _xv, _yv, b);
+		direction = 0;
+		bmp = g.dude_up_bmp;
 		}
 
 	override void draw(viewport_t v)
