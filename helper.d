@@ -222,3 +222,10 @@ struct al_target()
 		}
 	}
 
+/// Print variablename = value
+/// usage because of D oddness:    
+/// writeval(var.stringof, var);
+void writeval(T)(string x, T y) 
+	{
+	writeln(x, " = ", y);
+	}

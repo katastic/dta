@@ -16,6 +16,11 @@ import objects;
 import viewport;
 import map;
 
+alias KEY_UP = ALLEGRO_KEY_UP; // should we do these? By time we write them out we've already done more work than just writing them.
+alias KEY_DOWN = ALLEGRO_KEY_DOWN; // i'll leave them coded as an open question for later
+alias KEY_LEFT = ALLEGRO_KEY_LEFT; 
+alias KEY_RIGHT = ALLEGRO_KEY_RIGHT; 
+
 alias COLOR = ALLEGRO_COLOR;
 alias BITMAP = ALLEGRO_BITMAP;
 alias tile=ubyte;
@@ -85,6 +90,18 @@ struct atlas_t
 	BITMAP* atl;
 
 	int currentCursor=0;
+
+	void changeCursor(int relValue)
+		{
+		if( (cast(short)currentCursor + relValue >= 0) 
+			&& 
+			currentCursor + relValue <= g.atlas.data.length)
+			{
+			currentCursor += relValue;
+			writeln(currentCursor.stringof, " = ", currentCursor);
+//			writeval(g.atlas.data.length);
+			}			
+		}
 
 	// Editing the metadata functions
 	// ---------------------------------------------------------------
@@ -564,7 +581,6 @@ class world_t
 
 	void draw(viewport_t v)
 		{
-		
 		void draw(T)(ref T obj)
 			{
 			foreach(o; obj)
@@ -593,8 +609,8 @@ class world_t
 		drawStat(items, stats.number_of_drawn_objects);
 		drawStat(trees, stats.number_of_drawn_objects);
 		
-		if(!g.atlas.isHidden)g.atlas.drawAtlas( g.SCREEN_W - g.atlas.atl.w, 200);
-			
+		if(!g.atlas.isHidden)g.atlas.drawAtlas( g.SCREEN_W - g.atlas.atl.w, 140);
+		// g.SCREEN_H - g.atlas.atl.h);
 		}
 		
 	void logic()

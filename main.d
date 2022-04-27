@@ -27,156 +27,6 @@
 			OOOH. draw tiles like the same layer but only split for blood and other 'floor' 
 			decals whereas sprites are still on top.
 
-	Look at bosses from METAL SLUG etc
-
-	maps are mostly hand made. maybe we can cookie-cutter them like Diablo. 
-	We could add "themes" / mutators to existing map areas. 
-		Long path + [Undead] modifier + [High level] modifier
-		
-	weather effects? not just pretty. like magica: 
-		- RAIN has modifiers
-			- Platemail lower resist to lightning (both natural and magic)
-		- snow?
-
-	Moves:
-		- Walk
-		- Sprint
-		- Dodge 
-		- Jump/Leap forward (dodge when not pressing a direction is also jump?)
-		- Block
-		- Attack [different attack types?]
-		- Cast magic
-		- Use item
-		- Use inventory
-
-		-> Do we have STAMINA? Secret of Mana charge up attacks? Or reducing stamina like more 
-		modern games
-		-> Can you HOLD attack to do something different than pressing? (like SOM)
-
-	[magic]
-		 in SoM each magic type has a "mana spirit" and a series of spells associated with that spirit. kind a neat way
-		 to do it other than the tried-and-old "light/dark/fire/water/lightning" by putting a face on that spirit.
-
-	We could basically be fighting all the KNIGHTS of King Arthur as well as MERLIN (and his associates/underlings)
-	
-		https://en.wikipedia.org/wiki/Knights_of_the_Round_Table
-		holy shit theres TONS OF THESE GUYS
-			Lancelot - Uses lance?
-			
--->		KILL THE LADY OF THE LAKE.
-		
-	[KNIGHTS OF THE ROUND]
-		Yvain - has a pet LION
-		
-
-	[ENEMY attacks]
-		- Standard: 
-			- Stabbing spear
-			- Swinging sword
-			- Vertical hammer [basically same as spear but no long zone].
-			- Shield bash [no to light damage, pushes you back, maybe stuns]
-			- Charges up to do one of these ^	
-	
-		- Think [Vampire Survivors] but the enemy has the weapons]
-		- TOUCH: Touching the enemy does damage
-		- THORNS: Attacking the enemy with melee does damage
-		- AURA: Getting within a radius does damage.
-		- WAVE: Wave of fire, wave of rocks, whatever. Straight line wave attack.
-		- CIRCLE: radiating circle that spins out.
-		- METEOR: A blast hits the ground in a random spot, like a meteor
-		- BEAM:  long beams from the enemy or outside the enemy
-		- OFF-SCREEN-BASED a wave/line that goes from the outside of the world inward [left of screen to right].
-		- floor damage: (like meteor) but could last longer / permenant. Like the sections of Eye boss in Heroes of hammerwatch.
-		- Big "run away" boss that is eating. Screen wide, inside a canyon.
-	
-		- At one point you GO INSIDE A DUNE WORM and fight through the other things its eaten (like other guys/knights/enemies)
-		- Boss that runs at you. Whether it's a RAM or a lanceelot horse.
-		- Bosses that are mobile and jump away into distinct sections.
-		- Send "spikes" from the ground upward [see meteor]
-		- Bosses that raise undead
-		- BIG BOSSES that have TARGETABLE LIMBS [just like SOM, SOE, CTrigger] for different strategies
-			- healer drones
-			- maybe not make a single meta the only meta ['always target the drones first']
-		- Large mechanical device boss [dwarven?]
-		- Dragon(s)
-		- A tiny rabbit
-		- "sadness" [earthbound] "I'm attacking the darkness!"
-		
-		- MULTI WEAPON boss puzzles (better make weapon swapping easy then! L/R on controller)
-			- e.g. "use whip to get on top of mechanical boss, then use spear weapon to attack through armor plate"
-			- Support putting only specific weapons on the quick bar (even if you have more)
-				- that is: ready the 3 weapons you care about while still carrying the rest.
-	
-		- buddies with special attacks:
-			- Birds that just attack
-			- Birds that flock during an attack phase and then swarm at the player from one side
-			 to another.
-
-		- Arrows. Slightly/heavily magically enhanced tracking arrows.
-
-		- A line extends out and rotates (Binding of Isaac 'It Lives!')
-		- See [Heroes of Hammerwatch] bosses/enemies
-
-	[weapons]
-		- sword [+ shield]
-		- two handed sword [longer reach more damage, harder block, slower]
-		- whip? boomerang? bow?
-		- magic? Make magic available for everyone so there's no 'mage' class. Just paladins. Warriors with small amounts of magic.
-		- robinhoodian quartar staff?
-
-	[armor]
-		- wear robes to reduce water damage to armor? 
-		- change robes to hide identity from [[COPS]]?
-		- benefits of light vs heavy armor? Easier dodge for more blocking?
-
-	[attack caravans]
-		- dudes outside
-		- new guys spilling out (and/or reinforcements offscreen if you take too long)
-		- miniboss 'hero' with magic attacks
-
-	[attack other things?]
-		[travelling merchants that aren't caravans?]
-		[tiers of caravans based on defenses]
-		- 1 dude alone [occasionally a rare/legendary, miniboss dude walking by himself. DARE YE TEMPT FATE?]
-		- 2 dudes
-		- 3 dudes
-		- 4 dudes
-		- 5 dudes
-		- 1 wagon alone
-		- 1 wagon + X footmen
-		- 1 wagon + X mounted knights
-		- 2 wagons + ???
-		The more wagons you hit, the more the POLICE (I mean sheriffs guards) will be after you!
-
-		
-	defend caravans? annoying? can you send your own caravans to do stuff? can rival players attack them?
-		- RIVAL gangs. not just coop but verses?
-		
-	 - we could have "pets" that help fight but if you have say a dog, people will have their dog die.
-	 - also units don't die but go unconscious so you're not starting leveling your dudes everytime
-	 - 	also if we're talking VERSES gameplay, we don't want the game to be a "grind to outlevel the
-	 enemy because the first time you lose then the other player has more XP/resources forever
-	  and its over."
-
-	Secret of Mana
-	Chrono Trigger
-		- Most level data is either a level warp [house, map edge trigger],
-			a solid, or passable terrain plus a list of enemies (that respawn if offscreen)
-		- occasional script triggers [just simple lua stuff for us]
-		
-		- units walking around, for towns:
-			- isFriendly/isNeutral = true;
-			- hasScript = true; 
-			- runs luascript for onUse/onTalk();  and optionally onAttack();
-		
-		- MAP LAYERS
-			- ground
-			- tree / overhang layer
-		
-		- Sellers/dealers (the cat dude)
-		- Houses
-		
-
 */
 
 // GLOBAL CONSTANTS
@@ -347,7 +197,6 @@ static if (false) // MULTISAMPLING. Not sure if helpful.
 	viewports[1].oy = 0;
 */
 	world.map.load();
-
 
 	assert(viewports[0] !is null);
 	
@@ -581,7 +430,7 @@ void execute()
 							}
 						}
 						
-					void mouseChangeCursorTile(ALLEGRO_KEY key, int relMapValue)
+					void mouseChangeCursorTile(ALLEGRO_KEY key, int relValue)
 						{
 						if(event.keyboard.keycode == key)
 							{
@@ -589,12 +438,7 @@ void execute()
 							int j = cast(int)((mouse_y + viewports[0].oy)/32);
 							if(i >= 0 && j >= 0 && i < 50 && j < 50)
 								{
-								if(cast(short)g.atlas.currentCursor + relMapValue >= 0
-								 &&
-								 g.atlas.currentCursor <= g.atlas.data.length
-								 )
-									g.atlas.currentCursor += relMapValue;
-									writeln(g.atlas.currentCursor);
+								g.atlas.changeCursor(relValue);
 								}
 							}
 						}
@@ -625,9 +469,8 @@ void execute()
 					if(event.keyboard.keycode == ALLEGRO_KEY_B)
 						{
 						g.atlas.toggleIsPassable();
-						}	
-
-
+						}
+					
 					break;
 					}
 					

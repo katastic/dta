@@ -78,7 +78,7 @@ import allegro5.allegro_color;
 import std.conv;
 import std.random;
 import std.stdio;
-
+import std.math;
 import std.string;
 
 import g;
@@ -151,7 +151,6 @@ class treasure_chest : drawable_object_t
 	
 	override void onTick()
 		{		
-		import std.math;
 		if(isOpening)
 			{
 			state_delay--;
@@ -211,7 +210,6 @@ class monster_t : unit_t
 
 	void onHit(unit_t by, float damage)
 		{
-		import std.math;
 		isBeingHit=true;
 
 		float angle = atan2(by.y - y, by.x - x);
@@ -238,17 +236,14 @@ class monster_t : unit_t
 				g.world.blood2.add(x, y);
 		if(!isBeingHit && percent(4) )
 			{			
-			import std.math;
 			float angle = atan2(g.world.units[0].y - y, g.world.units[0].x - x);
 			float vel = 1.0f;
 						
 			vx = cos(angle)*vel;
 			vy = sin(angle)*vel;
 			}
-			
-		import std.math;
+	
 		super.onTick();
-
 		attemptMoveRel(vx, vy);
 
 		if(isBeingHit)
