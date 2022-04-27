@@ -256,7 +256,7 @@ class monster_t : unit_t
 			{
 			vx *= .99;
 			vy *= .99;
-			if(abs(vx) < .2 && abs(vy) < .2)
+			if(abs(vx) < .3 && abs(vy) < .3)
 				{vx = 0; vy = 0; isBeingHit = false;}  
 			}
 
@@ -327,7 +327,7 @@ class unit_t : drawable_object_t
 		{
 		float cx = x + dx;
 		float cy = y + dy;
-		if(cx > 0 && cy > 0 && cx < g.world.map.w*32-1 && cy < g.world.map.h*32-1)
+		if(cx > 0 && cy > 0 && cx < g.world.map.w*(32-1) && cy < g.world.map.h*(32-1))
 			{
 			tile type = g.world.map.data[cast(int)cx/32][cast(int)cy/32];
 			if(atlas.meta[type].isPassable)
