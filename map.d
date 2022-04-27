@@ -51,57 +51,7 @@ class map_t
 		load("world.map");
 		}
 	
-	void draw(viewport_t v, bool drawTopLayer) // so inefficient but it'll work for now.
-		{
-		long signed_start_i = cast(long) ((v.ox)/32.0)-1; //need signed to allow for negative
-		long signed_start_j = cast(long) ((v.oy)/32.0)-1;
-		uint start_i=0;
-		uint start_j=0;
-		uint end_i = cast(uint) ((v.w + v.ox + v.x)/32.0)+1; // v.ox should be negative shouldn't it??sd
-		uint end_j = cast(uint) ((v.h + v.oy + v.y)/32.0)+1;
-
-		if(signed_start_i < 0){start_i = 0;}else{start_i = to!uint(signed_start_i);}
-		if(signed_start_j < 0){start_j = 0;}else{start_j = to!uint(signed_start_j);}
-		if(end_i > w-1)end_i = w-1;
-		if(end_j > h-1)end_j = h-1;
-				
-//		writeln("start:", start_i, "/", start_j, " offset", v.ox, "/" , v.oy, " = end: ", end_i, "/",end_j);				
-		for(uint i = cast(uint) start_i; i < end_i; i++)
-		for(uint j = cast(uint) start_j; j < end_j; j++)
-			{
-			if(data[i][j] == 0 && !drawTopLayer)
-				{
-				al_draw_bitmap(g.grass_bmp, v.x + i*32.0 - v.ox, v.y + j*32.0 - v.oy, 0);
-				}
-			if(data[i][j] == 1 && drawTopLayer)
-				{
-				al_draw_bitmap(g.wall_bmp, v.x + i*32.0 - v.ox, v.y + j*32.0 - v.oy, 0);
-				}
-			if(data[i][j] == 2 && drawTopLayer)
-				{
-				al_draw_bitmap(g.water_bmp, v.x + i*32.0 - v.ox, v.y + j*32.0 - v.oy, 0);
-				}
-			if(data[i][j] == 3 && !drawTopLayer)
-				{
-				al_draw_bitmap(g.lava_bmp, v.x + i*32.0 - v.ox, v.y + j*32.0 - v.oy, 0);
-				}
-			if(data[i][j] == 4 && !drawTopLayer)
-				{
-				al_draw_bitmap(g.wood_bmp, v.x + i*32.0 - v.ox, v.y + j*32.0 - v.oy, 0);
-				}
-			if(data[i][j] == 5 && !drawTopLayer)
-				{
-				al_draw_bitmap(g.stone_bmp, v.x + i*32.0 - v.ox, v.y + j*32.0 - v.oy, 0);
-				}
-			if(data[i][j] == 6 && drawTopLayer)
-				{
-				al_draw_bitmap(g.reinforced_wall_bmp, v.x + i*32.0 - v.ox, v.y + j*32.0 - v.oy, 0);
-				}
-			stats.number_of_drawn_background_tiles++;
-			}
-		}
-
-	void draw2(viewport_t v, bool drawTopLayer)
+	void draw(viewport_t v, bool drawTopLayer)
 		{
 		long signed_start_i = cast(long) ((v.ox)/32.0)-1; //need signed to allow for negative
 		long signed_start_j = cast(long) ((v.oy)/32.0)-1;
@@ -240,7 +190,7 @@ class map_t
 	void save(string path="world.map")
 		{
 		auto f = File(path, "w");
-		rawWriteValue(f, g.world.map.data);
+		rawWriteValue(f, data);
 		//https://forum.dlang.org/post/mailman.113.1330209587.24984.digitalmars-d-learn@puremagic.com
 		writeln("SAVING MAP");
 		}
@@ -248,7 +198,7 @@ class map_t
 	void load(string path="world.map")
 		{
 		writeln("LOADING MAP");
-		auto read = File(path).rawRead(g.world.map.data[]);
+		auto read = File(path).rawRead(data[]);
 		}
 
 	}	

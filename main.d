@@ -6,15 +6,7 @@
 		 we can likely benefit from one gigantic (or subsectioned) 
 		 blood maps.
 
-
-
 	-> Basic tiled and lightmap lighting?
-
-
-
-
-
-
 
 	-> THERE IS some allegro bullshit
 		-> al_draw_bitmap ALWAYS calls al_draw_tinted_bitmap
@@ -27,10 +19,6 @@
 		going into the insane callstack that is allegro.
 		
 		worst case, do this magical thing called a BENCHMARK.
-		
-		
-		
-		
 
 	DRAW QUESTION:
 		Do we want to draw layers IN ORDER? That is, objects have to be drawn
@@ -39,15 +27,7 @@
 			OOOH. draw tiles like the same layer but only split for blood and other 'floor' 
 			decals whereas sprites are still on top.
 
-
-
-
-
 	Look at bosses from METAL SLUG etc
-
-
-
-
 
 	maps are mostly hand made. maybe we can cookie-cutter them like Diablo. 
 	We could add "themes" / mutators to existing map areas. 
@@ -57,7 +37,6 @@
 		- RAIN has modifiers
 			- Platemail lower resist to lightning (both natural and magic)
 		- snow?
-
 
 	Moves:
 		- Walk
@@ -74,12 +53,9 @@
 		modern games
 		-> Can you HOLD attack to do something different than pressing? (like SOM)
 
-
-
 	[magic]
 		 in SoM each magic type has a "mana spirit" and a series of spells associated with that spirit. kind a neat way
 		 to do it other than the tried-and-old "light/dark/fire/water/lightning" by putting a face on that spirit.
-
 
 	We could basically be fighting all the KNIGHTS of King Arthur as well as MERLIN (and his associates/underlings)
 	
@@ -135,10 +111,8 @@
 			- Birds that just attack
 			- Birds that flock during an attack phase and then swarm at the player from one side
 			 to another.
-		
 
 		- Arrows. Slightly/heavily magically enhanced tracking arrows.
-
 
 		- A line extends out and rotates (Binding of Isaac 'It Lives!')
 		- See [Heroes of Hammerwatch] bosses/enemies
@@ -183,7 +157,6 @@
 	 - 	also if we're talking VERSES gameplay, we don't want the game to be a "grind to outlevel the
 	 enemy because the first time you lose then the other player has more XP/resources forever
 	  and its over."
-
 
 	Secret of Mana
 	Chrono Trigger

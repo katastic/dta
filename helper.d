@@ -25,7 +25,6 @@ bool isWideInsideScreen(float x, float y, ALLEGRO_BITMAP* b, viewport_t v) /// S
 		{return true;} else{ return false;} //fixme
 	}
 
-
 /*
 //inline this? or template...
 void draw_target_dot(xy_pair xy)
@@ -128,9 +127,6 @@ pure T cap_ret(T)(T val, T low, T high)
 	return val;
 	}
 
-
-
-
 /// UFCS - Helper functions 
 /// see https://www.allegro.cc/manual/5/al_get_font_line_height
 
@@ -225,6 +221,4 @@ struct al_target()
 		al_reset_target();
 		}
 	}
-
-
 

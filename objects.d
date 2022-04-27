@@ -1,6 +1,4 @@
 
-
-
 enum STATE{	WALKING, SPRINTING, JUMPING, LANDING, ATTACKING}
 
 /*
@@ -55,13 +53,6 @@ player finite state machine! DRAW THIS THING.
 	dodge/roll? [more or less a jump with different animation?]
 		-
 		-
-
-
-
-JUMPING -> LANDING -> WALKING -> JUMPING
-
-
-
 */
 
 interface animState
@@ -77,8 +68,6 @@ class attackingState : animState
 	void trigger(){}
 	void exit(){}
 	}
-
-
 
 import allegro5.allegro;
 import allegro5.allegro_primitives;
@@ -202,7 +191,6 @@ class treasure_chest : drawable_object_t
 		}
 	}
 
-
 class boss_t : monster_t
 	{
 	this(float _x, float _y, float  _vx, float _vy)
@@ -236,7 +224,6 @@ class monster_t : unit_t
 		hp -= damage;
 		writeln("monster hit. health is now:", hp);
 				g.world.blood2.add(x, y);
-
 
 		if(hp <= 0){writeln("monster died!"); delete_me = true; 
 				g.world.blood2.add(x + uniform(-5, 5), y + uniform(-5, 5));
@@ -284,10 +271,8 @@ class monster_t : unit_t
 			{
 			hp -= 5;
 			}
-
 		}
 	}
-
 
 class tree : drawable_object_t 
 	{
@@ -322,7 +307,6 @@ class tree : drawable_object_t
 		   0, 0, g.sword_bmp.w, bmp.h,
 		   x2, y2, bmp.w*growthPercent/100.0, bmp.h*growthPercent/100.0, 0);
 		}
-
 	}
 
 class unit_t : drawable_object_t 
@@ -331,7 +315,7 @@ class unit_t : drawable_object_t
 	float hp=maxHP; /// Current health points
 	float ap=0; /// armor points (reduced on hits then armor breaks)
 	float armor=0; /// flat reduction (or percentage) on damages, haven't decided.
-	float weapon_damage=50; 
+	float weapon_damage=50;
 	bool has_weapon=false;
 	bool isAttacking=false;
 	bool isRunning=false;
@@ -446,6 +430,9 @@ class dwarf_t : unit_t
 	item[] myInventory;
 	bool hasSword = true;
 	int direction=0;
+	int use_cooldown = 0;
+	float stamina=100f;
+	immutable float SPRINT_SPEED=4;
 
 	this(float _x, float _y, float _xv, float _yv, ALLEGRO_BITMAP* b)
 		{
@@ -473,11 +460,6 @@ class dwarf_t : unit_t
 			text.toStringz());
 		}
 	
-	int use_cooldown = 0;
-
-	float stamina=100f;
-	immutable float SPRINT_SPEED=4;
-
 	override void actionSprint() // FIX: How does spamming sprint quickly deplete our stamina if we can only start it with a full bar??  
 		{
 		sprintWasHeld = true;
@@ -629,9 +611,6 @@ class dwarf_t : unit_t
 //						return;  comment to allow hitting multiple here
 						}
 					}
-
-
-
 				}
 			break;		
 			
@@ -639,7 +618,6 @@ class dwarf_t : unit_t
 			assert(0, "invalid state!"); 
 			break;
 			}
-			
 		}
 		
 	immutable float RUN_SPEED = 2.0f; 

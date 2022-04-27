@@ -167,8 +167,6 @@ struct blood_t
 	// single pixel. We can benchmark this to see speeds for a 256x256 vs 2048x2048, etc
 	// -> The fact we're drawing HUNDREDS of these adds up to a significant amount of
 	// our current draw time (like 11% and we're not doing much!) on my netbook
-
-
 /*
 	welp it's like infinitely faster it seems to do one draw call
 	
@@ -210,7 +208,6 @@ class static_blood_handler_t
 		al_draw_bitmap(data, 0 - v.ox + v.x, 0 - v.oy + v.y, 0);
 		}
 	}
-
 
 class blood_handler_t
 	{
@@ -495,7 +492,7 @@ class world_t
 				}
 			}
 		
-		map.draw2(v, false);
+		map.draw(v, false);
 //		blood.draw(v);
 		blood2.draw(v);
 		drawStat(units, stats.number_of_drawn_dwarves);
