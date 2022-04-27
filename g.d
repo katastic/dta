@@ -78,26 +78,102 @@ meta_t lava  = {false, false, true, true};
 struct atlas_t
 	{
 	bool isHidden=false;
-	meta_t*	[] meta;
+//	meta_t*	[] meta;
+	meta_t	[256] meta2;
 	BITMAP* [] data;
 	alias data this;
 	BITMAP* atl;
 
 	int currentCursor=0;
 
+	// Editing the metadata functions
+	// ---------------------------------------------------------------
+	void toggleIsPassable()
+		{
+		writeln("Toggling isPassable for ", currentCursor, " = ", meta2[currentCursor].isPassable);
+		meta2[currentCursor].isPassable = !meta2[currentCursor].isPassable;		
+		}
+		
+	//https://forum.dlang.org/post/t3ljgm$16du$1@digitalmars.com
+	//big 'ol wtf case.
+	void rawWriteValue(T)(File file, T value)
+		{
+		file.rawWrite((&value)[0..1]);
+		}
+
+	//TODO FIXME WTF: How do we save this table if we're using POINTERS.
+	// ---> WHY IS THIS NOT CRASHING.
+	
+	// Why? __because it is crashing, Chris. It is... crashing.__
+	
+	// we need to decide if we're going to use a full table of bools for each tile type
+	// OR, an index lookup to specific "types"
+	/*
+		meta[0].isPassable
+	
+		vs
+		
+		tiletypes[ meta[0].tiletype_index ].isPassable
+	
+		Is there any real benefit to keeping (and therefor easily changing specific 
+		classes of tiles)? Only if we do stuff like store "slowdown factor" of say, muds,
+		and we want to easily change multiple muds (the same class) together. And worst
+		case there we can either write a function to do it, or, dump to JSON and hack it
+		there in the rare case we do that.
+	
+	*/
+	void saveMeta(string path="meta.map")
+		{
+		auto f = File(path, "w");
+		rawWriteValue(f, meta2);
+		//https://forum.dlang.org/post/mailman.113.1330209587.24984.digitalmars-d-learn@puremagic.com
+		writeln("SAVING META MAP");
+		}
+
+	void loadMeta(string path="meta.map")
+		{
+		writeln("LOADING META MAP");
+		auto read = File(path).rawRead(meta2[]);
+		}
+
+	// -----------------------------------------------------------------------
 	void drawAtlas(float x, float y)
 		{
 //		if(isHidden)return; // should this be outside in g.d or main.d. Like why call something and then say don't draw yet. However, we also need to store the state for whether its hidden or not
 		al_draw_filled_rectangle(x, y, x + atl.w-1, y + atl.h-1, ALLEGRO_COLOR(.7,.7,.7,.7));
 		al_draw_bitmap(atl, x, y, 0);
 
+		{
+		int idx = 0;
 		int i = 0;
+		int j = 0;
+		
+		do{
+			if(i >= atl.w/32)
+				{
+				i=0;
+				j++;
+				}
+			if(j >= atl.h/32)break;
+			if(idx >= 256)break; //FIXME
+
+			if(g.atlas.meta2[idx].isPassable == false)
+				{
+				draw_target_dot(x + i*32, y + j*32);
+				}
+			i++;
+			idx++;
+			}while(true);
+		}
+
+		{
+		int idx = 0;
 		float x2 = 0;
 		float y2 = 0;
 		
 		do{
-			if(i >= currentCursor)break;
-			i++;
+			if(idx == currentCursor)break;
+			idx++;
 			x2+=32;
 			if(x2 >= atl.w)
 				{
@@ -105,8 +181,11 @@ struct atlas_t
 				y2 += 32;
 				}
 			}while(true);
-				
 		al_draw_rectangle(x + x2, y + y2, x + x2 + 31, y + y2 + 31, ALLEGRO_COLOR(1,0,0,1), 3);
+		}
+				
+		
+		
 		}
 
 	void load(string filepath)
@@ -135,9 +214,17 @@ struct atlas_t
 			
 			if(z == 1 || z == 9)
 				{
-				meta ~= &solid;
+//				meta ~= &solid;
+				
+				meta_t m;
+				m.isPassable = false;
+				meta2[z] = m;
 				}else{
-				meta ~= &path;
+//				meta ~= &path;
+
+				meta_t m;
+				m.isPassable = true;
+				meta2[z] = m;
 				}
 			z++;
 			}
@@ -430,6 +517,9 @@ class world_t
 
 	this()
 		{
+		atlas.loadMeta(); // NOTE THIS IS GLOBAL not inside world class
+			
+			
 		map = new map_t;
 		//blood = new blood_handler_t();
 		blood2 = new static_blood_handler_t(map);

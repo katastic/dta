@@ -1,13 +1,3 @@
-/*
-0 Grass
-1 Wall/Ground
-2 Water
-3 Lava
-4 Wood Road
-5 Stone Road
-6 REINFORCED WALL
-*/
-
 import allegro5.allegro;
 import allegro5.allegro_primitives;
 import allegro5.allegro_image;

@@ -25,7 +25,6 @@ map
 particles
 	- sword attack
 
-
 player finite state machine! DRAW THIS THING.
 
 	walking - free movement
@@ -203,12 +202,12 @@ class boss_t : monster_t
 
 class monster_t : unit_t
 	{
+	bool isBeingHit=false;
+
 	this(float _x, float _y, float  _vx, float _vy)
 		{
 		super(2, _x, _y, _vx, _vy, g.goblin_bmp);
 		}
-
-	bool isBeingHit=false;
 
 	void onHit(unit_t by, float damage)
 		{
@@ -320,8 +319,7 @@ class unit_t : drawable_object_t
 	bool isAttacking=false;
 	bool isRunning=false;
 	uint team=0;
-	
-	void actionSprint(){}
+	bool isPlayerControlled=false;
 	
 	void attemptMoveRel(float dx, float dy)
 		{
@@ -330,7 +328,7 @@ class unit_t : drawable_object_t
 		if(cx > 0 && cy > 0 && cx < g.world.map.w*(32-1) && cy < g.world.map.h*(32-1))
 			{
 			tile type = g.world.map.data[cast(int)cx/32][cast(int)cy/32];
-			if(atlas.meta[type].isPassable)
+			if(g.atlas.meta2[type].isPassable)
 				{
 				x = cx;
 				y = cy;
@@ -338,10 +336,6 @@ class unit_t : drawable_object_t
 			}
 		}
 
-	bool isPlayerControlled=false;
-	
-	void actionUse(){}
-	
 	void searchAndAttackNearbyEnemy() /// first one we find. ALSO STRUCTURES!
 		{
 		isAttacking = false;
@@ -393,7 +387,7 @@ class unit_t : drawable_object_t
 		{
 		hp -= amount;
 		}
-
+	
 	this(uint _team, float _x, float _y, float _xv, float _yv, ALLEGRO_BITMAP* b)
 		{
 		super(b);
@@ -421,18 +415,21 @@ class unit_t : drawable_object_t
 	override void onTick()
 		{
 		}
+	
+	void actionSprint(){}
+	void actionUse(){}
 	}
 
 class dwarf_t : unit_t
 	{
 	STATE state = STATE.WALKING;
-	int state_delay=0;
+	int state_delay = 0;
 	item[] myInventory;
 	bool hasSword = true;
-	int direction=0;
+	int direction = 0;
 	int use_cooldown = 0;
-	float stamina=100f;
-	immutable float SPRINT_SPEED=4;
+	float stamina = 100f;
+	immutable float SPRINT_SPEED = 4;
 
 	this(float _x, float _y, float _xv, float _yv, ALLEGRO_BITMAP* b)
 		{
@@ -444,11 +441,7 @@ class dwarf_t : unit_t
 	override void draw(viewport_t v)
 		{
 		super.draw(v);
-/*		draw_hp_bar(
-			x - v.ox + v.x, 
-			y - v.oy + v.y - 10, 
-			v, stamina, 100);
-	*/	
+
 		string text;
 		text = to!string(state);
 		
@@ -510,8 +503,7 @@ class dwarf_t : unit_t
 					//break; // lets only pick up one item at a time if it's for a USE key. [if it's "walk over" we'll pick up all of them--assuming we have room)
 					// eventually: Clause for 'inventory too full'
 					}
-			}
-			
+			}			
 		}
 
 	bool sprintWasHeld = false;
@@ -578,7 +570,6 @@ class dwarf_t : unit_t
 				
 				state = STATE.WALKING;
 				writeln("switching to STATE.WALKING");
-				
 				
 				if(hasSword)
 					{

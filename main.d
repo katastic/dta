@@ -346,6 +346,9 @@ static if (false) // MULTISAMPLING. Not sure if helpful.
 	viewports[1].ox = 0;
 	viewports[1].oy = 0;
 */
+	world.map.load();
+
+
 	assert(viewports[0] !is null);
 	
 	// FPS Handling
@@ -596,16 +599,6 @@ void execute()
 							}
 						}
 
-					/*
-					0 Grass
-					1 Wall/Ground
-					2 Water
-					3 Lava
-					4 Wood Road
-					5 Stone Road090
-					6 REINFORCED WALL
-					*/
-
 					mouseSetTile(ALLEGRO_KEY_1, 0);
 					mouseSetTile(ALLEGRO_KEY_2, 1);
 					mouseSetTile(ALLEGRO_KEY_3, 2);
@@ -621,13 +614,19 @@ void execute()
 
 					if(event.keyboard.keycode == ALLEGRO_KEY_O)
 						{
-						world.map.save();
+						g.atlas.saveMeta();
 						}	
 				
 					if(event.keyboard.keycode == ALLEGRO_KEY_P)
 						{
-						world.map.load();
+						g.atlas.loadMeta();
 						}
+
+					if(event.keyboard.keycode == ALLEGRO_KEY_B)
+						{
+						g.atlas.toggleIsPassable();
+						}	
+
 
 					break;
 					}
