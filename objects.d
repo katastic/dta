@@ -1,59 +1,6 @@
 
 enum STATE{	WALKING, SPRINTING, JUMPING, LANDING, ATTACKING}
 
-/*
-
-the problem with horses
-	while we can have NPC horses. if we give players horses then now there's two game modes. 
-		- Fast running on a horse and you have to jump off to fight. [travel horses now its just a hassle]
-		- Can fight while on horse in which case you'll never NOT use horses again [always horses makes non-horses a permenant early game transition]
-
-TODO - 
-	add diagonal detection
-	also decide whether diagonal should be proper sqrt(2) or classic wrong faster.
-
-dudes
-	- animation handler, script files.
-	- more FSM stuff
-	- are items separate from sprites? Then we'll need an anchor point for each sprite cell
-		for the sword location and (if applicable) rotation angle
-	
-map
-	- tileset/texture atlas parser
-	- map editor
-
-particles
-	- sword attack
-
-player finite state machine! DRAW THIS THING.
-
-	walking - free movement
-	jumping - in air jumping
-		- Can jumping be interrupted???
-	
-	landing - delay after hitting ground 'blade landing'
-	
-	stunned - can't move. (also can't be hurt?)
-			<-- I think in Secret of Mana, you get hit for a moment, immortal. But then you are still immortal for another second or two while walking/attacking.
-				- so the key here is INVULERABILITY_TIMER gets set upon being STUNNED (edge trigger) but keeps ticking down after STUN_TIMER runs out. So 
-				invulnerability is not tied to state transitions out.
-	attacking?
-		- "windup animation for attack"  Animation: yes. Otherwise ??? (ala can it be canceled)
-
-	casting?
-		- in secret of mana casting has a windup animation but also you can't be hit but... hits attacks can be queued up on you
-			ANIMATION: yes. Whether it controls immortality or anything is a ???.
-		- more or less just attack 
-	
-	parry?
-		- can we parry? (I think in SoM if both attacks hit at same time they don't subtract stamina and both get attackers attacks get reset)
-		- parry could be a very short stun duration with no invulnerability
-		
-	dodge/roll? [more or less a jump with different animation?]
-		-
-		-
-*/
-
 interface animState
 	{
 	void enter();
@@ -323,7 +270,7 @@ class unit_t : drawable_object_t
 		if(cx > 0 && cy > 0 && cx < g.world.map.w*(32-1) && cy < g.world.map.h*(32-1))
 			{
 			tile type = g.world.map.data[cast(int)cx/32][cast(int)cy/32];
-			if(g.atlas.meta2[type].isPassable)
+			if(g.atlas.meta[type].isPassable)
 				{
 				x = cx;
 				y = cy;

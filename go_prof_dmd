@@ -1,6 +1,6 @@
 #!/bin/sh
 #dmd -profile -profile=gc -debug -gs -g -ofmain main.d helper.d objects.d viewport.d g.d -L-L. $@
-dmd -profile -profile=gc -debug -gs -g -ofmain main.d helper.d objects.d viewport.d map.d g.d -L-L. $@
-echo "deleting old trace.log because it's additive."
-rm trace.log
-rm trace.def
+dmd -profile -profile=gc -debug -gs -g -ofmain main.d helper.d objects.d viewport.d map.d g.d gui.d -L-L. $@
+echo " * deleting old trace log files because they're additive."
+rm trace.log 2>&1 /dev/null
+rm trace.def 2>&1 /dev/null

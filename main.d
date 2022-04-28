@@ -50,10 +50,7 @@ import std.traits; // EnumMembers
 
 pragma(lib, "dallegro5ldc");
 
-version(ALLEGRO_NO_PRAGMA_LIB)
-{
-
-}else{
+version(ALLEGRO_NO_PRAGMA_LIB){}else{
 	pragma(lib, "allegro");
 	pragma(lib, "allegro_primitives");
 	pragma(lib, "allegro_image");
@@ -72,9 +69,8 @@ import allegro5.allegro_color;
 import helper;
 import objects;
 import viewport;
-import g;
-
-alias BITMAP=ALLEGRO_BITMAP;
+static import g;
+import gui;
 
 //ALLEGRO_CONFIG* 		cfg;  //whats this used for?
 ALLEGRO_DISPLAY* 		al_display;
@@ -161,44 +157,43 @@ static if (false) // MULTISAMPLING. Not sure if helpful.
 				
 	// load animations/etc
 	// --------------------------------------------------------
-	load_resources();
+	g.loadResources();
 
 	// SETUP world
 	// --------------------------------------------------------
-	world = new world_t;
+	g.world = new g.world_t;
 
 	// SETUP players
 	// --------------------------------------------------------
 	
 	// SETUP viewports
 	// --------------------------------------------------------
-	viewports[0] = new viewport_t;
-	viewports[0].x = 0;
-	viewports[0].y = 0;
-//	viewports[0].w  = g.SCREEN_W/2;// - 1;
-	viewports[0].w  = g.SCREEN_W;// - 1;
-	viewports[0].h = g.SCREEN_H;
-	viewports[0].ox = 0;
-	viewports[0].oy = 0;
-		
+	g.viewports[0] = new viewport_t;
+	g.viewports[0].x = 0;
+	g.viewports[0].y = 0;
+//	g.viewports[0].w  = g.SCREEN_W/2;// - 1;
+	g.viewports[0].w  = g.SCREEN_W;// - 1;
+	g.viewports[0].h = g.SCREEN_H;
+	g.viewports[0].ox = 0;
+	g.viewports[0].oy = 0;
 
 	dwarf_t p = cast(dwarf_t)(g.world.units[0]); 
-	guis[0] = new gui_t(p);
-	guis[0].x = 50;
-	guis[0].y = 200;
+	g.guis[0] = new gui_t(p);
+	g.guis[0].x = 50;
+	g.guis[0].y = 200;
 	
 /*
-	viewports[1] = new viewport_t;
-	viewports[1].x = g.SCREEN_W/2;
-	viewports[1].y = 0;
-	viewports[1].w  = g.SCREEN_W/2;//[ - 1;
-	viewports[1].h = g.SCREEN_H;
-	viewports[1].ox = 0;
-	viewports[1].oy = 0;
+	g.viewports[1] = new viewport_t;
+	g.viewports[1].x = g.SCREEN_W/2;
+	g.viewports[1].y = 0;
+	g.viewports[1].w  = g.SCREEN_W/2;//[ - 1;
+	g.viewports[1].h = g.SCREEN_H;
+	g.viewports[1].ox = 0;
+	g.viewports[1].oy = 0;
 */
-	world.map.load();
+	g.world.map.load();
 
-	assert(viewports[0] !is null);
+	assert(g.viewports[0] !is null);
 	
 	// FPS Handling
 	// --------------------------------------------------------
@@ -216,12 +211,7 @@ struct display_t
 	{
 	void start_frame()	
 		{
-		stats.number_of_drawn_objects=0;
-		stats.number_of_drawn_dwarves=0;
-		stats.number_of_drawn_background_tiles=0;
-		stats.number_of_drawn_particles=0;
-		stats.number_of_drawn_structures=0;
-		
+		g.stats.reset();
 		reset_clipping(); //why would we need this? One possible is below! To clear to color the whole screen!
 		al_clear_to_color(ALLEGRO_COLOR(.2,.2,.2,1)); //only needed if we aren't drawing a background
 		}
@@ -253,31 +243,31 @@ struct display_t
 	static if(true) //draw left viewport
 		{
 		al_set_clipping_rectangle(
-			viewports[0].x, 
-			viewports[0].y, 
-			viewports[0].x + viewports[0].w ,  //-1
-			viewports[0].y + viewports[0].h); //-1
+			g.viewports[0].x, 
+			g.viewports[0].y, 
+			g.viewports[0].x + g.viewports[0].w ,  //-1
+			g.viewports[0].y + g.viewports[0].h); //-1
 		
 		static if(DEBUG_NO_BACKGROUND)
 			al_clear_to_color(ALLEGRO_COLOR(.05, .05, .05, 1));
 		
-		world.draw(viewports[0]);
-		guis[0].onTick();
-		guis[0].draw(viewports[0]);
+		g.world.draw(g.viewports[0]);
+		g.guis[0].onTick();
+		g.guis[0].draw(g.viewports[0]);
 		}
 
 	static if(false) //draw right viewport
 		{
 		al_set_clipping_rectangle(
-			viewports[1].x, 
-			viewports[1].y, 
-			viewports[1].x + viewports[1].w  - 1, 
-			viewports[1].y + viewports[1].h - 1);
+			g.viewports[1].x, 
+			g.viewports[1].y, 
+			g.viewports[1].x + g.viewports[1].w  - 1, 
+			g.viewports[1].y + g.viewports[1].h - 1);
 
 		static if(DEBUG_NO_BACKGROUND)
 			al_clear_to_color(ALLEGRO_COLOR(.8,.7,.7, 1));
 
-		world.draw(viewports[1]);
+		g.world.draw(g.viewports[1]);
 		}
 		
 		//Viewport separator
@@ -297,37 +287,37 @@ struct display_t
 
 		al_draw_filled_rounded_rectangle(16, 32, 64+650, 105+32, 8, 8, ALLEGRO_COLOR(.7, .7, .7, .7));
 
-if(stats.fps != 0)	
-		al_draw_textf(g.font, ALLEGRO_COLOR(0, 0, 0, 1), 20, text_helper(false), ALLEGRO_ALIGN_LEFT, "fps[%d] objrate[%d]", stats.fps, 
-					(stats.number_of_drawn_objects +
-					stats.number_of_drawn_dwarves + 
-					stats.number_of_drawn_background_tiles + 
-					stats.number_of_drawn_objects + 
-					stats.number_of_drawn_particles + 
-					stats.number_of_drawn_structures) * stats.fps ); 
+if(g.stats.fps != 0)	
+		al_draw_textf(g.font, ALLEGRO_COLOR(0, 0, 0, 1), 20, text_helper(false), ALLEGRO_ALIGN_LEFT, "fps[%d] objrate[%d]", g.stats.fps, 
+					(g.stats.number_of_drawn_objects +
+					g.stats.number_of_drawn_dwarves + 
+					g.stats.number_of_drawn_background_tiles + 
+					g.stats.number_of_drawn_objects + 
+					g.stats.number_of_drawn_particles + 
+					g.stats.number_of_drawn_structures) * g.stats.fps ); 
 					// total draws multiplied by fps. how many objects per second we can do.
 					// should be approx constant for a cpu once you have enough objects and, are 
 					// no longer limited by screen VSYNC.
 					
-			al_draw_textf(g.font, ALLEGRO_COLOR(0, 0, 0, 1), 20, text_helper(false), ALLEGRO_ALIGN_LEFT, "mouse [%d, %d][%d]", mouse_x, mouse_y, mouse_lmb);			
+			al_draw_textf(g.font, ALLEGRO_COLOR(0, 0, 0, 1), 20, text_helper(false), ALLEGRO_ALIGN_LEFT, "mouse [%d, %d][%d]", g.mouse_x, g.mouse_y, g.mouse_lmb);			
 			al_draw_textf(g.font, ALLEGRO_COLOR(0, 0, 0, 1), 20, text_helper(false), ALLEGRO_ALIGN_LEFT, "money [%d] deaths [%d]", g.players[0].money, g.players[0].deaths);
 			al_draw_textf(g.font, ALLEGRO_COLOR(0, 0, 0, 1), 20, text_helper(false), ALLEGRO_ALIGN_LEFT, 
 				"drawn: objects [%d] dwarves [%d] structs [%d] bg_tiles [%d] particles [%d]", 
-				stats.number_of_drawn_objects, 
-				stats.number_of_drawn_dwarves, 
-				stats.number_of_drawn_structures, 
-				stats.number_of_drawn_background_tiles, 
-				stats.number_of_drawn_particles);
+				g.stats.number_of_drawn_objects, 
+				g.stats.number_of_drawn_dwarves, 
+				g.stats.number_of_drawn_structures, 
+				g.stats.number_of_drawn_background_tiles, 
+				g.stats.number_of_drawn_particles);
 			
 		text_helper(true);  //reset
 		
 		// DRAW MOUSE PIXEL HELPER/FINDER
-		draw_target_dot(mouse_x, mouse_y);
+		draw_target_dot(g.mouse_x, g.mouse_y);
 //		draw_target_dot(target.x, target.y);
 
 		int val = -1;
-		int mouse_xi = (mouse_x + cast(int)viewports[0].ox + cast(int)viewports[0].x)/32;
-		int mouse_yi = (mouse_y + cast(int)viewports[0].oy + cast(int)viewports[0].x)/32;
+		int mouse_xi = (g.mouse_x + cast(int)g.viewports[0].ox + cast(int)g.viewports[0].x)/32;
+		int mouse_yi = (g.mouse_y + cast(int)g.viewports[0].oy + cast(int)g.viewports[0].x)/32;
 		if(mouse_xi >= 0 && mouse_yi >= 0
 			&& mouse_xi < 50 && mouse_yi < 50)
 			{
@@ -337,15 +327,15 @@ if(stats.fps != 0)
 		al_draw_textf(
 			g.font, 
 			ALLEGRO_COLOR(0, 0, 0, 1), 
-			mouse_x, 
-			mouse_y - 30, 
-			ALLEGRO_ALIGN_CENTER, "mouse [%d, %d] = %d", mouse_x, mouse_y, val);
+			g.mouse_x, 
+			g.mouse_y - 30, 
+			ALLEGRO_ALIGN_CENTER, "mouse [%d, %d] = %d", g.mouse_x, g.mouse_y, val);
 		}
 	}
 
 void logic()
 	{
-	world.logic();
+	g.world.logic();
 	}
 
 void execute()
@@ -391,14 +381,14 @@ void execute()
 					{
 					isKeySet(ALLEGRO_KEY_ESCAPE, exit);
 
-					isKeySet(ALLEGRO_KEY_SPACE, key_space_down);
-					isKeySet(ALLEGRO_KEY_Q, key_q_down);
-					isKeySet(ALLEGRO_KEY_E, key_e_down);
-					isKeySet(ALLEGRO_KEY_W, key_w_down);
-					isKeySet(ALLEGRO_KEY_S, key_s_down);
-					isKeySet(ALLEGRO_KEY_A, key_a_down);
-					isKeySet(ALLEGRO_KEY_D, key_d_down);
-					isKeySet(ALLEGRO_KEY_F, key_f_down);
+					isKeySet(ALLEGRO_KEY_SPACE, g.key_space_down);
+					isKeySet(ALLEGRO_KEY_Q, g.key_q_down);
+					isKeySet(ALLEGRO_KEY_E, g.key_e_down);
+					isKeySet(ALLEGRO_KEY_W, g.key_w_down);
+					isKeySet(ALLEGRO_KEY_S, g.key_s_down);
+					isKeySet(ALLEGRO_KEY_A, g.key_a_down);
+					isKeySet(ALLEGRO_KEY_D, g.key_d_down);
+					isKeySet(ALLEGRO_KEY_F, g.key_f_down);
 					
 					isKeySet(ALLEGRO_KEY_N, g.atlas.isHidden);
 					isKeyRel(ALLEGRO_KEY_M, g.atlas.isHidden);
@@ -407,8 +397,8 @@ void execute()
 						{
 						if(event.keyboard.keycode == key)
 							{
-							int i = cast(int)((mouse_x + viewports[0].ox)/32);
-							int j = cast(int)((mouse_y + viewports[0].oy)/32);
+							int i = cast(int)((g.mouse_x + g.viewports[0].ox)/32);
+							int j = cast(int)((g.mouse_y + g.viewports[0].oy)/32);
 							if(i >= 0 && j >= 0 && i < 50 && j < 50)g.world.map.data[i][j] = mapValue;
 							}
 						}
@@ -417,8 +407,8 @@ void execute()
 						{
 						if(event.keyboard.keycode == key)
 							{
-							int i = cast(int)((mouse_x + viewports[0].ox)/32);
-							int j = cast(int)((mouse_y + viewports[0].oy)/32);
+							int i = cast(int)((g.mouse_x + g.viewports[0].ox)/32);
+							int j = cast(int)((g.mouse_y + g.viewports[0].oy)/32);
 							if(i >= 0 && j >= 0 && i < 50 && j < 50)
 								{
 								if(cast(short)g.world.map.data[i][j] + cast(short)relMapValue >= 0
@@ -434,8 +424,8 @@ void execute()
 						{
 						if(event.keyboard.keycode == key)
 							{
-							int i = cast(int)((mouse_x + viewports[0].ox)/32);
-							int j = cast(int)((mouse_y + viewports[0].oy)/32);
+							int i = cast(int)((g.mouse_x + g.viewports[0].ox)/32);
+							int j = cast(int)((g.mouse_y + g.viewports[0].oy)/32);
 							if(i >= 0 && j >= 0 && i < 50 && j < 50)
 								{
 								g.atlas.changeCursor(relValue);
@@ -476,52 +466,53 @@ void execute()
 					
 				case ALLEGRO_EVENT_KEY_UP:				
 					{
-					isKeyRel(ALLEGRO_KEY_SPACE, key_space_down);
-					isKeyRel(ALLEGRO_KEY_Q, key_q_down);
-					isKeyRel(ALLEGRO_KEY_E, key_e_down);
-					isKeyRel(ALLEGRO_KEY_W, key_w_down);
-					isKeyRel(ALLEGRO_KEY_S, key_s_down);
-					isKeyRel(ALLEGRO_KEY_A, key_a_down);
-					isKeyRel(ALLEGRO_KEY_D, key_d_down);
-					isKeyRel(ALLEGRO_KEY_F, key_f_down);
+					isKeyRel(ALLEGRO_KEY_SPACE, g.key_space_down);
+					isKeyRel(ALLEGRO_KEY_Q, g.key_q_down);
+					isKeyRel(ALLEGRO_KEY_E, g.key_e_down);
+					isKeyRel(ALLEGRO_KEY_W, g.key_w_down);
+					isKeyRel(ALLEGRO_KEY_S, g.key_s_down);
+					isKeyRel(ALLEGRO_KEY_A, g.key_a_down);
+					isKeyRel(ALLEGRO_KEY_D, g.key_d_down);
+					isKeyRel(ALLEGRO_KEY_F, g.key_f_down);
 
 					break;
 					}
 
 				case ALLEGRO_EVENT_MOUSE_AXES:
 					{
-					mouse_x = event.mouse.x;
-					mouse_y = event.mouse.y;
-					mouse_in_window = true;
+					g.mouse_x = event.mouse.x;
+					g.mouse_y = event.mouse.y;
+					g.mouse_in_window = true;
 					break;
 					}
 
 				case ALLEGRO_EVENT_MOUSE_ENTER_DISPLAY:
 					{
 					writeln("mouse enters window");
-					mouse_in_window = true;
+					g.mouse_in_window = true;
 					break;
 					}
 				
 				case ALLEGRO_EVENT_MOUSE_LEAVE_DISPLAY:
 					{
 					writeln("mouse left window");
-					mouse_in_window = false;
+					g.mouse_in_window = false;
 					break;
 					}
 
 				case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
 					{
-					long px = to!long(mouse_x + viewports[0].ox + viewports[0].x)/32;
-					long py = to!long(mouse_y + viewports[0].oy + viewports[0].y)/32;
-					writeln(viewports[0].ox, ",", viewports[0].oy);
-					writeln("mouse click at coordinate[", mouse_x, ",", mouse_y, "] and tile [", px, ",", py, "]");
+					if(!g.mouse_in_window)break;
+					long px = to!long(g.mouse_x + g.viewports[0].ox + g.viewports[0].x)/32;
+					long py = to!long(g.mouse_y + g.viewports[0].oy + g.viewports[0].y)/32;
+					writeln(g.viewports[0].ox, ",", g.viewports[0].oy);
+					writeln("mouse click at coordinate[", g.mouse_x, ",", g.mouse_y, "] and tile [", px, ",", py, "]");
 					if(px < 0 || py < 0)break;
 					
 					if(event.mouse.button == 1)
 						{
-						mouse_lmb = true;
-						world.map.data[px][py] = cast(ubyte)g.atlas.currentCursor;
+						g.mouse_lmb = true;
+						g.world.map.data[px][py] = cast(ubyte)g.atlas.currentCursor;
 						}
 					if(event.mouse.button == 2)
 						{
@@ -533,7 +524,7 @@ void execute()
 				
 				case ALLEGRO_EVENT_MOUSE_BUTTON_UP:
 					{
-					mouse_lmb = false;
+					g.mouse_lmb = false;
 					break;
 					}
 				
@@ -547,8 +538,8 @@ void execute()
 						}						
 					if(event.timer.source == fps_timer) //ONCE per second
 						{
-						stats.fps = stats.frames_passed;
-						stats.frames_passed = 0;
+						g.stats.fps = g.stats.frames_passed;
+						g.stats.frames_passed = 0;
 						}
 					break;
 					}
@@ -558,7 +549,7 @@ void execute()
 
 		logic();
 		display.draw_frame();
-		stats.frames_passed++;
+		g.stats.frames_passed++;
 //		Fiber.yield();  // THIS SEGFAULTS. I don't think this does what I thought.
 //		pthread_yield(); //doesn't seem to change anything useful here. Are we already VSYNC limited to 60 FPS?
 		}

@@ -15,6 +15,7 @@ import helper;
 import objects;
 import viewport;
 import map;
+import gui : gui_t;
 
 alias KEY_UP = ALLEGRO_KEY_UP; // should we do these? By time we write them out we've already done more work than just writing them.
 alias KEY_DOWN = ALLEGRO_KEY_DOWN; // i'll leave them coded as an open question for later
@@ -84,7 +85,7 @@ struct atlas_t
 	{
 	bool isHidden=false;
 //	meta_t*	[] meta;
-	meta_t	[256] meta2;
+	meta_t	[256] meta;
 	BITMAP* [] data;
 	alias data this;
 	BITMAP* atl;
@@ -99,7 +100,6 @@ struct atlas_t
 			{
 			currentCursor += relValue;
 			writeln(currentCursor.stringof, " = ", currentCursor);
-//			writeval(g.atlas.data.length);
 			}			
 		}
 
@@ -107,8 +107,8 @@ struct atlas_t
 	// ---------------------------------------------------------------
 	void toggleIsPassable()
 		{
-		writeln("Toggling isPassable for ", currentCursor, " = ", meta2[currentCursor].isPassable);
-		meta2[currentCursor].isPassable = !meta2[currentCursor].isPassable;		
+		writeln("Toggling isPassable for ", currentCursor, " = ", meta[currentCursor].isPassable);
+		meta[currentCursor].isPassable = !meta[currentCursor].isPassable;		
 		}
 		
 	//https://forum.dlang.org/post/t3ljgm$16du$1@digitalmars.com
@@ -118,31 +118,10 @@ struct atlas_t
 		file.rawWrite((&value)[0..1]);
 		}
 
-	//TODO FIXME WTF: How do we save this table if we're using POINTERS.
-	// ---> WHY IS THIS NOT CRASHING.
-	
-	// Why? __because it is crashing, Chris. It is... crashing.__
-	
-	// we need to decide if we're going to use a full table of bools for each tile type
-	// OR, an index lookup to specific "types"
-	/*
-		meta[0].isPassable
-	
-		vs
-		
-		tiletypes[ meta[0].tiletype_index ].isPassable
-	
-		Is there any real benefit to keeping (and therefor easily changing specific 
-		classes of tiles)? Only if we do stuff like store "slowdown factor" of say, muds,
-		and we want to easily change multiple muds (the same class) together. And worst
-		case there we can either write a function to do it, or, dump to JSON and hack it
-		there in the rare case we do that.
-	
-	*/
 	void saveMeta(string path="meta.map")
 		{
 		auto f = File(path, "w");
-		rawWriteValue(f, meta2);
+		rawWriteValue(f, meta);
 		//https://forum.dlang.org/post/mailman.113.1330209587.24984.digitalmars-d-learn@puremagic.com
 		writeln("SAVING META MAP");
 		}
@@ -150,7 +129,7 @@ struct atlas_t
 	void loadMeta(string path="meta.map")
 		{
 		writeln("LOADING META MAP");
-		auto read = File(path).rawRead(meta2[]);
+		auto read = File(path).rawRead(meta[]);
 		}
 
 	// -----------------------------------------------------------------------
@@ -174,7 +153,7 @@ struct atlas_t
 			if(j >= atl.h/32)break;
 			if(idx >= 256)break; //FIXME
 
-			if(g.atlas.meta2[idx].isPassable == false)
+			if(g.atlas.meta[idx].isPassable == false)
 				{
 				draw_target_dot(x + i*32, y + j*32);
 				}
@@ -235,13 +214,13 @@ struct atlas_t
 				
 				meta_t m;
 				m.isPassable = false;
-				meta2[z] = m;
+				meta[z] = m;
 				}else{
 //				meta ~= &path;
 
 				meta_t m;
 				m.isPassable = true;
-				meta2[z] = m;
+				meta[z] = m;
 				}
 			z++;
 			}
@@ -387,91 +366,6 @@ class blood_handler_t
 		}
 	}
 
-class gui_t
-	{
-	float x=0, y=0;
-	dwarf_t p;
-	int flicker_cooldown = 20;
-	
-	this(ref dwarf_t _p)
-		{
-		p = _p;
-		}
-		
-	void onTick()
-		{
-		if(flicker_cooldown)flicker_cooldown--;
-		}
-		
-	void setFlicker()
-		{
-		flicker_cooldown = 20;
-		}
-		
-	void drawBackground(viewport_t v)
-		{
-		COLOR c = COLOR(.3, .3, .3, .9);
-		float w = 200;
-		float h = 40;
-		al_draw_filled_rounded_rectangle(x, y, x + w-1, y + h-1, 5, 5, c); 
-		}
-	
-	void drawSword(viewport_t v)
-		{
-		assert(g.sword_bmp != null);
-		float x2 = x + v.x - g.sword_bmp.w/2 + 16 + 8;
-		float y2 = y + v.y - g.sword_bmp.h/2 + 16 + 4;
-		if(!p.hasSword)
-			{
-			
-			ALLEGRO_COLOR c = ALLEGRO_COLOR(1.0, 0.5, 0.5, 1.0);
-			if(p.stamina < 50) c = ALLEGRO_COLOR(1, 0, 0, 1); 
-				
-			if(flicker_cooldown)
-				al_draw_scaled_bitmap(g.sword_bmp,
-				   0, 0, g.sword_bmp.w, g.sword_bmp.h,
-				   x2 - 10, y2 - 10, g.sword_bmp.w + 20, g.sword_bmp.h + 20, 0);
-
-			al_draw_tinted_bitmap(g.sword_bmp,
-				c,
-				x2, 
-				y2, 
-				0);			
-
-			}else{
-
-			ALLEGRO_COLOR c = ALLEGRO_COLOR(1, 1, 1, 1);
-			if(p.stamina < 50) c = ALLEGRO_COLOR(1, 0, 0, 1); 
-
-			al_draw_tinted_bitmap(g.sword_bmp,
-				c,
-				x2, 
-				y2, 
-				0);			
-			}
-		}
-
-	void drawStamina(viewport_t v)
-		{
-		float w = 100;
-		float wp = p.stamina / 100 * w; /// bar width percent * # pixels wide
-		float h = 10;
-		float x2 = x + 5;
-		float y2 = y + 40;
-		al_draw_rectangle(x2, y2, x2 + w-1, y2 + h-1, ALLEGRO_COLOR(1, 1, 0, 1), 2); 
-		al_draw_filled_rectangle(x2, y2, x2 + wp-1, y2 + h-1, ALLEGRO_COLOR(1, 1, 0, 1)); 
-		}
-
-	void draw(viewport_t v)
-		{
-		drawBackground(v);
-		drawSword(v);
-		drawStamina(v);
-		}
-
-	//onTick() {}
-	}
-
 world_t world;
 viewport_t [2] viewports;
 gui_t[2] guis; //todo: combine into viewports
@@ -535,7 +429,6 @@ class world_t
 	this()
 		{
 		atlas.loadMeta(); // NOTE THIS IS GLOBAL not inside world class
-			
 			
 		map = new map_t;
 		//blood = new blood_handler_t();
@@ -717,7 +610,7 @@ class world_t
 //globals_t g;
 
 import std.format;
-void load_resources()	
+void loadResources()	
 	{
 	g.atlas.load("./data/atlas.png");
 		
@@ -764,13 +657,24 @@ ALLEGRO_BITMAP* getBitmap(string path)
 
 struct statistics_t
 	{
+	// per frame statistics
 	ulong number_of_drawn_particles=0;
 	ulong number_of_drawn_objects=0;
 	ulong number_of_drawn_structures=0;
 	ulong number_of_drawn_dwarves=0;
 	ulong number_of_drawn_background_tiles=0;
+	
 	ulong fps=0;
 	ulong frames_passed=0;
+	
+	void reset()
+		{ // note we do NOT reset fps/frames_passed here as they are cumulative or handled elsewhere.
+		number_of_drawn_particles = 0;
+		number_of_drawn_objects = 0;
+		number_of_drawn_structures = 0;
+		number_of_drawn_dwarves = 0;
+		number_of_drawn_background_tiles = 0;
+		}
 	}
 
 statistics_t stats;
