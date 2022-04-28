@@ -24,7 +24,7 @@ alias KEY_RIGHT = ALLEGRO_KEY_RIGHT;
 
 alias COLOR = ALLEGRO_COLOR;
 alias BITMAP = ALLEGRO_BITMAP;
-alias tile=ubyte;
+alias tile=ushort;
 alias dir=direction;
 
 struct pair

@@ -59,8 +59,9 @@ class map_t
 		for(uint i = cast(uint) start_i; i < end_i; i++)
 		for(uint j = cast(uint) start_j; j < end_j; j++)
 			{
-			ubyte index = data[i][j];
+			ushort index = data[i][j];
 			assert(index >= 0);
+			assert(index < 400);
 			al_draw_bitmap(g.atlas[index], v.x + i*32.0 - v.ox, v.y + j*32.0 - v.oy, 0);
 			stats.number_of_drawn_background_tiles++;
 			}
@@ -174,7 +175,7 @@ class map_t
 	//big 'ol wtf case.
 	void rawWriteValue(T)(File file, T value)
 		{
-		file.rawWrite((&value)[0..1]);
+		file.rawWrite((&value)[0..1]); // should this be 0..3?
 		}
 
 	void save(string path="world.map")
