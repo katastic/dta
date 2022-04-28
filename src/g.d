@@ -85,13 +85,18 @@ struct atlas_t
 	{
 	bool isHidden=false;
 //	meta_t*	[] meta;
-	meta_t	[256] meta;
+	meta_t	[16*25] meta;
 	BITMAP* [] data;
 	alias data this;
 	BITMAP* atl;
+	int w=16;
+	int h=25;
 
+
+
+	// Editing the metadata functions
+	// ---------------------------------------------------------------
 	int currentCursor=0;
-
 	void changeCursor(int relValue)
 		{
 		if( (cast(short)currentCursor + relValue >= 0) 
@@ -102,9 +107,7 @@ struct atlas_t
 			writeln(currentCursor.stringof, " = ", currentCursor);
 			}			
 		}
-
-	// Editing the metadata functions
-	// ---------------------------------------------------------------
+		
 	void toggleIsPassable()
 		{
 		writeln("Toggling isPassable for ", currentCursor, " = ", meta[currentCursor].isPassable);
@@ -133,11 +136,14 @@ struct atlas_t
 		}
 
 	// -----------------------------------------------------------------------
+
+	BITMAP* canvas;
 	void drawAtlas(float x, float y)
 		{
-//		if(isHidden)return; // should this be outside in g.d or main.d. Like why call something and then say don't draw yet. However, we also need to store the state for whether its hidden or not
-		al_draw_filled_rectangle(x, y, x + atl.w-1, y + atl.h-1, ALLEGRO_COLOR(.7,.7,.7,.7));
-		al_draw_bitmap(atl, x, y, 0);
+		assert(canvas !is null);
+		al_set_target_bitmap(canvas);
+		al_draw_filled_rectangle(0, 0, 0 + atl.w-1, 0 + atl.h-1, ALLEGRO_COLOR(.7,.7,.7,.7));
+		al_draw_bitmap(atl, 0, 0, 0);
 
 		{
 		int idx = 0;
@@ -151,11 +157,11 @@ struct atlas_t
 				j++;
 				}
 			if(j >= atl.h/32)break;
-			if(idx >= 256)break; //FIXME
+			if(idx >= w*h-1)break;
 
 			if(g.atlas.meta[idx].isPassable == false)
 				{
-				draw_target_dot(x + i*32, y + j*32);
+				draw_target_dot(0 + i*32, 0 + j*32);
 				}
 			i++;
 			idx++;
@@ -177,10 +183,12 @@ struct atlas_t
 				y2 += 32;
 				}
 			}while(true);
-		al_draw_rectangle(x + x2, y + y2, x + x2 + 31, y + y2 + 31, ALLEGRO_COLOR(1,0,0,1), 3);
+		al_draw_rectangle(0 + x2, 0 + y2, 0 + x2 + 31, 0 + y2 + 31, ALLEGRO_COLOR(1,0,0,1), 3);
 		}
-				
 		
+		al_reset_target();
+		immutable float SCALE = 0.75;
+		al_draw_scaled_bitmap2(canvas, x, y, SCALE, SCALE);
 		
 		}
 
@@ -190,18 +198,18 @@ struct atlas_t
 		atl = al_load_bitmap(filepath.toStringz());
 		assert(atl != null, "ATLAS " ~ filepath ~ " NOT FOUND/LOADABLE");
 		
-		int w = atl.w;
-		int h = atl.h;
+		int width = atl.w;
+		int height = atl.h;
 		
-		assert(w % 32 == 0, "ATLAS ISNT 32-byte ALIGNED. ZEUS IS FURIOUS."); 
+		assert(width % 32 == 0, "ATLAS ISNT 32-byte ALIGNED. ZEUS IS FURIOUS."); 
 		
 		// TODO FIX. consider making a sub-bitmap based one
 		// so we're not constantly changing textures while drawing
 		// (one for each layer would work.)
 		
 		int z = 0;
-		for(int j = 0; j < 16; j++) //order important
-		for(int i = 0; i < 16; i++)
+		for(int j = 0; j < h; j++) //note: order important
+		for(int i = 0; i < w; i++)
 			{
 			writeln("i, j, z = ", i, " ", j, " ", z);
 			BITMAP* b = al_create_sub_bitmap(atl, 32*i, 32*j, 32, 32);
@@ -210,21 +218,25 @@ struct atlas_t
 			
 			if(z == 1 || z == 9)
 				{
-//				meta ~= &solid;
-				
 				meta_t m;
 				m.isPassable = false;
 				meta[z] = m;
 				}else{
-//				meta ~= &path;
-
 				meta_t m;
 				m.isPassable = true;
 				meta[z] = m;
 				}
 			z++;
 			}
+		writeln("meta.length = ", meta.length);
 		writeln("data.length = ", data.length);
+
+		if(canvas) // just in case this gets called twice
+			{
+			al_destroy_bitmap(canvas); 
+			}
+		canvas = al_create_bitmap(atl.w, atl.h);
+		assert(canvas !is null);
 		}
 	}
 
@@ -428,7 +440,7 @@ class world_t
 
 	this()
 		{
-		atlas.loadMeta(); // NOTE THIS IS GLOBAL not inside world class
+		//atlas.loadMeta(); // NOTE THIS IS GLOBAL not inside world class
 			
 		map = new map_t;
 		//blood = new blood_handler_t();

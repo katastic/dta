@@ -175,6 +175,12 @@ void al_reset_target()
 	al_set_target_backbuffer(al_get_current_display());
 	}
 	
+void al_draw_scaled_bitmap2(ALLEGRO_BITMAP *bitmap, float x, float y, float scaleX, float scaleY, int flags=0)
+	{
+	al_draw_scaled_bitmap(bitmap, 0, 0, bitmap.w, bitmap.h, x, y, bitmap.w * scaleX, bitmap.w * scaleY, flags);
+	}
+
+
 // you know, we could do some sort of scoped lambda like thing that auto resets the target
 /*
 	DAllegro might already have that somewhere...
