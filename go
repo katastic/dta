@@ -9,9 +9,9 @@ fi
 if [ $1 = "dmdprof" ]; then
 	dmd -profile -profile=gc -debug -gs -g -ofmain `ls ./src/*.d` -L-L. $@
 	echo " * deleting old trace log files because they're cumulative."
-	rm trace.log 2>&1 /dev/null
-	rm trace.def 2>&1 /dev/null
-	rm profilegc.log 2>&1 /dev/null
+	rm trace.log >> /dev/null 2>&1
+	rm trace.def >> /dev/null 2>&1
+	rm profilegc.log >> /dev/null 2>&1
 fi
 
 if [ $1 = "ldc" ]; then
