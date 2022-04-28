@@ -1,7 +1,9 @@
 
 #!/bin/sh
+# was: main.d helper.d objects.d viewport.d map.d gui.d g.d
+# now: `ls *.d`  NOTE only works currently if all files are in main directory.
 
-dmd -debug -gs -g -ofmain main.d helper.d objects.d viewport.d map.d gui.d g.d -L-L. $@
+dmd -debug -gs -g -ofmain `ls ./src/*.d` -L-L./lib/ $@
 #-vgc 
 
 

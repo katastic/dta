@@ -575,13 +575,15 @@ class dwarf_t : unit_t
 	override void actionAttack()
 		{
 		if(state == STATE.WALKING)
-			if(hasSword && stamina > 50)
 			{
-			stamina -= 50;
-			state = STATE.ATTACKING;
-			writeln("switching to STATE.ATTACKING");
-			}else{
-			g.guis[0].setFlicker();
+			if(hasSword && stamina > 50)
+				{
+				stamina -= 50;
+				state = STATE.ATTACKING;
+				writeln("switching to STATE.ATTACKING");
+				}else{
+				g.guis[0].setFlicker();
+				}
 			}
 		}
 	override void actionJump()

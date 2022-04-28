@@ -4,7 +4,8 @@
 #ldc2 -w -release -ofmain main.d -L-L. $@    -gc -d-debug=3  -de
 
 #ldc2 -w -release -ofmain main.d helper.d -L-L/usr/local/lib/ -L-L. $@
-ldc2 -w -d-debug -ofmain main.d helper.d objects.d viewport.d g.d gui.d -L-L/usr/local/lib/ -L-L. $@
+#ldc2 -w -d-debug -ofmain main.d helper.d objects.d viewport.d g.d gui.d -L-L/usr/local/lib/ -L-L. $@
+ldc2 -wi -d-debug -stats -ofmain `ls ./src/*.d` -L-L/usr/local/lib/ -L-L./lib/ $@
 
 #  -fprofile-instr-generate
 # https://wiki.dlang.org/LDC_LLVM_profiling_instrumentation
