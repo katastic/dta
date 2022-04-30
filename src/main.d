@@ -454,11 +454,13 @@ void execute()
 					if(event.keyboard.keycode == ALLEGRO_KEY_O)
 						{
 						g.atlas.saveMeta();
+						g.atlas2.saveMeta();
 						}	
 				
 					if(event.keyboard.keycode == ALLEGRO_KEY_P)
 						{
 						g.atlas.loadMeta();
+						g.atlas2.loadMeta();
 						}
 
 					if(event.keyboard.keycode == ALLEGRO_KEY_K)

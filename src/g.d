@@ -117,7 +117,7 @@ import std.json;
 		import std.file;
 		File f = File("./data/maps/meta.map", "w");
 
-			map_in_json_format = parseJSON("{ \"taco\":\"boo\"}");
+			//map_in_json_format = parseJSON("{ \"taco\":\"boo\"}");
 
 			map_in_json_format.object["width"] = 50;
 			map_in_json_format.object["height"] = 50;
@@ -140,7 +140,7 @@ import std.json;
 		string str = std.file.readText("./data/maps/meta.map");
 	//	writeln(str);
 		map_in_json_format = parseJSON(str);
-//		writeln(map_in_json_format);
+		writeln(map_in_json_format);
 
 		auto t = map_in_json_format;
 
@@ -267,6 +267,7 @@ import std.json;
 	}
 
 atlas_t atlas;
+atlas_t atlas2;
 
 struct blood_t
 	{
@@ -539,6 +540,8 @@ class world_t
 		drawStat(chests, stats.number_of_drawn_objects);
 		drawStat(items, stats.number_of_drawn_objects);
 		drawStat(trees, stats.number_of_drawn_objects);
+
+		map.draw(v, true);
 		
 		if(!g.atlas.isHidden)g.atlas.drawAtlas( g.SCREEN_W - g.atlas.atl.w, 140);
 		// g.SCREEN_H - g.atlas.atl.h);
@@ -651,6 +654,9 @@ import std.format;
 void loadResources()	
 	{
 	g.atlas.load("./data/atlas.png");
+	g.atlas.loadMeta();
+	g.atlas2.load("./data/atlas2.png");
+	g.atlas2.loadMeta();
 		
 	g.font = al_load_font("./data/DejaVuSans.ttf", 18, 0);
 

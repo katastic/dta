@@ -57,14 +57,30 @@ class map_t
 		if(end_j > h-1)end_j = h-1;
 				
 //		writeln("start:", start_i, "/", start_j, " offset", v.ox, "/" , v.oy, " = end: ", end_i, "/",end_j);				
-		for(uint i = cast(uint) start_i; i < end_i; i++)
-		for(uint j = cast(uint) start_j; j < end_j; j++)
+		if(!drawTopLayer)
 			{
-			ushort index = data[i][j];
-			assert(index >= 0);
-			assert(index < 400);
-			al_draw_bitmap(g.atlas[index], v.x + i*32.0 - v.ox, v.y + j*32.0 - v.oy, 0);
-			stats.number_of_drawn_background_tiles++;
+			for(uint i = cast(uint) start_i; i < end_i; i++)
+			for(uint j = cast(uint) start_j; j < end_j; j++)
+				{
+				ushort index = data[i][j];
+				assert(index >= 0);
+				assert(index < 400);
+				al_draw_bitmap(g.atlas[index], v.x + i*32.0 - v.ox, v.y + j*32.0 - v.oy, 0);
+				stats.number_of_drawn_background_tiles++;
+				}
+			}
+		
+		if(drawTopLayer)
+			{
+			for(uint i = cast(uint) start_i; i < end_i; i++)
+			for(uint j = cast(uint) start_j; j < end_j; j++)
+				{
+				ushort index = data[i][j];
+				assert(index >= 0);
+				assert(index < 400);
+				al_draw_bitmap(g.atlas2[index], v.x + i*32.0 - v.ox, v.y + j*32.0 - v.oy, 0);
+				stats.number_of_drawn_background_tiles++;
+				}
 			}
 		}
 
