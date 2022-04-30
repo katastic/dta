@@ -68,31 +68,17 @@ void test1()
 	return;
 	}*/
 
-struct meta_t
-	{
-	bool isPassable;
-	bool isSlowing;
-	bool isLiquid;
-	bool isPainful; // lava  
-	}
-	
-meta_t path = {true, false, false, false};
-meta_t solid = {false, false, false, false};
-meta_t water = {false, false, true, false};
-meta_t lava  = {false, false, true, true};
-
 struct atlas_t
 	{
 	bool isHidden=false;
 //	meta_t*	[] meta;
-	meta_t	[16*25] meta;
+//	meta_t	[16*25] meta;
+	bool [16*25] isPassable=true;
 	BITMAP* [] data;
 	alias data this;
 	BITMAP* atl;
 	int w=16;
 	int h=25;
-
-
 
 	// Editing the metadata functions
 	// ---------------------------------------------------------------
@@ -110,8 +96,8 @@ struct atlas_t
 		
 	void toggleIsPassable()
 		{
-		writeln("Toggling isPassable for ", currentCursor, " = ", meta[currentCursor].isPassable);
-		meta[currentCursor].isPassable = !meta[currentCursor].isPassable;		
+		writeln("Toggling isPassable for ", currentCursor, " = ", isPassable[currentCursor]);
+		isPassable[currentCursor] = !isPassable[currentCursor];		
 		}
 		
 	//https://forum.dlang.org/post/t3ljgm$16du$1@digitalmars.com
@@ -121,18 +107,56 @@ struct atlas_t
 		file.rawWrite((&value)[0..1]);
 		}
 
+import std.json;
+	JSONValue map_in_json_format;
+
 	void saveMeta(string path="meta.map")
 		{
-		auto f = File(path, "w");
-		rawWriteValue(f, meta);
+		writeln("save META map");
+		import std.json;;
+		import std.file;
+		File f = File("./data/maps/meta.map", "w");
+
+			map_in_json_format = parseJSON("{ \"taco\":\"boo\"}");
+
+			map_in_json_format.object["width"] = 50;
+			map_in_json_format.object["height"] = 50;
+			map_in_json_format.object["isPassable"] = JSONValue( isPassable ); 
+	//		writeln(map_in_json_format);
+
+		f.write(map_in_json_format.toJSON(false));
+		f.close();
+			
+//		auto f = File(path, "w");
+	//	rawWriteValue(f, meta);
 		//https://forum.dlang.org/post/mailman.113.1330209587.24984.digitalmars-d-learn@puremagic.com
-		writeln("SAVING META MAP");
 		}
 
+	import std.file;
 	void loadMeta(string path="meta.map")
 		{
 		writeln("LOADING META MAP");
-		auto read = File(path).rawRead(meta[]);
+		
+		string str = std.file.readText("./data/maps/meta.map");
+	//	writeln(str);
+		map_in_json_format = parseJSON(str);
+//		writeln(map_in_json_format);
+
+		auto t = map_in_json_format;
+
+//		int width = to!int(t.object["widthl"].integer);
+//		int height = to!int(t.object["height"].integer);
+//		writeln(width, " by ", height);
+		writeln("------");
+		writeln(t.object["isPassable"].array);
+	
+		foreach(size_t i, r; t.object["isPassable"].array)
+			{
+			writeln(i, r);
+			isPassable[i] = to!bool(r.boolean); //"integer" outs long. lulbbq.
+			}
+			
+//		auto read = File(path).rawRead(meta[]);
 		}
 
 	// -----------------------------------------------------------------------
@@ -159,7 +183,7 @@ struct atlas_t
 			if(j >= atl.h/32)break;
 			if(idx >= w*h-1)break;
 
-			if(g.atlas.meta[idx].isPassable == false)
+			if(g.atlas.isPassable[idx] == false)
 				{
 				draw_target_dot(0 + i*32, 0 + j*32);
 				}
@@ -218,17 +242,19 @@ struct atlas_t
 			
 			if(z == 1 || z == 9)
 				{
-				meta_t m;
-				m.isPassable = false;
-				meta[z] = m;
+				isPassable[z] = false;
+				//m/eta_t m;
+				//m.isPassable = false;
+				//meta[z] = m;
 				}else{
-				meta_t m;
-				m.isPassable = true;
-				meta[z] = m;
+				isPassable[z] = true;
+				//meta_t m;
+				//m.isPassable = true;
+				//meta[z] = m;
 				}
 			z++;
 			}
-		writeln("meta.length = ", meta.length);
+//		writeln("meta.length = ", meta.length);
 		writeln("data.length = ", data.length);
 
 		if(canvas) // just in case this gets called twice

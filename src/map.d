@@ -5,6 +5,7 @@ import allegro5.allegro_font;
 import allegro5.allegro_ttf;
 import allegro5.allegro_color;
 
+import std.json;
 import std.conv;
 import std.random;
 import std.file;
@@ -178,18 +179,52 @@ class map_t
 		file.rawWrite((&value)[0..1]); // should this be 0..3?
 		}
 
+	JSONValue map_in_json_format;
+
 	void save(string path="world.map")
 		{
-		auto f = File(path, "w");
-		rawWriteValue(f, data);
+		writeln("save map");
+		import std.json;
+		import std.file;
+		File f = File("./data/maps/map.map", "w");
+		
+		map_in_json_format.object["width"] = 50;
+		map_in_json_format.object["height"] = 50;
+		map_in_json_format.object["layer0"] = JSONValue( data ); 
+
+		f.write(map_in_json_format.toJSON(false));
+		f.close();
+
+//		auto f = File(path, "w");
+//		rawWriteValue(f, data);
+//		writeln("SAVING MAP");
 		//https://forum.dlang.org/post/mailman.113.1330209587.24984.digitalmars-d-learn@puremagic.com
-		writeln("SAVING MAP");
 		}
 
 	void load(string path="world.map")
 		{
-		writeln("LOADING MAP");
-		auto read = File(path).rawRead(data[]);
+		writeln("load map");
+		string str = std.file.readText("./data/maps/map.map");
+		writeln(str);
+		map_in_json_format = parseJSON(str);
+		writeln(map_in_json_format);
+
+		auto t = map_in_json_format;
+
+		int width = to!int(t.object["width"].integer);
+		int height = to!int(t.object["height"].integer);
+		writeln(width, " by ", height);
+	
+		foreach(int j, r; t.object["layer0"].array)
+			{
+			foreach(int i, val; r.array)
+				{
+				data[j][i] = to!ushort(val.integer); //"integer" outs long. lulbbq.
+				}
+			}
+			
+//		writeln("LOADING MAP");
+//		auto read = File(path).rawRead(data[]);
 		}
 
 	}	

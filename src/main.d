@@ -445,6 +445,11 @@ void execute()
 					mouseChangeCursorTile(ALLEGRO_KEY_RIGHT, 1);
 					mouseChangeCursorTile(ALLEGRO_KEY_UP, -g.atlas.atl.w/32);
 					mouseChangeCursorTile(ALLEGRO_KEY_DOWN, g.atlas.atl.w/32);
+					
+					if(event.keyboard.keycode == ALLEGRO_KEY_B)
+						{
+						g.atlas.toggleIsPassable();
+						}	
 
 					if(event.keyboard.keycode == ALLEGRO_KEY_O)
 						{
@@ -456,9 +461,14 @@ void execute()
 						g.atlas.loadMeta();
 						}
 
-					if(event.keyboard.keycode == ALLEGRO_KEY_B)
+					if(event.keyboard.keycode == ALLEGRO_KEY_K)
 						{
-						g.atlas.toggleIsPassable();
+						g.world.map.save();
+						}
+
+					if(event.keyboard.keycode == ALLEGRO_KEY_L)
+						{
+						g.world.map.load();
 						}
 					
 					break;
