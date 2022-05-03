@@ -113,7 +113,7 @@ import std.json;
 	void saveMeta(string path="meta.map")
 		{
 		writeln("save META map");
-		import std.json;;
+		import std.json;
 		import std.file;
 		File f = File("./data/maps/meta.map", "w");
 

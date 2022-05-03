@@ -1,4 +1,35 @@
 
+TODO
+	- logger
+	- scripting
+
+
+
+
+	----> CONVERT more names to camelCase.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 fishing
 
 farming
