@@ -26,6 +26,7 @@ alias KEY_RIGHT = ALLEGRO_KEY_RIGHT;
 
 alias COLOR = ALLEGRO_COLOR;
 alias BITMAP = ALLEGRO_BITMAP;
+alias FONT = ALLEGRO_FONT;
 alias tile=ushort;
 alias dir=direction;
 
@@ -222,8 +223,8 @@ import std.json;
 	void load(string filepath)
 		{
 		writeln("loading atlas at ", filepath);
-		atl = al_load_bitmap(filepath.toStringz());
-		assert(atl != null, "ATLAS " ~ filepath ~ " NOT FOUND/LOADABLE");
+		atl = getBitmap(filepath);
+		//assert(atl != null, "ATLAS " ~ filepath ~ " NOT FOUND/LOADABLE");
 		
 		int width = atl.w;
 		int height = atl.h;
@@ -667,7 +668,7 @@ void loadResources()
 	g.atlas2.load("./data/atlas2.png");
 	g.atlas2.loadMeta();
 		
-	g.font = al_load_font("./data/DejaVuSans.ttf", 18, 0);
+	g.font = getFont("./data/DejaVuSans.ttf", 18);
 
 	g.dude_up_bmp  	= getBitmap("./data/dude_up.png");
 	g.dude_down_bmp  	= getBitmap("./data/dude_down.png");
@@ -677,7 +678,6 @@ void loadResources()
 	g.sword_bmp  		= getBitmap("./data/sword.png");
 	g.carrot_bmp  		= getBitmap("./data/carrot.png");
 	g.potion_bmp  		= getBitmap("./data/potion.png");
-	
 	g.chest_bmp  		= getBitmap("./data/chest.png");
 	g.chest_open_bmp  	= getBitmap("./data/chest_open.png");
 
@@ -692,12 +692,17 @@ void loadResources()
 	g.fountain_bmp  = getBitmap("./data/fountain.png");
 	g.wood_bmp  	= getBitmap("./data/wood.png");
 	g.stone_bmp  	= getBitmap("./data/brick.png");
-	
 	g.tree_bmp  	= getBitmap("./data/tree.png");
-	
 	g.blood_bmp  	= getBitmap("./data/blood.png");
-	
 	g.reinforced_wall_bmp  	= getBitmap("./data/reinforced_wall.png");	
+	}
+
+FONT* getFont(string path, int size)
+	{
+	import std.string : toStringz;
+	ALLEGRO_FONT* f = al_load_font(toStringz(path), size, 0);
+	assert(f != null, format("ERROR: Failed to load font [%s]!", path));
+	return f;
 	}
 
 ALLEGRO_BITMAP* getBitmap(string path)

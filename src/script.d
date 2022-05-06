@@ -8,8 +8,6 @@
 		So instead of just skipping time, you can also make your guy look like he's losing his shit with impatience
 		during conversations.
 
-
-
 		- chatbox
 		- move
 		- attack
@@ -42,7 +40,6 @@ interface controllee
 	void actionAttack();
 	void actionUse();
 	}
-
 
 // each conversation is a set of dialogs that can be "skipped" forward and then the next plays.
 class conversation
