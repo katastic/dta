@@ -71,6 +71,7 @@ import objects;
 import viewport;
 static import g;
 import gui;
+import atlas;
 
 //ALLEGRO_CONFIG* 		cfg;  //whats this used for?
 ALLEGRO_DISPLAY* 		al_display;
@@ -301,7 +302,7 @@ if(g.stats.fps != 0)
 	
 	
 			if(g.selectLayer)
-				al_draw_textf(g.font, ALLEGRO_COLOR(0, 0, 0, 1), 20, text_helper(false), ALLEGRO_ALIGN_LEFT, "mouse [%d, %d][%d] cursor[%d]", g.mouse_x, g.mouse_y, g.mouse_lmb, g.atlas.currentCursor);
+				al_draw_textf(g.font, ALLEGRO_COLOR(0, 0, 0, 1), 20, text_helper(false), ALLEGRO_ALIGN_LEFT, "mouse [%d, %d][%d] cursor[%d]", g.mouse_x, g.mouse_y, g.mouse_lmb, g.atlas1.currentCursor);
 				else
 				al_draw_textf(g.font, ALLEGRO_COLOR(0, 0, 0, 1), 20, text_helper(false), ALLEGRO_ALIGN_LEFT, "mouse [%d, %d][%d] cursor[%d]", g.mouse_x, g.mouse_y, g.mouse_lmb, g.atlas2.currentCursor);
 			
@@ -400,8 +401,8 @@ void execute()
 					isKeySet(ALLEGRO_KEY_D, g.key_d_down);
 					isKeySet(ALLEGRO_KEY_F, g.key_f_down);
 					
-					isKeySet(ALLEGRO_KEY_N, g.atlas.isHidden);
-					isKeyRel(ALLEGRO_KEY_M, g.atlas.isHidden);
+					isKeySet(ALLEGRO_KEY_N, g.atlas1.isHidden);
+					isKeyRel(ALLEGRO_KEY_M, g.atlas1.isHidden);
 					
 					void mouseSetTile(ALLEGRO_KEY key, ubyte mapValue)
 						{
@@ -423,7 +424,7 @@ void execute()
 								{
 								if(cast(short)g.world.map.data[i][j] + cast(short)relMapValue >= 0
 								 &&
-								 g.world.map.data[i][j] <= g.atlas.data.length
+								 g.world.map.data[i][j] <= g.atlas1.data.length
 								 )
 									g.world.map.data[i][j] += relMapValue;
 								}
@@ -439,7 +440,7 @@ void execute()
 							if(i >= 0 && j >= 0 && i < 50 && j < 50)
 								{
 								if(g.selectLayer)
-									g.atlas.changeCursor(relValue);
+									g.atlas1.changeCursor(relValue);
 									else
 									g.atlas2.changeCursor(relValue);
 								}
@@ -456,25 +457,25 @@ void execute()
 					mouseSetTile(ALLEGRO_KEY_8, 7);
 					mouseChangeCursorTile(ALLEGRO_KEY_LEFT, -1);
 					mouseChangeCursorTile(ALLEGRO_KEY_RIGHT, 1);
-					mouseChangeCursorTile(ALLEGRO_KEY_UP, -g.atlas.atl.w/32);
-					mouseChangeCursorTile(ALLEGRO_KEY_DOWN, g.atlas.atl.w/32);
+					mouseChangeCursorTile(ALLEGRO_KEY_UP, -g.atlas1.atl.w/32);
+					mouseChangeCursorTile(ALLEGRO_KEY_DOWN, g.atlas1.atl.w/32);
 					
 					if(event.keyboard.keycode == ALLEGRO_KEY_B)
 						{
 						if(g.selectLayer)
-							g.atlas.toggleIsPassable();
+							g.atlas1.toggleIsPassable();
 							//we don't do atlas2 because the top layer doesn't have collision. so we just ignore keypress.
 						}	
 
 					if(event.keyboard.keycode == ALLEGRO_KEY_O)
 						{
-						g.atlas.saveMeta();
+						g.atlas1.saveMeta();
 						g.atlas2.saveMeta();
 						}	
 				
 					if(event.keyboard.keycode == ALLEGRO_KEY_P)
 						{
-						g.atlas.loadMeta();
+						g.atlas1.loadMeta();
 						g.atlas2.loadMeta();
 						}
 
@@ -540,7 +541,7 @@ void execute()
 						{
 						g.mouse_lmb = true;
 						if(g.selectLayer)
-							g.world.map.data[px][py] = cast(ubyte)g.atlas.currentCursor;
+							g.world.map.data[px][py] = cast(ubyte)g.atlas1.currentCursor;
 							else
 							g.world.map.data2[px][py] = cast(ubyte)g.atlas2.currentCursor;
 						}

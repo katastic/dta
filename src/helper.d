@@ -5,10 +5,12 @@ import allegro5.allegro_font;
 import allegro5.allegro_ttf;
 import allegro5.allegro_color;
 
+import std.format;
+
 import std.random;
 import std.conv;
-
 import viewport;
+import g;
 
 // Graphical helper functions
 //=============================================================================
@@ -234,4 +236,29 @@ struct al_target()
 void writeval(T)(string x, T y) 
 	{
 	writeln(x, " = ", y);
+	}
+
+
+
+
+
+
+
+
+
+
+FONT* getFont(string path, int size)
+	{
+	import std.string : toStringz;
+	ALLEGRO_FONT* f = al_load_font(toStringz(path), size, 0);
+	assert(f != null, format("ERROR: Failed to load font [%s]!", path));
+	return f;
+	}
+
+ALLEGRO_BITMAP* getBitmap(string path)
+	{
+	import std.string : toStringz;
+	ALLEGRO_BITMAP* bmp = al_load_bitmap(toStringz(path));
+	assert(bmp != null, format("ERROR: Failed to load bitmap [%s]!", path));
+	return bmp;
 	}

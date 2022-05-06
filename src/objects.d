@@ -279,7 +279,7 @@ class unit_t : drawable_object_t
 		if(cx > 0 && cy > 0 && cx < g.world.map.w*(32-1) && cy < g.world.map.h*(32-1))
 			{
 			tile type = g.world.map.data[cast(int)cx/32][cast(int)cy/32];
-			if(g.atlas.isPassable[type])
+			if(g.atlas1.isPassable[type])
 				{
 				x = cx;
 				y = cy;

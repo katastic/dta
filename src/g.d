@@ -16,6 +16,8 @@ import objects;
 import viewport;
 import map;
 import gui : gui_t;
+import blood;
+import atlas;
 
 bool selectLayer=false; //which layer for mouse map editing is selected
 
@@ -47,368 +49,9 @@ struct pair
 		}
 	}
 
-/*
-import std.typecons;
 
-// https://dlang.org/library/std/typecons/typedef.html
-//  Unlike the alias feature, Typedef ensures the two types are
-//  not considered as equals. 
-alias sPair = Typedef!(pair, pair.init, "screen"); // screen pair?
-alias wPair = Typedef!(pair, pair.init, "world"); // world pair?
-alias vPair = Typedef!(pair, pair.init, "viewport"); // viewport pair?
-
-//alias s2v = screenToViewport;
-alias v2s = viewportToScreen;
-sPair viewportToScreen(vPair s, viewport_t v)
-	{
-	return cast(sPair)pair(s.x - v.ox + v.x, s.y - v.oy + v.y);
-	} //but what if our functions want only the x or y? Is there a template way?
-
-void test1()
-	{
-//	pair v4 = pair(1f, 2f); // works fine
-	vPair v5 = vPair(pair(1f, 2f));
-	return;
-	}*/
-
-struct atlas_t
-	{
-	bool isHidden=false;
-//	meta_t*	[] meta;
-//	meta_t	[16*25] meta;
-	bool [16*25] isPassable=true;
-	BITMAP* [] data;
-	alias data this;
-	BITMAP* atl;
-	int w=16;
-	int h=25;
-
-	// Editing the metadata functions
-	// ---------------------------------------------------------------
-	int currentCursor=0;
-	void changeCursor(int relValue)
-		{
-		if( (cast(short)currentCursor + relValue >= 0) 
-			&& 
-			currentCursor + relValue <= g.atlas.data.length)
-			{
-			currentCursor += relValue;
-			writeln(currentCursor.stringof, " = ", currentCursor);
-			}			
-		}
-		
-	void toggleIsPassable()
-		{
-		writeln("Toggling isPassable for ", currentCursor, " = ", isPassable[currentCursor]);
-		isPassable[currentCursor] = !isPassable[currentCursor];		
-		}
-		
-	//https://forum.dlang.org/post/t3ljgm$16du$1@digitalmars.com
-	//big 'ol wtf case.
-	void rawWriteValue(T)(File file, T value)
-		{
-		file.rawWrite((&value)[0..1]);
-		}
-
-import std.json;
-	JSONValue map_in_json_format;
-
-	void saveMeta(string path="meta.map")
-		{
-		writeln("save META map");
-		import std.json;
-		import std.file;
-		File f = File("./data/maps/meta.map", "w");
-
-			//map_in_json_format = parseJSON("{ \"taco\":\"boo\"}");
-
-			map_in_json_format.object["width"] = 50;
-			map_in_json_format.object["height"] = 50;
-			map_in_json_format.object["isPassable"] = JSONValue( isPassable ); 
-	//		writeln(map_in_json_format);
-
-		f.write(map_in_json_format.toJSON(false));
-		f.close();
-			
-//		auto f = File(path, "w");
-	//	rawWriteValue(f, meta);
-		//https://forum.dlang.org/post/mailman.113.1330209587.24984.digitalmars-d-learn@puremagic.com
-		}
-
-	import std.file;
-	void loadMeta(string path="meta.map")
-		{
-		writeln("LOADING META MAP");
-		
-		string str = std.file.readText("./data/maps/meta.map");
-	//	writeln(str);
-		map_in_json_format = parseJSON(str);
-		writeln(map_in_json_format);
-
-		auto t = map_in_json_format;
-
-//		int width = to!int(t.object["widthl"].integer);
-//		int height = to!int(t.object["height"].integer);
-//		writeln(width, " by ", height);
-		writeln("------");
-		writeln(t.object["isPassable"].array);
-	
-		foreach(size_t i, r; t.object["isPassable"].array)
-			{
-			writeln(i, r);
-			isPassable[i] = to!bool(r.boolean); //"integer" outs long. lulbbq.
-			}
-			
-//		auto read = File(path).rawRead(meta[]);
-		}
-
-	// -----------------------------------------------------------------------
-
-	BITMAP* canvas;
-	void drawAtlas(float x, float y)
-		{
-		assert(canvas !is null);
-		al_set_target_bitmap(canvas);
-		al_draw_filled_rectangle(0, 0, 0 + atl.w-1, 0 + atl.h-1, ALLEGRO_COLOR(.7,.7,.7,.7));
-		al_draw_bitmap(atl, 0, 0, 0);
-
-		{
-		int idx = 0;
-		int i = 0;
-		int j = 0;
-		
-		do{
-			if(i >= atl.w/32)
-				{
-				i=0;
-				j++;
-				}
-			if(j >= atl.h/32)break;
-			if(idx >= w*h-1)break;
-
-			if(g.atlas.isPassable[idx] == false && g.selectLayer) //we only draw this for8 the primary layer
-				{
-				//draw_target_dot(0 + i*32, 0 + j*32);
-				al_draw_filled_rectangle(i*32 + 16, j*32 + 16, i*32 + 32, j*32 + 32,COLOR(1,0,0,.5));
-				}
-			i++;
-			idx++;
-			}while(true);
-		}
-
-		{
-		int idx = 0;
-		float x2 = 0;
-		float y2 = 0;
-		
-		do{
-			if(idx == currentCursor)break;
-			idx++;
-			x2+=32;
-			if(x2 >= atl.w)
-				{
-				x2 = 0;
-				y2 += 32;
-				}
-			}while(true);
-		al_draw_rectangle(0 + x2, 0 + y2, 0 + x2 + 31, 0 + y2 + 31, ALLEGRO_COLOR(1,0,0,1), 3);
-		}
-		
-		al_reset_target();
-		immutable float SCALE = 0.75;
-		al_draw_scaled_bitmap2(canvas, x, y, SCALE, SCALE);
-		
-		}
-
-	void load(string filepath)
-		{
-		writeln("loading atlas at ", filepath);
-		atl = getBitmap(filepath);
-		//assert(atl != null, "ATLAS " ~ filepath ~ " NOT FOUND/LOADABLE");
-		
-		int width = atl.w;
-		int height = atl.h;
-		
-		assert(width % 32 == 0, "ATLAS ISNT 32-byte ALIGNED. ZEUS IS FURIOUS."); 
-		
-		// TODO FIX. consider making a sub-bitmap based one
-		// so we're not constantly changing textures while drawing
-		// (one for each layer would work.)
-		
-		int z = 0;
-		for(int j = 0; j < h; j++) //note: order important
-		for(int i = 0; i < w; i++)
-			{
-			writeln("i, j, z = ", i, " ", j, " ", z);
-			BITMAP* b = al_create_sub_bitmap(atl, 32*i, 32*j, 32, 32);
-			assert(b != null);
-			data ~= b;
-			
-			if(z == 1 || z == 9)
-				{
-				isPassable[z] = false;
-				//m/eta_t m;
-				//m.isPassable = false;
-				//meta[z] = m;
-				}else{
-				isPassable[z] = true;
-				//meta_t m;
-				//m.isPassable = true;
-				//meta[z] = m;
-				}
-			z++;
-			}
-//		writeln("meta.length = ", meta.length);
-		writeln("data.length = ", data.length);
-
-		if(canvas) // just in case this gets called twice
-			{
-			al_destroy_bitmap(canvas); 
-			}
-		canvas = al_create_bitmap(atl.w, atl.h);
-		assert(canvas !is null);
-		}
-	}
-
-atlas_t atlas;
+atlas_t atlas1;
 atlas_t atlas2;
-
-struct blood_t
-	{
-	int x=0, y=0;
-	int lifetime=100;
-	int bloodtype=0; // or use bmp
-	int rotation=0;
-	bool deleteMe=false;
-	}  
-	// ideally we sort this by bloodtype to reduce contextswitches
-	// we could use a pointer to bmp but that would be slower?
-	// -> DONT FORGET we can do a full decal map if necessary and just paint to it.
-	// writing will be slower, RAM much higher, but one flat draw call each time.
-	// -> could split into multiple subsector maps so only the smaller sector is being
-	// updated (where blood is happening) to reduce bus transfers. If we only update
-	// the important area of the bitmap it's not so bad except allegro likely keeps
-	// the memory copy, and then does a full blit (not dirty rectangles) of the entire
-	// map back to VRAM. So the bigger the atlas, the bigger the transfer even for a 
-	// single pixel. We can benchmark this to see speeds for a 256x256 vs 2048x2048, etc
-	// -> The fact we're drawing HUNDREDS of these adds up to a significant amount of
-	// our current draw time (like 11% and we're not doing much!) on my netbook
-/*
-	welp it's like infinitely faster it seems to do one draw call
-	
-	HOWEVER, what about the WRITE SPEED. how many WRITES per frame can we do
-	before it gets slower to simply DRAW them all?
-	
-	HOWEVER HOWEVER, most decals are NOT MOVING. So a constant "stream of blood" (ahah) 
-	is okay as long as it doesn't exceed a certain amount per second. The total amount
-	doesn't matter so eventually, with time, the static method will ALWAYS exceed the
-	live method. 
-	
-	Quick test: 15 constant additions of blood have no discernable impact on framerate!
-		"PEOPLE ARE ICE SKATING ON A RIVER OF BLOOD OUT HERE."
-*/
-class static_blood_handler_t
-	{
-	BITMAP* data;
-	BITMAP*[4][4] chunks; //lmfao pun
-	
-	this(ref map_t m)
-		{
-		data = al_create_bitmap(m.w*32, m.h*32); //ideally power of 2? TEST THAT.
-	// WORKS
-	//	al_set_target_bitmap(data);
-	//	al_clear_to_color(COLOR(1,0,1,1));
-	//	al_set_target_backbuffer(al_get_current_display()); // is there an Allegro function that already does this?
-		assert(data != null);
-		}
-	
-	void add(float x, float y)
-		{
-		al_set_target_bitmap(data);
-		al_draw_centered_bitmap(g.blood_bmp, x, y, uniform!"[]"(0,3));
-		al_reset_target();
-		}
-		
-	void draw(viewport_t v)
-		{
-		al_draw_bitmap(data, 0 - v.ox + v.x, 0 - v.oy + v.y, 0);
-		}
-	}
-
-class blood_handler_t
-	{
-	blood_t[] data;
-
-	this()
-		{
-		// 20000 = 16 FPS with al_draw_bitmap 		
-		// 20000 = 16 FPS with al_tinted_draw_bitmap 		
-		// 20000 = 33 FPS with isInsideScreen() with 7905 drawn
-		// 20000 = 33 FPS with isWideInsideScreen() with 8041 drawn
-		
-		// 10000 (4000 drawn) = 52 FPS with isWideInsideScreen
-		
-		// Hell, we could even AUTOMATICALLY reduce max draw counts
-		// of particles when game framerate gets below TARGET_FRAMERATE
-		// though we have to be careful not to eliminate important ones.
-		// for example, we could skip every other particle because likewise
-		// particles tend to spawn together so everything gets halved. However,
-		// dropping HALF will be a sudden drop. Dropping every 4th and rising 
-		// from there might work.
-		
-		immutable int STARTING_BLOOD = 5000;
-		for(int i = 0; i < STARTING_BLOOD; i++)
-			{
-			float w = 50; //g.world.map.w
-			float h = 50;
-			
-			float x1 = uniform!"[]"(0, 32*(w-1));
-			float y1 = uniform!"[]"(0, 32*(h-1));
-			add(x1, y1);
-			}
-		}
-
-	void add(float x, float y)
-		{
-		blood_t b = blood_t(cast(int)x, cast(int)y, 100, 0, uniform!"[]"(0, 4), false);
-		data ~= b;
-		}
-	
-	void draw(viewport_t v)
-		{
-		COLOR c = COLOR(1,1,1,.9);
-		foreach(b; data)
-			{
-			if(b.bloodtype == 0 && isWideInsideScreen(b.x - v.ox + v.x, b.y - v.oy + v.y, g.blood_bmp, v))
-				{
-				al_draw_tinted_bitmap(
-					g.blood_bmp, c,
-					b.x - v.ox + v.x - g.blood_bmp.w/2, 
-					b.y - v.oy + v.y - g.blood_bmp.h/2, 
-					b.rotation);
-					// if we're gonna spam TONS of these and barely even use any tinting, we might as well just use straight non-transparent draw calls
-					
-/*				al_draw_tinted_bitmap(
-					g.blood_bmp,
-					ALLEGRO_COLOR(1.0, 1.0, 1.0, 0.9),
-					b.x - v.ox + v.x - g.blood_bmp.w/2, 
-					b.y - v.oy + v.y - g.blood_bmp.h/2, 
-					b.rotation);*/
-				stats.number_of_drawn_particles++;
-				}
-			}
-		}
-		
-	void onTick()
-		{
-		foreach(b; data)
-			{
-			b.lifetime--;
-			if(b.lifetime < 0)b.deleteMe = true;
-			}
-		}
-	}
-
 world_t world;
 viewport_t [2] viewports;
 gui_t[2] guis; //todo: combine into viewports
@@ -547,12 +190,12 @@ class world_t
 
 		map.draw(v, true);
 		
-		if(!g.atlas.isHidden)
+		if(!g.atlas1.isHidden)
 			{
 			if(g.selectLayer)
-				g.atlas.drawAtlas( g.SCREEN_W - g.atlas.atl.w, 140);
+				g.atlas1.drawAtlas( g.SCREEN_W - g.atlas1.atl.w, 140);
 			else
-				g.atlas2.drawAtlas( g.SCREEN_W - g.atlas.atl.w, 140);
+				g.atlas2.drawAtlas( g.SCREEN_W - g.atlas2.atl.w, 140);
 			}
 		// g.SCREEN_H - g.atlas.atl.h);
 		}
@@ -663,8 +306,8 @@ class world_t
 import std.format;
 void loadResources()	
 	{
-	g.atlas.load("./data/atlas.png");
-	g.atlas.loadMeta();
+	g.atlas1.load("./data/atlas.png");
+	g.atlas1.loadMeta();
 	g.atlas2.load("./data/atlas2.png");
 	g.atlas2.loadMeta();
 		
@@ -695,22 +338,6 @@ void loadResources()
 	g.tree_bmp  	= getBitmap("./data/tree.png");
 	g.blood_bmp  	= getBitmap("./data/blood.png");
 	g.reinforced_wall_bmp  	= getBitmap("./data/reinforced_wall.png");	
-	}
-
-FONT* getFont(string path, int size)
-	{
-	import std.string : toStringz;
-	ALLEGRO_FONT* f = al_load_font(toStringz(path), size, 0);
-	assert(f != null, format("ERROR: Failed to load font [%s]!", path));
-	return f;
-	}
-
-ALLEGRO_BITMAP* getBitmap(string path)
-	{
-	import std.string : toStringz;
-	ALLEGRO_BITMAP* bmp = al_load_bitmap(toStringz(path));
-	assert(bmp != null, format("ERROR: Failed to load bitmap [%s]!", path));
-	return bmp;
 	}
 
 struct statistics_t

@@ -244,7 +244,7 @@ horse carriages like APC's
 		
 
 
-/*
+
 
 the problem with horses
 	while we can have NPC horses. if we give players horses then now there's two game modes. 
@@ -295,4 +295,4 @@ player finite state machine! DRAW THIS THING.
 	dodge/roll? [more or less a jump with different animation?]
 		-
 		-
-*/
+

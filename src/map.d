@@ -52,7 +52,7 @@ class map_t
 				ushort index = data[i][j];
 				assert(index >= 0);
 				assert(index < 400);
-				al_draw_bitmap(g.atlas[index], v.x + i*32.0 - v.ox, v.y + j*32.0 - v.oy, 0);
+				al_draw_bitmap(g.atlas1[index], v.x + i*32.0 - v.ox, v.y + j*32.0 - v.oy, 0);
 				stats.number_of_drawn_background_tiles++;
 				}
 			}
