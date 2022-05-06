@@ -83,7 +83,7 @@ bool percent(float chance)
 	}
 
 // can't remember the best name for this. How about clampToMax? <-----
-void clampUpper(T)(ref T val, T max)
+void clampHigh(T)(ref T val, T max)
 	{
 	if(val > max)
 		{
@@ -91,7 +91,7 @@ void clampUpper(T)(ref T val, T max)
 		}
 	}	
 
-void clampLower(T)(ref T val, T min)
+void clampLow(T)(ref T val, T min)
 	{
 	if(val < min)
 		{

@@ -52,12 +52,13 @@ class gui_t
 			if(flicker_cooldown)
 				al_draw_scaled_bitmap(g.sword_bmp,
 				   0, 0, g.sword_bmp.w, g.sword_bmp.h,
-				   x2 - 10, y2 - 10, g.sword_bmp.w + 20, g.sword_bmp.h + 20, 0);
+				   x2 - 10, y2 - 10, 
+				   g.sword_bmp.w + 20, g.sword_bmp.h + 20, 
+				   0);
 
 			al_draw_tinted_bitmap(g.sword_bmp,
 				c,
-				x2, 
-				y2, 
+				x2, y2, 
 				0);			
 
 			}else{
@@ -67,8 +68,7 @@ class gui_t
 
 			al_draw_tinted_bitmap(g.sword_bmp,
 				c,
-				x2, 
-				y2, 
+				x2, y2, 
 				0);			
 			}
 		}

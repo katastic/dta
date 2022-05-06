@@ -21,24 +21,10 @@ class map_t
 	immutable uint h = 50;
 
 	tile[w][h] data;
+	tile[w][h] data2;
 	
 	this()
 		{
-			/*
-		for(int i = 0; i < w; i++)
-		for(int j = 0; j < h; j++)
-			{
-			if(percent(5))
-				{
-				data[i][j] = 9;
-				}
-			}
-			
-		for(ubyte i = 0; i < w; i++)
-			{
-			data[i][0] = i;
-			}
-			*/
 		load("world.map");
 		}
 	
@@ -53,8 +39,9 @@ class map_t
 
 		if(signed_start_i < 0){start_i = 0;}else{start_i = to!uint(signed_start_i);}
 		if(signed_start_j < 0){start_j = 0;}else{start_j = to!uint(signed_start_j);}
-		if(end_i > w-1)end_i = w-1;
-		if(end_j > h-1)end_j = h-1;
+		end_i.clampHigh(w-1);
+		end_j.clampHigh(h-1);
+		
 				
 //		writeln("start:", start_i, "/", start_j, " offset", v.ox, "/" , v.oy, " = end: ", end_i, "/",end_j);				
 		if(!drawTopLayer)
@@ -75,7 +62,8 @@ class map_t
 			for(uint i = cast(uint) start_i; i < end_i; i++)
 			for(uint j = cast(uint) start_j; j < end_j; j++)
 				{
-				ushort index = data[i][j];
+				ushort index = data2[i][j];
+				if(index == 0)continue; // skip blank first tile
 				assert(index >= 0);
 				assert(index < 400);
 				al_draw_bitmap(g.atlas2[index], v.x + i*32.0 - v.ox, v.y + j*32.0 - v.oy, 0);
@@ -207,6 +195,7 @@ class map_t
 		map_in_json_format.object["width"] = 50;
 		map_in_json_format.object["height"] = 50;
 		map_in_json_format.object["layer0"] = JSONValue( data ); 
+		map_in_json_format.object["layer1"] = JSONValue( data2 ); 
 
 		f.write(map_in_json_format.toJSON(false));
 		f.close();
@@ -236,6 +225,13 @@ class map_t
 			foreach(int i, val; r.array)
 				{
 				data[j][i] = to!ushort(val.integer); //"integer" outs long. lulbbq.
+				}
+			}
+		foreach(int j, r; t.object["layer1"].array)
+			{
+			foreach(int i, val; r.array)
+				{
+				data2[j][i] = to!ushort(val.integer); //"integer" outs long. lulbbq.
 				}
 			}
 			

@@ -169,7 +169,10 @@ class monster_t : unit_t
 		writeln("monster hit. health is now:", hp);
 				g.world.blood2.add(x, y);
 
-		if(hp <= 0){writeln("monster died!"); delete_me = true; 
+		if(hp <= 0)
+				{
+				writeln("monster died!"); 
+				delete_me = true; 
 				g.world.blood2.add(x + uniform(-5, 5), y + uniform(-5, 5));
 				g.world.blood2.add(x + uniform(-5, 5), y + uniform(-5, 5));
 				g.world.blood2.add(x + uniform(-5, 5), y + uniform(-5, 5));
@@ -198,7 +201,11 @@ class monster_t : unit_t
 			vx *= .99;
 			vy *= .99;
 			if(abs(vx) < .3 && abs(vy) < .3)
-				{vx = 0; vy = 0; isBeingHit = false;}  
+				{
+				vx = 0; 
+				vy = 0; 
+				isBeingHit = false;
+				}  
 			}
 
 		if(x < 0 || y < 0)delete_me = true;
@@ -246,7 +253,9 @@ class tree : drawable_object_t
 		draw_hp_bar(x2, y2, v, growthPercent, 100); 
 		al_draw_scaled_bitmap(bmp,
 		   0, 0, g.sword_bmp.w, bmp.h,
-		   x2, y2, bmp.w*growthPercent/100.0, bmp.h*growthPercent/100.0, 0);
+		   x2, y2, 
+		   bmp.w*growthPercent/100.0, bmp.h*growthPercent/100.0, 
+		   0);
 		}
 	}
 

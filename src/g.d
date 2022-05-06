@@ -17,6 +17,8 @@ import viewport;
 import map;
 import gui : gui_t;
 
+bool selectLayer=false; //which layer for mouse map editing is selected
+
 alias KEY_UP = ALLEGRO_KEY_UP; // should we do these? By time we write them out we've already done more work than just writing them.
 alias KEY_DOWN = ALLEGRO_KEY_DOWN; // i'll leave them coded as an open question for later
 alias KEY_LEFT = ALLEGRO_KEY_LEFT; 
@@ -183,9 +185,10 @@ import std.json;
 			if(j >= atl.h/32)break;
 			if(idx >= w*h-1)break;
 
-			if(g.atlas.isPassable[idx] == false)
+			if(g.atlas.isPassable[idx] == false && g.selectLayer) //we only draw this for8 the primary layer
 				{
-				draw_target_dot(0 + i*32, 0 + j*32);
+				//draw_target_dot(0 + i*32, 0 + j*32);
+				al_draw_filled_rectangle(i*32 + 16, j*32 + 16, i*32 + 32, j*32 + 32,COLOR(1,0,0,.5));
 				}
 			i++;
 			idx++;
@@ -543,7 +546,13 @@ class world_t
 
 		map.draw(v, true);
 		
-		if(!g.atlas.isHidden)g.atlas.drawAtlas( g.SCREEN_W - g.atlas.atl.w, 140);
+		if(!g.atlas.isHidden)
+			{
+			if(g.selectLayer)
+				g.atlas.drawAtlas( g.SCREEN_W - g.atlas.atl.w, 140);
+			else
+				g.atlas2.drawAtlas( g.SCREEN_W - g.atlas.atl.w, 140);
+			}
 		// g.SCREEN_H - g.atlas.atl.h);
 		}
 		

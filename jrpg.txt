@@ -2,11 +2,10 @@
 TODO
 	- logger
 	- scripting
-
-
-
-
-	----> CONVERT more names to camelCase.
+	
+	+ SAVE second layer to json file
+	- BUG: Looks like atlas is still looking at 256 (at least for 2nd layer/upperlayer)
+	- CONVERT more names to camelCase.
 
 
 

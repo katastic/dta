@@ -17,6 +17,7 @@
 		- play animation like emotes
 		- spawn
 +/
+
 import viewport;
 import objects;
 
@@ -107,8 +108,7 @@ class modalBox
 
 	void onTick()
 		{
-		}
-	
+		}	
 	
 	// how to do fast-forward, also holding button only finishes a dialog instance, it does not 
 	// automatically continue past a button prompt.

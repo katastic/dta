@@ -298,8 +298,13 @@ if(g.stats.fps != 0)
 					// total draws multiplied by fps. how many objects per second we can do.
 					// should be approx constant for a cpu once you have enough objects and, are 
 					// no longer limited by screen VSYNC.
-					
-			al_draw_textf(g.font, ALLEGRO_COLOR(0, 0, 0, 1), 20, text_helper(false), ALLEGRO_ALIGN_LEFT, "mouse [%d, %d][%d]", g.mouse_x, g.mouse_y, g.mouse_lmb);			
+	
+	
+			if(g.selectLayer)
+				al_draw_textf(g.font, ALLEGRO_COLOR(0, 0, 0, 1), 20, text_helper(false), ALLEGRO_ALIGN_LEFT, "mouse [%d, %d][%d] cursor[%d]", g.mouse_x, g.mouse_y, g.mouse_lmb, g.atlas.currentCursor);
+				else
+				al_draw_textf(g.font, ALLEGRO_COLOR(0, 0, 0, 1), 20, text_helper(false), ALLEGRO_ALIGN_LEFT, "mouse [%d, %d][%d] cursor[%d]", g.mouse_x, g.mouse_y, g.mouse_lmb, g.atlas2.currentCursor);
+			
 			al_draw_textf(g.font, ALLEGRO_COLOR(0, 0, 0, 1), 20, text_helper(false), ALLEGRO_ALIGN_LEFT, "money [%d] deaths [%d]", g.players[0].money, g.players[0].deaths);
 			al_draw_textf(g.font, ALLEGRO_COLOR(0, 0, 0, 1), 20, text_helper(false), ALLEGRO_ALIGN_LEFT, 
 				"drawn: objects [%d] dwarves [%d] structs [%d] bg_tiles [%d] particles [%d]", 
@@ -382,6 +387,11 @@ void execute()
 					isKeySet(ALLEGRO_KEY_ESCAPE, exit);
 
 					isKeySet(ALLEGRO_KEY_SPACE, g.key_space_down);
+					
+					isKeySet(ALLEGRO_KEY_Z, g.selectLayer);
+					isKeyRel(ALLEGRO_KEY_X, g.selectLayer);
+					
+					
 					isKeySet(ALLEGRO_KEY_Q, g.key_q_down);
 					isKeySet(ALLEGRO_KEY_E, g.key_e_down);
 					isKeySet(ALLEGRO_KEY_W, g.key_w_down);
@@ -428,7 +438,10 @@ void execute()
 							int j = cast(int)((g.mouse_y + g.viewports[0].oy)/32);
 							if(i >= 0 && j >= 0 && i < 50 && j < 50)
 								{
-								g.atlas.changeCursor(relValue);
+								if(g.selectLayer)
+									g.atlas.changeCursor(relValue);
+									else
+									g.atlas2.changeCursor(relValue);
 								}
 							}
 						}
@@ -448,7 +461,9 @@ void execute()
 					
 					if(event.keyboard.keycode == ALLEGRO_KEY_B)
 						{
-						g.atlas.toggleIsPassable();
+						if(g.selectLayer)
+							g.atlas.toggleIsPassable();
+							//we don't do atlas2 because the top layer doesn't have collision. so we just ignore keypress.
 						}	
 
 					if(event.keyboard.keycode == ALLEGRO_KEY_O)
@@ -524,7 +539,10 @@ void execute()
 					if(event.mouse.button == 1)
 						{
 						g.mouse_lmb = true;
-						g.world.map.data[px][py] = cast(ubyte)g.atlas.currentCursor;
+						if(g.selectLayer)
+							g.world.map.data[px][py] = cast(ubyte)g.atlas.currentCursor;
+							else
+							g.world.map.data2[px][py] = cast(ubyte)g.atlas2.currentCursor;
 						}
 					if(event.mouse.button == 2)
 						{
