@@ -1,1 +1,1 @@
-dscanner -S *.d | grep -Ev 'undocumented|immutable|120|style'
+dscanner -S ./src/*.d | grep -Ev 'undocumented|immutable|120|style'
