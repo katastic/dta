@@ -362,8 +362,7 @@ class unit_t : drawable_object_t
 import std.math : atan2;
 
 	float alpha = 0.75;
-	auto p = pair(g.lights[0]);
-	float angle = angleTo(this, p); //g.world.units[0]
+	float angle = angleTo(this, g.lights[0]); //g.world.units[0]
 	float distance = (bmp.w + bmp.h) / 2;
 	float relx = cos(angle)*distance;
 	float rely = sin(angle)*distance;
