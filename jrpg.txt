@@ -2,6 +2,8 @@
 TODO
 	- logger
 	- scripting
+	- snow/rain particles/leaves blowing in wind
+	- ??? i just forgot (something with particles?)
 	
 	+ SAVE second layer to json file
 	- BUG: Looks like atlas is still looking at 256 (at least for 2nd layer/upperlayer)

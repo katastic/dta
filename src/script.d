@@ -3,7 +3,6 @@
 	
 	scripting routines for cinematics/textboxes
 
-
 	---> FUNNY. every time you press skip, your character portrait shakes like he's angry. Further the more you do it.
 		So instead of just skipping time, you can also make your guy look like he's losing his shit with impatience
 		during conversations.
@@ -64,7 +63,6 @@ class dialogInstance
 	bool hasSound=false;
 	int playSoundAtIndex; // Play sound at lines[x]
 	int playSoundOffset; // Play sound at [y] letter of [x] (for delayed sounds on long lines)
-
 
 	int lastLineGiven=0; 
 		

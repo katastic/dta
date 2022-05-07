@@ -357,6 +357,24 @@ class unit_t : drawable_object_t
 			y - v.oy + v.y - bmp.h/2, 
 			0);			
 		
+
+//if(drawShadow)
+import std.math : atan2;
+
+	float angle = atan2(y - g.world.units[0].y, x - g.world.units[0].x);
+	float distance = (bmp.w + bmp.h) / 2;
+	float relx = cos(angle)*distance;
+	float rely = sin(angle)*distance;
+		al_draw_tinted_scaled_bitmap(bmp,
+   ALLEGRO_COLOR(0,0,0,1),
+   0,0,bmp.w, bmp.h,
+   relx + x - v.ox + v.x - bmp.w/2, 
+   rely + y - v.oy + v.y - bmp.h/2, 
+   bmp.w, 
+   bmp.h, 
+   0);
+
+
 		draw_hp_bar(
 			x - v.ox + v.x, 
 			y - v.oy + v.y - bmp.w/2, 

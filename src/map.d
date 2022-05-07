@@ -42,7 +42,6 @@ class map_t
 		end_i.clampHigh(w-1);
 		end_j.clampHigh(h-1);
 		
-				
 //		writeln("start:", start_i, "/", start_j, " offset", v.ox, "/" , v.oy, " = end: ", end_i, "/",end_j);				
 		if(!drawTopLayer)
 			{
@@ -52,7 +51,13 @@ class map_t
 				ushort index = data[i][j];
 				assert(index >= 0);
 				assert(index < 400);
-				al_draw_bitmap(g.atlas1[index], v.x + i*32.0 - v.ox, v.y + j*32.0 - v.oy, 0);
+				import std.math;
+				float d = sqrt((to!float(i) - g.world.units[0].x/32)^^2 + (to!float(j) - g.world.units[0].y/32)^^2);
+				d /= 15; // Lower means darker quicker (lower radius/sharper transition)
+				writeln(d, " ", i, " ", j);
+				d.clampBoth(0, 1.0);
+				auto c = COLOR(1.0 - d,1.0 - d,1.0 - d,1);
+				al_draw_tinted_bitmap(g.atlas1[index], c, v.x + i*32.0 - v.ox, v.y + j*32.0 - v.oy, 0);
 				stats.number_of_drawn_background_tiles++;
 				}
 			}

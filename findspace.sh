@@ -3,4 +3,4 @@
 # 		-M multiline
 # 		-n write line number
 echo "Searching for multiple consecutive newlines in source files."
-pcregrep -nM '\n\n\n' *.d
+pcregrep -nM '\n\n\n' ./src/*.d

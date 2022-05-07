@@ -1,31 +1,6 @@
 /*
-	-> TO TEST: benchmark blood decal maps of various sizes vs drawing.
-		Also benchmark write performance (adding a new blood spot)
-		 - one benefit of blits is they can move if necessary 
-		 but will that ever be necessary? For static decals like blood
-		 we can likely benefit from one gigantic (or subsectioned) 
-		 blood maps.
 
 	-> Basic tiled and lightmap lighting?
-
-	-> THERE IS some allegro bullshit
-		-> al_draw_bitmap ALWAYS calls al_draw_tinted_bitmap
-		which calls _draw_tinted_rotated_scaled_bitmap_region 
-
-		https://github.com/liballeg/allegro5/blob/aeb6c4f4f81773b45c249bfec055c5351d184617/src/bitmap_draw.c#L62
-		https://github.com/liballeg/allegro5/blob/c9bc8d5dd787395f25c2de1a84cd986dbcd453e3/src/opengl/ogl_bitmap.c#L295
-
-		It may really be faster for us to clip natively before 
-		going into the insane callstack that is allegro.
-		
-		worst case, do this magical thing called a BENCHMARK.
-
-	DRAW QUESTION:
-		Do we want to draw layers IN ORDER? That is, objects have to be drawn
-		in order too?
-
-			OOOH. draw tiles like the same layer but only split for blood and other 'floor' 
-			decals whereas sprites are still on top.
 
 */
 

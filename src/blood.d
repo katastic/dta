@@ -122,13 +122,6 @@ class blood_handler_t
 					b.y - v.oy + v.y - g.blood_bmp.h/2, 
 					b.rotation);
 					// if we're gonna spam TONS of these and barely even use any tinting, we might as well just use straight non-transparent draw calls
-					
-/*				al_draw_tinted_bitmap(
-					g.blood_bmp,
-					ALLEGRO_COLOR(1.0, 1.0, 1.0, 0.9),
-					b.x - v.ox + v.x - g.blood_bmp.w/2, 
-					b.y - v.oy + v.y - g.blood_bmp.h/2, 
-					b.rotation);*/
 				stats.number_of_drawn_particles++;
 				}
 			}

@@ -6,11 +6,16 @@ import allegro5.allegro_ttf;
 import allegro5.allegro_color;
 
 import std.format;
-
+import std.math;
 import std.random;
 import std.conv;
 import viewport;
 import g;
+
+float distance(float x, float y)
+	{
+	return sqrt(x*x + y*y);
+	}
 
 // Graphical helper functions
 //=============================================================================
@@ -182,7 +187,6 @@ void al_draw_scaled_bitmap2(ALLEGRO_BITMAP *bitmap, float x, float y, float scal
 	al_draw_scaled_bitmap(bitmap, 0, 0, bitmap.w, bitmap.h, x, y, bitmap.w * scaleX, bitmap.w * scaleY, flags);
 	}
 
-
 // you know, we could do some sort of scoped lambda like thing that auto resets the target
 /*
 	DAllegro might already have that somewhere...
@@ -237,15 +241,6 @@ void writeval(T)(string x, T y)
 	{
 	writeln(x, " = ", y);
 	}
-
-
-
-
-
-
-
-
-
 
 FONT* getFont(string path, int size)
 	{

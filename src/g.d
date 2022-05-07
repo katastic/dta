@@ -32,6 +32,52 @@ alias FONT = ALLEGRO_FONT;
 alias tile=ushort;
 alias dir=direction;
 
+struct particle
+	{
+	float x=0, y=0;
+	float vx=0, vy=0;
+	int lifetime=0;
+	bool isDead=false;
+	}
+
+class leaf_handler : particle_handler
+	{
+	}
+
+class particle_handler
+	{
+	particle[] data;
+	
+	void draw(viewport_t v)
+		{
+		// what about accumulation buffer particle systems like static blood decal
+		foreach(p; data)
+			{
+			
+			}
+		}
+	
+	void onTick()
+		{
+		foreach(p; data)
+			{
+			p.x += p.vx;
+			p.y += p.vy;
+			}
+		}
+	}
+
+class weather_t
+	{
+	void draw(viewport_t v)
+		{
+		}
+	
+	void onTick()
+		{
+		}
+	}
+
 struct pair
 	{
 	float x;
@@ -48,7 +94,6 @@ struct pair
 		y = _y;
 		}
 	}
-
 
 atlas_t atlas1;
 atlas_t atlas2;
