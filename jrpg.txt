@@ -10,7 +10,9 @@ TODO
 	- CONVERT more names to camelCase.
 
 
+https://www.allegro.cc/forums/thread/615262
 
+	allegro 5 gouraud shading.. asked by me, in like 2015.\
 
 
 

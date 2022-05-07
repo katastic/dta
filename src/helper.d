@@ -273,3 +273,96 @@ ALLEGRO_BITMAP* getBitmap(string path)
 	assert(bmp != null, format("ERROR: Failed to load bitmap [%s]!", path));
 	return bmp;
 	}
+
+/// ported Gourand shading Allegro 5 functions from old my forum post
+/// 	https://www.allegro.cc/forums/thread/615262
+/// Four point shading:
+void al_draw_gouraud_bitmap(ALLEGRO_BITMAP* bmp, float x, float y, ALLEGRO_COLOR tl, ALLEGRO_COLOR tr, ALLEGRO_COLOR bl, ALLEGRO_COLOR br)
+	{
+	ALLEGRO_VERTEX[4] vtx;
+	float w = bmp.w;
+	float h = bmp.h;
+
+	vtx[0].x = x;
+	vtx[0].y = y;
+	vtx[0].z = 0;
+	vtx[0].color = tl;
+	vtx[0].u = 0;
+	vtx[0].v = 0;
+
+	vtx[1].x = x + w;
+	vtx[1].y = y;
+	vtx[1].z = 0;
+	vtx[1].color = tr;
+	vtx[1].u = w;
+	vtx[1].v = 0;
+
+	vtx[2].x = x + w;
+	vtx[2].y = y + h;
+	vtx[2].z = 0;
+	vtx[2].color = br;
+	vtx[2].u = w;
+	vtx[2].v = h;
+
+	vtx[3].x = x;
+	vtx[3].y = y + h;
+	vtx[3].z = 0;
+	vtx[3].color = bl;
+	vtx[3].u = 0;
+	vtx[3].v = h;
+
+	al_draw_prim(cast(void*)vtx, NULL, bmp, 0, 4, ALLEGRO_PRIM_TYPE.ALLEGRO_PRIM_TRIANGLE_FAN);
+	}
+
+/// Five points (includes center)
+void al_draw_gouraud_bitmap_5pt(ALLEGRO_BITMAP* bmp, float x, float y, ALLEGRO_COLOR tl, ALLEGRO_COLOR tr, ALLEGRO_COLOR bl, ALLEGRO_COLOR br, ALLEGRO_COLOR mid)
+	{
+	ALLEGRO_VERTEX[6] vtx;
+	float w = bmp.w;
+	float h = bmp.h;
+
+	//center
+	vtx[0].x = x + w/2;
+	vtx[0].y = y + h/2;
+	vtx[0].z = 0;
+	vtx[0].color = mid;
+	vtx[0].u = w/2;
+	vtx[0].v = h/2;
+
+	vtx[1].x = x;
+	vtx[1].y = y;
+	vtx[1].z = 0;
+	vtx[1].color = tl;
+	vtx[1].u = 0;
+	vtx[1].v = 0;
+
+	vtx[2].x = x + w;
+	vtx[2].y = y;
+	vtx[2].z = 0;
+	vtx[2].color = tr;
+	vtx[2].u = w;
+	vtx[2].v = 0;
+
+	vtx[3].x = x + w;
+	vtx[3].y = y + h;
+	vtx[3].z = 0;
+	vtx[3].color = br;
+	vtx[3].u = w;
+	vtx[3].v = h;
+
+	vtx[4].x = x;
+	vtx[4].y = y + h;
+	vtx[4].z = 0;
+	vtx[4].color = bl;
+	vtx[4].u = 0;
+	vtx[4].v = h;
+
+	vtx[5].x = vtx[1].x; //end where we started.
+	vtx[5].y = vtx[1].y;
+	vtx[5].z = vtx[1].z;
+	vtx[5].color = vtx[1].color;
+	vtx[5].u = vtx[1].u;
+	vtx[5].v = vtx[1].v;
+
+	al_draw_prim(cast(void*)vtx, null, bmp, 0, 6, ALLEGRO_PRIM_TYPE.ALLEGRO_PRIM_TRIANGLE_FAN);
+	}
