@@ -12,6 +12,22 @@ import std.conv;
 import viewport;
 import g;
 
+/// angleTo:
+///
+/// Get angle to anything that has an x and y coordinate fields
+/// 	Cleaner:	float angle = angleTo(this, g.world.units[0]);
+///  	Verses :	float angle = atan2(y - g.world.units[0].y, x - g.world.units[0].x);
+
+float angleTo(T, U)(T t, U u) 
+	{
+	return atan2(t.y - u.y, t.x - u.x);
+	}
+
+float distanceTo(T, U)(T t, U u)
+	{
+	return sqrt((u.x - t.x)^^2 + (u.y - t.y)^^2);
+	}
+	
 float distance(float x, float y)
 	{
 	return sqrt(x*x + y*y);

@@ -52,11 +52,14 @@ class map_t
 				assert(index >= 0);
 				assert(index < 400);
 				import std.math;
-				float d = sqrt((to!float(i) - g.world.units[0].x/32)^^2 + (to!float(j) - g.world.units[0].y/32)^^2);
-				d /= 15; // Lower means darker quicker (lower radius/sharper transition)
-				writeln(d, " ", i, " ", j);
+//				float d = sqrt((to!float(i) - g.world.units[0].x/32)^^2 + (to!float(j) - g.world.units[0].y/32)^^2);
+				auto p = pair(i*32, j*32);
+				float d = distanceTo(p, g.lights[0]); // holy crap. We just compared a pair, to a light object
+				
+				d /= 500; // Lower means darker quicker (lower radius/sharper transition)
+//				writeln(d, " ", i, " ", j);
 				d.clampBoth(0, 1.0);
-				auto c = COLOR(1.0 - d,1.0 - d,1.0 - d,1);
+				auto c = COLOR(1.0 - d,1.0 - d,1.0 - d,1.0);
 				al_draw_tinted_bitmap(g.atlas1[index], c, v.x + i*32.0 - v.ox, v.y + j*32.0 - v.oy, 0);
 				stats.number_of_drawn_background_tiles++;
 				}

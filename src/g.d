@@ -32,6 +32,15 @@ alias FONT = ALLEGRO_FONT;
 alias tile=ushort;
 alias dir=direction;
 
+struct light
+	{
+	float x=684;
+	float y=245;
+	COLOR color;
+	}
+	
+light[1] lights;
+
 struct particle
 	{
 	float x=0, y=0;
@@ -78,10 +87,33 @@ class weather_t
 		}
 	}
 
+struct ipair
+	{
+	int x;
+	int y;
+	this(int _x, int _y) //needed?
+		{
+		x = _x;
+		y = _y;
+		}
+	}
+
 struct pair
 	{
 	float x;
 	float y;
+	
+	this(T)(T t) //give it an object
+		{
+		x = t.x;
+		y = t.y;
+		}
+	
+	this(int _x, int _y)
+		{
+		x = to!float(_x);
+		y = to!float(_y);
+		}
 
 	this(float _x, float _y)
 		{

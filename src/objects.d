@@ -361,12 +361,14 @@ class unit_t : drawable_object_t
 //if(drawShadow)
 import std.math : atan2;
 
-	float angle = atan2(y - g.world.units[0].y, x - g.world.units[0].x);
+	float alpha = 0.75;
+	auto p = pair(g.lights[0]);
+	float angle = angleTo(this, p); //g.world.units[0]
 	float distance = (bmp.w + bmp.h) / 2;
 	float relx = cos(angle)*distance;
 	float rely = sin(angle)*distance;
 		al_draw_tinted_scaled_bitmap(bmp,
-   ALLEGRO_COLOR(0,0,0,1),
+   COLOR(0,0,0,alpha),
    0,0,bmp.w, bmp.h,
    relx + x - v.ox + v.x - bmp.w/2, 
    rely + y - v.oy + v.y - bmp.h/2, 
