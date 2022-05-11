@@ -30,12 +30,14 @@ class map_t
 	
 	void draw(viewport_t v, bool drawTopLayer)
 		{
-		long signed_start_i = cast(long) ((v.ox)/32.0)-1; //need signed to allow for negative
-		long signed_start_j = cast(long) ((v.oy)/32.0)-1;
+		import std.math;
+		import g : TILE_W, TILE_H;
+		long signed_start_i = cast(long) ((v.ox)/TILE_W)-1; //need signed to allow for negative
+		long signed_start_j = cast(long) ((v.oy)/TILE_H)-1;
 		uint start_i=0;
 		uint start_j=0;
-		uint end_i = cast(uint) ((v.w + v.ox + v.x)/32.0)+1; // v.ox should be negative shouldn't it??sd
-		uint end_j = cast(uint) ((v.h + v.oy + v.y)/32.0)+1;
+		uint end_i = cast(uint) ((v.w + v.ox + v.x)/TILE_W)+1; // v.ox should be negative shouldn't it??sd
+		uint end_j = cast(uint) ((v.h + v.oy + v.y)/TILE_H)+1;
 
 		if(signed_start_i < 0){start_i = 0;}else{start_i = to!uint(signed_start_i);}
 		if(signed_start_j < 0){start_j = 0;}else{start_j = to!uint(signed_start_j);}
@@ -51,16 +53,14 @@ class map_t
 				ushort index = data[i][j];
 				assert(index >= 0);
 				assert(index < 400);
-				import std.math;
-//				float d = sqrt((to!float(i) - g.world.units[0].x/32)^^2 + (to!float(j) - g.world.units[0].y/32)^^2);
-				auto p = pair(i*32, j*32);
+				auto p = pair(i*TILE_W, j*TILE_H);
 				float d = distanceTo(p, g.lights[0]); // holy crap. We just compared a pair, to a light object
 				
 				d /= 500; // Lower means darker quicker (lower radius/sharper transition)
 //				writeln(d, " ", i, " ", j);
 				d.clampBoth(0, 1.0);
 				auto c = COLOR(1.0 - d,1.0 - d,1.0 - d,1.0);
-				al_draw_tinted_bitmap(g.atlas1[index], c, v.x + i*32.0 - v.ox, v.y + j*32.0 - v.oy, 0);
+				al_draw_tinted_bitmap(g.atlas1[index], c, v.x + i*TILE_W - v.ox, v.y + j*TILE_H - v.oy, 0);
 				stats.number_of_drawn_background_tiles++;
 				}
 			}
@@ -74,7 +74,7 @@ class map_t
 				if(index == 0)continue; // skip blank first tile
 				assert(index >= 0);
 				assert(index < 400);
-				al_draw_bitmap(g.atlas2[index], v.x + i*32.0 - v.ox, v.y + j*32.0 - v.oy, 0);
+				al_draw_bitmap(g.atlas2[index], v.x + i*TILE_W - v.ox, v.y + j*TILE_H - v.oy, 0);
 				stats.number_of_drawn_background_tiles++;
 				}
 			}
@@ -218,9 +218,9 @@ class map_t
 		{
 		writeln("load map");
 		string str = std.file.readText("./data/maps/map.map");
-		writeln(str);
+		//writeln(str);
 		map_in_json_format = parseJSON(str);
-		writeln(map_in_json_format);
+//		writeln(map_in_json_format);
 
 		auto t = map_in_json_format;
 

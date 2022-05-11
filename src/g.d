@@ -19,6 +19,8 @@ import gui : gui_t;
 import blood;
 import atlas;
 
+immutable int TILE_W=32;
+immutable int TILE_H=TILE_W;
 bool selectLayer=false; //which layer for mouse map editing is selected
 
 alias KEY_UP = ALLEGRO_KEY_UP; // should we do these? By time we write them out we've already done more work than just writing them.
@@ -32,6 +34,63 @@ alias FONT = ALLEGRO_FONT;
 alias tile=ushort;
 alias dir=direction;
 
+/// thought bubble handler
+class bubble_handler
+	{
+	bubble[] bubbles;
+	
+	void spawn(string text, float _x, float _y, int lifetime)
+		{
+		bubble b;
+		b.text = text;
+		b.x = _x;
+		b.y = _y;
+		b.lifetime = lifetime;
+		
+		bubbles ~= b;
+		}
+	
+	void drawBubble(bubble b, viewport_t v)
+		{
+		float cx = b.x - v.ox + v.x; // topleft x,y
+		float cy = b.y - v.oy + v.y;
+		float w = 100;
+		float h = 64;
+		float r = 5;
+		
+		al_draw_filled_rounded_rectangle(
+			cx, cy,
+			cx + w, cy + h,
+			r, r, COLOR(1,1,1,0.7));
+			
+		al_draw_text(g.font, COLOR(0,0,0,1.0), cx + r, cx + r, 0, b.text.toStringz);
+		
+		// todo: smooth fade out 
+		// if(lifetime < 10) ...
+		}
+	
+	void draw(viewport_t v)
+		{
+		foreach(b; bubbles)
+			{
+			drawBubble(b, v);
+			}
+		}
+	
+	void onTick()
+		{
+		foreach(b; bubbles)
+			{
+			b.lifetime--;
+			if(b.lifetime >= 0)b.isDead = true;
+			}
+		for(size_t i = bubbles.length ; i-- > 0 ; )
+			{
+			if(bubbles[i].isDead)bubbles = bubbles.remove(i); continue;
+			}
+		}
+	}
+
 struct light
 	{
 	float x=684;
@@ -39,7 +98,16 @@ struct light
 	COLOR color;
 	}
 	
-light[1] lights;
+light[2] lights;
+
+struct bubble
+	{
+	string text;
+	float x=0, y=0;
+	float vx=0, vy=0;
+	int lifetime=0;
+	bool isDead=false;
+	}
 
 struct particle
 	{
@@ -186,15 +254,11 @@ class world_t
 	structure_t[] structures;
 	map_t map;
 	tree[] trees;
-	//blood_handler_t blood;
 	static_blood_handler_t blood2;
 
 	this()
 		{
-		//atlas.loadMeta(); // NOTE THIS IS GLOBAL not inside world class
-			
 		map = new map_t;
-		//blood = new blood_handler_t();
 		blood2 = new static_blood_handler_t(map);
 		
 		units ~= new dwarf_t(680, 360, 0, 0, g.stone_bmp);
@@ -216,6 +280,9 @@ class world_t
 		trees ~= new tree(232, 232, 0, 0, g.tree_bmp);
 		trees ~= new tree(264, 200, 0, 0, g.tree_bmp);
 		trees ~= new tree(264, 232, 0, 0, g.tree_bmp);
+
+		testGraph = new intrinsic_graph!float(units[0].x, COLOR(1,0,0,1));
+//		testGraph.dataSource = &units[0].x;
 		
 		int x = 300;
 		int y = 300;
@@ -255,12 +322,10 @@ class world_t
 			}
 		
 		map.draw(v, false);
-//		blood.draw(v);
 		blood2.draw(v);
 		drawStat(units, stats.number_of_drawn_dwarves);
 		drawStat(monsters, stats.number_of_drawn_dwarves);		
-		drawStat(structures, stats.number_of_drawn_structures);
-		
+		drawStat(structures, stats.number_of_drawn_structures);		
 		drawStat(chests, stats.number_of_drawn_objects);
 		drawStat(items, stats.number_of_drawn_objects);
 		drawStat(trees, stats.number_of_drawn_objects);
@@ -274,27 +339,27 @@ class world_t
 			else
 				g.atlas2.drawAtlas( g.SCREEN_W - g.atlas2.atl.w, 140);
 			}
-		// g.SCREEN_H - g.atlas.atl.h);
+		
+		testGraph.draw(v);
 		}
 		
 	void logic()
 		{
+		assert(testGraph !is null);
+		testGraph.onTick();
 		unit_t p = units[0]; // player
-			
 		viewports[0].ox = units[0].x - viewports[0].w/2;
 		viewports[0].oy = units[0].y - viewports[0].h/2;
 
-		p.isPlayerControlled  = true;
+		p.isPlayerControlled = true;
 
 		if(key_w_down)p.up();
 		if(key_s_down)p.down();
 		if(key_a_down)p.left();
 		if(key_d_down)p.right();
-		
 		if(key_q_down)p.actionAttack();
 		if(key_e_down)p.actionUse();
 		if(key_f_down)p.actionSprint();
-
 		if(key_space_down)p.actionJump();
 
 		map.logic();
@@ -338,49 +403,38 @@ class world_t
 
 // CONSTANTS
 //=============================================================================
-//struct globals_t
-//	{
-	player_t[2] players;
-		
-	ALLEGRO_FONT* 	font;
+player_t[2] players;
 	
-	ALLEGRO_BITMAP* dude_up_bmp;
-	ALLEGRO_BITMAP* dude_down_bmp;
-	ALLEGRO_BITMAP* dude_left_bmp;
-	ALLEGRO_BITMAP* dude_right_bmp;
-	
-	ALLEGRO_BITMAP* chest_bmp;
-	ALLEGRO_BITMAP* chest_open_bmp;
+ALLEGRO_FONT* 	font;
 
-	ALLEGRO_BITMAP* dwarf_bmp;
-	ALLEGRO_BITMAP* goblin_bmp;
-	ALLEGRO_BITMAP* boss_bmp;
+ALLEGRO_BITMAP* dude_up_bmp;
+ALLEGRO_BITMAP* dude_down_bmp;
+ALLEGRO_BITMAP* dude_left_bmp;
+ALLEGRO_BITMAP* dude_right_bmp;
 
-	ALLEGRO_BITMAP* fountain_bmp;
-	
-	ALLEGRO_BITMAP* tree_bmp;
+ALLEGRO_BITMAP* chest_bmp;
+ALLEGRO_BITMAP* chest_open_bmp;
 
-	ALLEGRO_BITMAP* wall_bmp;
-	ALLEGRO_BITMAP* grass_bmp;
-	ALLEGRO_BITMAP* lava_bmp;
-	ALLEGRO_BITMAP* water_bmp;
-	
-	ALLEGRO_BITMAP* wood_bmp;
-	ALLEGRO_BITMAP* stone_bmp;
-	ALLEGRO_BITMAP* reinforced_wall_bmp;
-	
-	ALLEGRO_BITMAP* sword_bmp;
-	ALLEGRO_BITMAP* carrot_bmp;
-	ALLEGRO_BITMAP* potion_bmp;
-	
-	ALLEGRO_BITMAP* blood_bmp;
+ALLEGRO_BITMAP* dwarf_bmp;
+ALLEGRO_BITMAP* goblin_bmp;
+ALLEGRO_BITMAP* boss_bmp;
+ALLEGRO_BITMAP* fountain_bmp;
+ALLEGRO_BITMAP* tree_bmp;
+ALLEGRO_BITMAP* wall_bmp;
+ALLEGRO_BITMAP* grass_bmp;
+ALLEGRO_BITMAP* lava_bmp;
+ALLEGRO_BITMAP* water_bmp;
+ALLEGRO_BITMAP* wood_bmp;
+ALLEGRO_BITMAP* stone_bmp;
+ALLEGRO_BITMAP* reinforced_wall_bmp;
+ALLEGRO_BITMAP* sword_bmp;
+ALLEGRO_BITMAP* carrot_bmp;
+ALLEGRO_BITMAP* potion_bmp;
+ALLEGRO_BITMAP* blood_bmp;
 
-	int SCREEN_W = 1360;
-	int SCREEN_H = 720;
-//	}
-//globals_t g;
+int SCREEN_W = 1360;
+int SCREEN_H = 720;
 
-import std.format;
 void loadResources()	
 	{
 	g.atlas1.load("./data/atlas.png");
@@ -416,6 +470,89 @@ void loadResources()
 	g.blood_bmp  	= getBitmap("./data/blood.png");
 	g.reinforced_wall_bmp  	= getBitmap("./data/reinforced_wall.png");	
 	}
+
+
+// what if we want timestamps? Have two identical buffers, one with X
+// and one with (T)ime? (not to be confused with T below)
+class circular_buffer(T, size_t size)
+	{
+	T[size] data;
+	int index=0;
+		
+	void addNext(T t)
+		{
+		index++;
+		if(index == data.length)index = 0;
+		data[index] = t;
+		}
+	}
+
+intrinsic_graph!float testGraph;
+
+/// al_draw_line_segment for pairs
+void al_draw_line_segment(pair[] pairs, COLOR color, float thickness)
+	{
+	assert(pairs.length > 1);
+	pair lp = pairs[0]; // initial p, also previous p ("last p")
+	foreach(ref p; pairs)
+		{
+		al_draw_line(p.x, p.y, lp.x, lp.y, color, thickness);
+		lp = p;
+		}
+	}
+	
+/// al_draw_line_segment for raw integers floats POD arrays
+void al_draw_line_segment(T)(T[] x, T[] y, COLOR color, float thickness)
+	{
+	assert(x.length > 1);
+	assert(y.length > 1);
+	assert(x.length == y.length);
+
+	for(int i = 1; i < x.length; i++) // note i = 1
+		{
+		al_draw_line(x[i], y[i], x[i-1], y[i-1], color, thickness);
+		}
+	}
+
+/// al_draw_line_segment 1D
+void al_draw_line_segment(T)(T[] y, COLOR color, float thickness)
+	{
+	assert(y.length > 1);
+
+	for(int i = 1; i < y.length; i++) // note i = 1
+		{
+		al_draw_line(i, y[i], i-1, y[i-1], color, thickness);
+		}
+	}
+
+class intrinsic_graph(T)
+	{
+	float x=0,y=0;
+	float w=400, h=100;
+	COLOR color;
+	BITMAP* buffer;
+	T* dataSource; // where we auto grab the data every frame
+	circular_buffer!(T, 1000) dataBuffer; //how do we invoke the constructor?
+ 	
+	this(ref T _dataSource, COLOR _color)
+		{
+		dataBuffer = new circular_buffer!(T, 1000);
+		dataSource = &_dataSource;
+		color = _color;
+		}
+
+	void draw(viewport_t v)
+		{
+		al_draw_filled_rectangle(x, y, x + w, y + h, COLOR(1,1,1,.75)); 
+		al_draw_line_segment(dataBuffer.data, color, 1.0f);
+		}
+		
+	void onTick()
+		{
+		dataBuffer.addNext(*dataSource);
+		}
+	}
+	
 
 struct statistics_t
 	{

@@ -10,20 +10,24 @@ TODO
 	- CONVERT more names to camelCase.
 
 
-https://www.allegro.cc/forums/thread/615262
+	+ https://www.allegro.cc/forums/thread/615262
+		allegro 5 gouraud shading.. asked by me, in like 2015.\
+	
+	- does temperature matter/do anything?
+		- slower stamina increase?
 
-	allegro 5 gouraud shading.. asked by me, in like 2015.\
+	--> how do we STRETCH shadows?
+		- we might be able to make our own quad deforming function by looking at the gouraud shading function.
+		- that's an implementation detail. we still need to know the math of what we want.
+		
+			x---x		1---2
+			|	|		|	|
+			|	|		|	|
+			x---x		4---3
 
-
-
-
-
-
-
-
-
-
-
+			- find furthest point away from lightsource, and stretch outward? hmm
+			- stretch/project all 4 points away from lightsource, with 'further away' points being streched further? 
+				- map out properly on paper
 
 
 

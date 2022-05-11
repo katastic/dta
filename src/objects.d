@@ -183,7 +183,8 @@ class monster_t : unit_t
 
 	override void onTick()
 		{
-				g.world.blood2.add(x, y);
+		import g : TILE_W, TILE_H;
+		g.world.blood2.add(x, y);
 		if(!isBeingHit && percent(4) )
 			{			
 			float angle = atan2(g.world.units[0].y - y, g.world.units[0].x - x);
@@ -209,11 +210,11 @@ class monster_t : unit_t
 			}
 
 		if(x < 0 || y < 0)delete_me = true;
-		if(x > (world.map.w-1)*32)delete_me = true;
-		if(y > (world.map.h-1)*32)delete_me = true;
+		if(x > (world.map.w-1)*TILE_W)delete_me = true;
+		if(y > (world.map.h-1)*TILE_H)delete_me = true;
 		
-		int i = cast(int) x/32;
-		int j = cast(int) y/32;
+		int i = cast(int) x/TILE_W;
+		int j = cast(int) y/TILE_H;
 
 		if(world.map.data[i][j] == 3) //if water, take damage
 			{
@@ -274,11 +275,12 @@ class unit_t : drawable_object_t
 	
 	void attemptMoveRel(float dx, float dy)
 		{
+		import g : TILE_W, TILE_H;
 		float cx = x + dx;
 		float cy = y + dy;
-		if(cx > 0 && cy > 0 && cx < g.world.map.w*(32-1) && cy < g.world.map.h*(32-1))
+		if(cx > 0 && cy > 0 && cx < g.world.map.w*(TILE_W-1) && cy < g.world.map.h*(TILE_H-1))
 			{
-			tile type = g.world.map.data[cast(int)cx/32][cast(int)cy/32];
+			tile type = g.world.map.data[cast(int)cx/TILE_W][cast(int)cy/TILE_H];
 			if(g.atlas1.isPassable[type])
 				{
 				x = cx;
@@ -289,13 +291,14 @@ class unit_t : drawable_object_t
 
 	void searchAndAttackNearbyEnemy() /// first one we find. ALSO STRUCTURES!
 		{
+		import g : TILE_W, TILE_H;
 		isAttacking = false;
 		foreach(u; world.units)  // le oof algorithm complexity
 			{
 			assert(u.team != 0);
 			if(u.team != team)
 				{
-				if( to!int(u.x/32) == to!int(x/32) && (to!int(u.y/32) == to!int(y/32)) )
+				if( to!int(u.x/TILE_W) == to!int(x/TILE_W) && (to!int(u.y/TILE_H) == to!int(y/TILE_H)) )
 					{
 					attack(u);
 					isAttacking=true;
@@ -315,7 +318,7 @@ class unit_t : drawable_object_t
 			{
 			assert(s.team != 0);
 			if(team != s.team)
-			if(to!int(s.x/32) == to!int(x/32) && (to!int(s.y/32) == to!int(y/32)))
+			if(to!int(s.x/TILE_W) == to!int(x/TILE_W) && (to!int(s.y/TILE_H) == to!int(y/TILE_H)))
 				{
 				attackStructure(s);
 				isAttacking=true;
@@ -349,6 +352,31 @@ class unit_t : drawable_object_t
 		vy = _yv;
 		}
 
+	void drawShadow(viewport_t v)
+		{		
+		import std.math : atan2;
+
+		foreach(l; g.lights)
+			{
+			// re: fading alpha with distance
+			// "I don't think this is how light works"
+			float alpha = 0.75 - capHigh(distanceTo(this, l)/200, 0.75f);
+			float angle = angleTo(this, l); //g.world.units[0]
+			float distance = (bmp.w + bmp.h) / 2;
+			float relx = cos(angle)*distance;
+			float rely = sin(angle)*distance;
+
+			al_draw_tinted_scaled_bitmap(bmp,
+			   COLOR(0,0,0,alpha),
+			   0,0,bmp.w, bmp.h,
+			   relx + x - v.ox + v.x - bmp.w/2, 
+			   rely + y - v.oy + v.y - bmp.h/2, 
+			   bmp.w, 
+			   bmp.h, 
+			   0);
+			}
+		}
+
 	override void draw(viewport_t v)
 		{
 		al_draw_tinted_bitmap(bmp,
@@ -357,25 +385,8 @@ class unit_t : drawable_object_t
 			y - v.oy + v.y - bmp.h/2, 
 			0);			
 		
-
-//if(drawShadow)
-import std.math : atan2;
-
-	float alpha = 0.75;
-	float angle = angleTo(this, g.lights[0]); //g.world.units[0]
-	float distance = (bmp.w + bmp.h) / 2;
-	float relx = cos(angle)*distance;
-	float rely = sin(angle)*distance;
-		al_draw_tinted_scaled_bitmap(bmp,
-   COLOR(0,0,0,alpha),
-   0,0,bmp.w, bmp.h,
-   relx + x - v.ox + v.x - bmp.w/2, 
-   rely + y - v.oy + v.y - bmp.h/2, 
-   bmp.w, 
-   bmp.h, 
-   0);
-
-
+		drawShadow(v);
+		
 		draw_hp_bar(
 			x - v.ox + v.x, 
 			y - v.oy + v.y - bmp.w/2, 
@@ -683,12 +694,13 @@ class structure_t : drawable_object_t
 
 	override void onTick()
 		{
+		import g : TILE_W, TILE_H;
 		if(hp <= 0)delete_me = true;
 			
 		if(
-			world.map.data[cast(int)x/32][cast(int)y/32] == 0 || 
-			world.map.data[cast(int)x/32][cast(int)y/32] == 4 ||
-			world.map.data[cast(int)x/32][cast(int)y/32] == 5 
+			world.map.data[cast(int)x/TILE_W][cast(int)y/TILE_H] == 0 || 
+			world.map.data[cast(int)x/TILE_W][cast(int)y/TILE_H] == 4 ||
+			world.map.data[cast(int)x/TILE_W][cast(int)y/TILE_H] == 5 
 			) 
 			{
 			//

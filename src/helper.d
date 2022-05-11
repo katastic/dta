@@ -17,7 +17,6 @@ import g;
 /// Get angle to anything that has an x and y coordinate fields
 /// 	Cleaner:	float angle = angleTo(this, g.world.units[0]);
 ///  	Verses :	float angle = atan2(y - g.world.units[0].y, x - g.world.units[0].x);
-
 float angleTo(T, U)(T t, U u) 
 	{
 	return atan2(t.y - u.y, t.x - u.x);
@@ -33,16 +32,32 @@ float distance(float x, float y)
 	return sqrt(x*x + y*y);
 	}
 
+/// 2D array width/height helpers
+size_t w(T)(T[][] array2d)
+	{
+	array2d[0].length;
+	}
+
+/// Ditto
+size_t h(T)(T[][] array2d)
+	{
+	array2d.length;
+	}
+
+//	writeln(array.length); // 10, h
+//	writeln(array[0].length); // 5, w
+
 // Graphical helper functions
 //=============================================================================
-
-bool isInsideScreen(float x, float y, viewport_t v) /// For bitmap culling. Is this point inside the screen?
+/// For bitmap culling. Is this point inside the screen?
+bool isInsideScreen(float x, float y, viewport_t v) 
 	{
 	if(x > 0 && x < v.w && y > 0 && y < v.h)
 		{return true;} else{ return false;}
 	}
 
-bool isWideInsideScreen(float x, float y, ALLEGRO_BITMAP* b, viewport_t v) /// Same as above but includes a bitmaps width/height instead of a single point
+/// Same as above but includes a bitmaps width/height instead of a single point
+bool isWideInsideScreen(float x, float y, ALLEGRO_BITMAP* b, viewport_t v) 
 	{
 	if(x >= -b.w/2 && x - b.w/2 < v.w && y - b.h/2 >= -b.w/2 && y < v.h)
 		{return true;} else{ return false;} //fixme
@@ -105,6 +120,56 @@ bool percent(float chance)
 	return uniform!"[]"(0.0, 100.0) < chance;
 	}
 
+// TODO Fix naming conflict here. This series returns the value. The other works by 
+// reference
+/+
+	capLow		(non-reference versions)
+	
+		capRefLow?	(reference versions)
+		rCapLow	
+		refCapLow
+	
+	
+	also is cap ambiguous? I like that it's smaller than 'clamp'
+		cap:
+			verb
+				2.provide a fitting climax or conclusion to.
++/
+
+T capHigh(T)(T val, T max)
+	{
+	if(val > max)
+		{
+		return max;
+		}else{
+		return val;
+		}
+	}	
+// Ditto.
+T capLow(T)(T val, T max)
+	{
+	if(val < max)
+		{
+		return max;
+		}else{
+		return val;
+		}
+	}	
+// Ditto.
+T capBoth(T)(T val, T min, T max)
+	{
+	assert(min < max);
+	if(val < max)
+		{
+		val = max;
+		}
+	if(val > min)
+		{
+		val = min;
+		}
+	return val;
+	}	
+
 // can't remember the best name for this. How about clampToMax? <-----
 void clampHigh(T)(ref T val, T max)
 	{
@@ -124,6 +189,7 @@ void clampLow(T)(ref T val, T min)
 
 void clampBoth(T)(ref T val, T min, T max)
 	{
+	assert(min < max);
 	if(val < min)
 		{
 		val = min;
@@ -149,9 +215,6 @@ pure T cap_ret(T)(T val, T low, T high)
 	if(val > high){val = high; return val;}
 	return val;
 	}
-
-/// UFCS - Helper functions 
-/// see https://www.allegro.cc/manual/5/al_get_font_line_height
 
 /// Font Height = Ascent + Descent
 int h(const ALLEGRO_FONT *f)
@@ -197,7 +260,8 @@ void al_reset_target()
 	{
 	al_set_target_backbuffer(al_get_current_display());
 	}
-	
+
+/// draw scaled bitmap but with a scale factor (simpler than the allegro API version)
 void al_draw_scaled_bitmap2(ALLEGRO_BITMAP *bitmap, float x, float y, float scaleX, float scaleY, int flags=0)
 	{
 	al_draw_scaled_bitmap(bitmap, 0, 0, bitmap.w, bitmap.h, x, y, bitmap.w * scaleX, bitmap.w * scaleY, flags);
@@ -258,6 +322,7 @@ void writeval(T)(string x, T y)
 	writeln(x, " = ", y);
 	}
 
+/// Load a font and verify we succeeded or cause an out-of-band error to occur.
 FONT* getFont(string path, int size)
 	{
 	import std.string : toStringz;
@@ -266,6 +331,7 @@ FONT* getFont(string path, int size)
 	return f;
 	}
 
+/// Load a bitmap and verify we succeeded or cause an out-of-band error to occur.
 ALLEGRO_BITMAP* getBitmap(string path)
 	{
 	import std.string : toStringz;
@@ -274,10 +340,10 @@ ALLEGRO_BITMAP* getBitmap(string path)
 	return bmp;
 	}
 
-/// ported Gourand shading Allegro 5 functions from old my forum post
+/// ported Gourand shading Allegro 5 functions from my old forum post
 /// 	https://www.allegro.cc/forums/thread/615262
 /// Four point shading:
-void al_draw_gouraud_bitmap(ALLEGRO_BITMAP* bmp, float x, float y, ALLEGRO_COLOR tl, ALLEGRO_COLOR tr, ALLEGRO_COLOR bl, ALLEGRO_COLOR br)
+void al_draw_gouraud_bitmap(ALLEGRO_BITMAP* bmp, float x, float y, COLOR tl, COLOR tr, COLOR bl, COLOR br)
 	{
 	ALLEGRO_VERTEX[4] vtx;
 	float w = bmp.w;
@@ -311,11 +377,11 @@ void al_draw_gouraud_bitmap(ALLEGRO_BITMAP* bmp, float x, float y, ALLEGRO_COLOR
 	vtx[3].u = 0;
 	vtx[3].v = h;
 
-	al_draw_prim(cast(void*)vtx, NULL, bmp, 0, 4, ALLEGRO_PRIM_TYPE.ALLEGRO_PRIM_TRIANGLE_FAN);
+	al_draw_prim(cast(void*)vtx, null, bmp, 0, vtx.length, ALLEGRO_PRIM_TYPE.ALLEGRO_PRIM_TRIANGLE_FAN);
 	}
 
 /// Five points (includes center)
-void al_draw_gouraud_bitmap_5pt(ALLEGRO_BITMAP* bmp, float x, float y, ALLEGRO_COLOR tl, ALLEGRO_COLOR tr, ALLEGRO_COLOR bl, ALLEGRO_COLOR br, ALLEGRO_COLOR mid)
+void al_draw_gouraud_bitmap_5pt(ALLEGRO_BITMAP* bmp, float x, float y, COLOR tl, COLOR tr, COLOR bl, COLOR br, COLOR mid)
 	{
 	ALLEGRO_VERTEX[6] vtx;
 	float w = bmp.w;
@@ -364,5 +430,5 @@ void al_draw_gouraud_bitmap_5pt(ALLEGRO_BITMAP* bmp, float x, float y, ALLEGRO_C
 	vtx[5].u = vtx[1].u;
 	vtx[5].v = vtx[1].v;
 
-	al_draw_prim(cast(void*)vtx, null, bmp, 0, 6, ALLEGRO_PRIM_TYPE.ALLEGRO_PRIM_TRIANGLE_FAN);
+	al_draw_prim(cast(void*)vtx, null, bmp, 0, vtx.length, ALLEGRO_PRIM_TYPE.ALLEGRO_PRIM_TRIANGLE_FAN);
 	}

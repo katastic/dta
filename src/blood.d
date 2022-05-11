@@ -1,4 +1,5 @@
 import g;
+import g : TILE_W, TILE_H;
 import map;
 import viewport;
 import helper;
@@ -49,11 +50,7 @@ class static_blood_handler_t
 	
 	this(ref map_t m)
 		{
-		data = al_create_bitmap(m.w*32, m.h*32); //ideally power of 2? TEST THAT.
-	// WORKS
-	//	al_set_target_bitmap(data);
-	//	al_clear_to_color(COLOR(1,0,1,1));
-	//	al_set_target_backbuffer(al_get_current_display()); // is there an Allegro function that already does this?
+		data = al_create_bitmap(m.w*TILE_W, m.h*TILE_H); //ideally power of 2? TEST THAT.
 		assert(data != null);
 		}
 	
@@ -97,8 +94,8 @@ class blood_handler_t
 			float w = 50; //g.world.map.w
 			float h = 50;
 			
-			float x1 = uniform!"[]"(0, 32*(w-1));
-			float y1 = uniform!"[]"(0, 32*(h-1));
+			float x1 = uniform!"[]"(0, TILE_W*(w-1));
+			float y1 = uniform!"[]"(0, TILE_H*(h-1));
 			add(x1, y1);
 			}
 		}

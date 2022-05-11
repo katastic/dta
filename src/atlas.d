@@ -9,7 +9,6 @@ import allegro5.allegro_primitives;
 import allegro5.allegro_image;
 import allegro5.allegro_font;
 import allegro5.allegro_ttf;
-import allegro5.allegro_color;
 
 struct atlas_t
 	{
@@ -107,6 +106,7 @@ import std.json;
 	BITMAP* canvas;
 	void drawAtlas(float x, float y)
 		{
+		import g : TILE_W, TILE_H;
 		assert(canvas !is null);
 		al_set_target_bitmap(canvas);
 		al_draw_filled_rectangle(0, 0, 0 + atl.w-1, 0 + atl.h-1, ALLEGRO_COLOR(.7,.7,.7,.7));
@@ -118,18 +118,17 @@ import std.json;
 		int j = 0;
 		
 		do{
-			if(i >= atl.w/32)
+			if(i >= atl.w/TILE_W)
 				{
 				i=0;
 				j++;
 				}
-			if(j >= atl.h/32)break;
+			if(j >= atl.h/TILE_H)break;
 			if(idx >= w*h-1)break;
 
-			if(isPassable[idx] == false && g.selectLayer) //we only draw this for8 the primary layer
+			if(isPassable[idx] == false && g.selectLayer) //we only draw this for the primary layer
 				{
-				//draw_target_dot(0 + i*32, 0 + j*32);
-				al_draw_filled_rectangle(i*32 + 16, j*32 + 16, i*32 + 32, j*32 + 32,COLOR(1,0,0,.5));
+				al_draw_filled_rectangle(i*TILE_W + 16, j*TILE_H + 16, i*TILE_W + 32, j*TILE_H + 32,COLOR(1,0,0,.5));
 				}
 			i++;
 			idx++;
@@ -144,14 +143,14 @@ import std.json;
 		do{
 			if(idx == currentCursor)break;
 			idx++;
-			x2+=32;
+			x2+=TILE_W;
 			if(x2 >= atl.w)
 				{
 				x2 = 0;
-				y2 += 32;
+				y2 += TILE_W;
 				}
 			}while(true);
-		al_draw_rectangle(0 + x2, 0 + y2, 0 + x2 + 31, 0 + y2 + 31, ALLEGRO_COLOR(1,0,0,1), 3);
+		al_draw_rectangle(0 + x2, 0 + y2, 0 + x2 + TILE_W-1, 0 + y2 + TILE_H-1, ALLEGRO_COLOR(1,0,0,1), 3);
 		}
 		
 		al_reset_target();
@@ -171,30 +170,20 @@ import std.json;
 		
 		assert(width % 32 == 0, "ATLAS ISNT 32-byte ALIGNED. ZEUS IS FURIOUS."); 
 		
-		// TODO FIX. consider making a sub-bitmap based one
-		// so we're not constantly changing textures while drawing
-		// (one for each layer would work.)
-		
 		int z = 0;
 		for(int j = 0; j < h; j++) //note: order important
 		for(int i = 0; i < w; i++)
 			{
-			writeln("i, j, z = ", i, " ", j, " ", z);
-			BITMAP* b = al_create_sub_bitmap(atl, 32*i, 32*j, 32, 32);
+//			writeln("i, j, z = ", i, " ", j, " ", z);
+			BITMAP* b = al_create_sub_bitmap(atl, TILE_W*i, TILE_H*j, TILE_W, TILE_H);
 			assert(b != null);
 			data ~= b;
 			
 			if(z == 1 || z == 9)
 				{
 				isPassable[z] = false;
-				//m/eta_t m;
-				//m.isPassable = false;
-				//meta[z] = m;
 				}else{
 				isPassable[z] = true;
-				//meta_t m;
-				//m.isPassable = true;
-				//meta[z] = m;
 				}
 			z++;
 			}

@@ -45,6 +45,7 @@ import helper;
 import objects;
 import viewport;
 static import g;
+import g : TILE_W, TILE_H;
 import gui;
 import atlas;
 
@@ -157,6 +158,8 @@ static if (false) // MULTISAMPLING. Not sure if helpful.
 	g.guis[0] = new gui_t(p);
 	g.guis[0].x = 50;
 	g.guis[0].y = 200;
+	
+	g.lights[1].x = 200;
 	
 /*
 	g.viewports[1] = new viewport_t;
@@ -297,8 +300,8 @@ if(g.stats.fps != 0)
 //		draw_target_dot(target.x, target.y);
 
 		int val = -1;
-		int mouse_xi = (g.mouse_x + cast(int)g.viewports[0].ox + cast(int)g.viewports[0].x)/32;
-		int mouse_yi = (g.mouse_y + cast(int)g.viewports[0].oy + cast(int)g.viewports[0].x)/32;
+		int mouse_xi = (g.mouse_x + cast(int)g.viewports[0].ox + cast(int)g.viewports[0].x)/TILE_W;
+		int mouse_yi = (g.mouse_y + cast(int)g.viewports[0].oy + cast(int)g.viewports[0].x)/TILE_H;
 		if(mouse_xi >= 0 && mouse_yi >= 0
 			&& mouse_xi < 50 && mouse_yi < 50)
 			{
@@ -367,7 +370,6 @@ void execute()
 					isKeySet(ALLEGRO_KEY_Z, g.selectLayer);
 					isKeyRel(ALLEGRO_KEY_X, g.selectLayer);
 					
-					
 					isKeySet(ALLEGRO_KEY_Q, g.key_q_down);
 					isKeySet(ALLEGRO_KEY_E, g.key_e_down);
 					isKeySet(ALLEGRO_KEY_W, g.key_w_down);
@@ -383,8 +385,8 @@ void execute()
 						{
 						if(event.keyboard.keycode == key)
 							{
-							int i = cast(int)((g.mouse_x + g.viewports[0].ox)/32);
-							int j = cast(int)((g.mouse_y + g.viewports[0].oy)/32);
+							int i = cast(int)((g.mouse_x + g.viewports[0].ox)/TILE_W);
+							int j = cast(int)((g.mouse_y + g.viewports[0].oy)/TILE_H);
 							if(i >= 0 && j >= 0 && i < 50 && j < 50)g.world.map.data[i][j] = mapValue;
 							}
 						}
@@ -393,8 +395,8 @@ void execute()
 						{
 						if(event.keyboard.keycode == key)
 							{
-							int i = cast(int)((g.mouse_x + g.viewports[0].ox)/32);
-							int j = cast(int)((g.mouse_y + g.viewports[0].oy)/32);
+							int i = cast(int)((g.mouse_x + g.viewports[0].ox)/TILE_W);
+							int j = cast(int)((g.mouse_y + g.viewports[0].oy)/TILE_H);
 							if(i >= 0 && j >= 0 && i < 50 && j < 50)
 								{
 								if(cast(short)g.world.map.data[i][j] + cast(short)relMapValue >= 0
@@ -410,8 +412,8 @@ void execute()
 						{
 						if(event.keyboard.keycode == key)
 							{
-							int i = cast(int)((g.mouse_x + g.viewports[0].ox)/32);
-							int j = cast(int)((g.mouse_y + g.viewports[0].oy)/32);
+							int i = cast(int)((g.mouse_x + g.viewports[0].ox)/TILE_W);
+							int j = cast(int)((g.mouse_y + g.viewports[0].oy)/TILE_H);
 							if(i >= 0 && j >= 0 && i < 50 && j < 50)
 								{
 								if(g.selectLayer)
@@ -432,8 +434,8 @@ void execute()
 					mouseSetTile(ALLEGRO_KEY_8, 7);
 					mouseChangeCursorTile(ALLEGRO_KEY_LEFT, -1);
 					mouseChangeCursorTile(ALLEGRO_KEY_RIGHT, 1);
-					mouseChangeCursorTile(ALLEGRO_KEY_UP, -g.atlas1.atl.w/32);
-					mouseChangeCursorTile(ALLEGRO_KEY_DOWN, g.atlas1.atl.w/32);
+					mouseChangeCursorTile(ALLEGRO_KEY_UP, -g.atlas1.atl.w/TILE_W);
+					mouseChangeCursorTile(ALLEGRO_KEY_DOWN, g.atlas1.atl.w/TILE_W);
 					
 					if(event.keyboard.keycode == ALLEGRO_KEY_B)
 						{
@@ -506,8 +508,8 @@ void execute()
 				case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
 					{
 					if(!g.mouse_in_window)break;
-					long px = to!long(g.mouse_x + g.viewports[0].ox + g.viewports[0].x)/32;
-					long py = to!long(g.mouse_y + g.viewports[0].oy + g.viewports[0].y)/32;
+					long px = to!long(g.mouse_x + g.viewports[0].ox + g.viewports[0].x)/TILE_W;
+					long py = to!long(g.mouse_y + g.viewports[0].oy + g.viewports[0].y)/TILE_H;
 					writeln(g.viewports[0].ox, ",", g.viewports[0].oy);
 					writeln("mouse click at coordinate[", g.mouse_x, ",", g.mouse_y, "] and tile [", px, ",", py, "]");
 					if(px < 0 || py < 0)break;
