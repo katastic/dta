@@ -471,24 +471,6 @@ void loadResources()
 	g.reinforced_wall_bmp  	= getBitmap("./data/reinforced_wall.png");	
 	}
 
-
-// what if we want timestamps? Have two identical buffers, one with X
-// and one with (T)ime? (not to be confused with T below)
-class circular_buffer(T, size_t size)
-	{
-	T[size] data;
-	int index=0;
-		
-	void addNext(T t)
-		{
-		index++;
-		if(index == data.length)index = 0;
-		data[index] = t;
-		}
-	}
-
-intrinsic_graph!float testGraph;
-
 /// al_draw_line_segment for pairs
 void al_draw_line_segment(pair[] pairs, COLOR color, float thickness)
 	{
@@ -525,30 +507,146 @@ void al_draw_line_segment(T)(T[] y, COLOR color, float thickness)
 		}
 	}
 
+/// al_draw_line_segment 1D
+void al_draw_scaled_line_segment(T)(pair xycoord, T[] y, float yScale, COLOR color, float thickness)
+	{
+	assert(y.length > 1);
+
+	for(int i = 1; i < y.length; i++) // note i = 1
+		{
+		al_draw_line(
+			xycoord.x + i, 
+			xycoord.y + y[i]*yScale, 
+			xycoord.x + i-1, 
+			xycoord.y + y[i-1]*yScale, 
+			color, thickness);
+		}
+	}
+
+void testerror()
+	{
+	import std.algorithm;
+	float [] arr;
+	float value = arr.maxElement;
+	}
+
+// what if we want timestamps? Have two identical buffers, one with X
+// and one with (T)ime? (not to be confused with T below)
+class circular_buffer(T, size_t size)
+	{
+	float[size] data; 
+ 	int index=0;
+	bool isFull=false;
+	int maxSize=size;
+	
+	/* note:
+	if 'data' is a static array it causes all kinds of extra problems
+	 because static arrays aren't ranges so magic things like maxElement
+	 fail.
+	 
+	but it's its dynamic, now its on the heap. We're only allocating once
+	but it's still kinda bullshit.
+	
+	but then we have to "manage" an expanding array even though its not
+	going to expand so the appender has to deal with the case of growing
+	until it hits max size. which is also bullshit.
+	*/
+    
+    T maxElement()
+		{
+		T maxSoFar = to!T(-99999999);
+		for(int i = 0; i < size; i++)
+			{
+			if(data[i] > maxSoFar)maxSoFar = data[i]; 
+			}
+		return maxSoFar;
+		}
+
+    T opApply(scope T delegate(ref T) dg)
+		{ //https://dlang.org/spec/statement.html#foreach-statement
+        foreach (e; data)
+			{
+            T result = dg(e);
+            if (result)
+                return result;
+			}
+        return 0;
+		}
+		
+	void addNext(T t)
+		{
+		index++;
+		if(index == data.length)
+			{
+			index = 0; isFull = true;
+			}
+		data[index] = t;
+		}
+	}
+
+intrinsic_graph!float testGraph;
+
+/// Graph that attempts to automatically poll a value every frame
+/// is instrinsic the right name?
+/// We also want a variant that gets manually fed values
+/// This one also will (if maxTimeRemembered != 0) not reset the "zoom" or y-scaling
+/// for a certain amount of time after the 
+///
+/// Not sure if time remembered should be in terms of individual frames, or, 
+/// in terms of "buffers" full. Because a longer buffer, with same frames, will
+/// last a shorter length and so what's right for one buffer, could be not enough
+/// for a larger one.
+///
+/// Also warning: Make sure any timing considerations don't expect DRAWING to be
+/// lined up 1-to-1 with LOGIC. Draw calls may be duplicated with no new data, or 
+/// skipped during slowdowns.
+
 class intrinsic_graph(T)
 	{
-	float x=0,y=0;
-	float w=400, h=100;
+	float x=0,y=300;
+	int w=400, h=100;
 	COLOR color;
 	BITMAP* buffer;
 	T* dataSource; // where we auto grab the data every frame
-	circular_buffer!(T, 1000) dataBuffer; //how do we invoke the constructor?
+	circular_buffer!(T, 400) dataBuffer; //how do we invoke the constructor?
+
+	// private data
+ 	private T max=-9999; //READONLY cache of max value.
+ 	private float scaleFactor=1.00; //READONLY set by draw() every frame.
+ 	private int maxTimeRemembered=600; // how many frames do we remember a previous maximum. 0 for always update.
+ 	private T previousMaximum=0;
+	private int howLongAgoWasMaxSet=0;
  	
 	this(ref T _dataSource, COLOR _color)
 		{
-		dataBuffer = new circular_buffer!(T, 1000);
+		dataBuffer = new circular_buffer!(T, 400);
 		dataSource = &_dataSource;
 		color = _color;
 		}
 
 	void draw(viewport_t v)
 		{
-		al_draw_filled_rectangle(x, y, x + w, y + h, COLOR(1,1,1,.75)); 
-		al_draw_line_segment(dataBuffer.data, color, 1.0f);
+		al_draw_filled_rectangle(x, y, x + w, y + h, COLOR(1,1,1,.75));
+
+		float tempMax = max;
+		howLongAgoWasMaxSet++;
+		if(tempMax < previousMaximum && howLongAgoWasMaxSet <= maxTimeRemembered)
+			{
+			tempMax = previousMaximum;
+			}else{
+			previousMaximum = tempMax;
+			howLongAgoWasMaxSet = 0;
+			}
+		float scaleFactor=h/tempMax;
+		al_draw_scaled_line_segment(pair(this), dataBuffer.data, scaleFactor, color, 1.0f);
+
+		al_draw_text(g.font, COLOR(0,0,0,1), x, y, 0, "0");
+		al_draw_text(g.font, COLOR(0,0,0,1), x, y+h-g.font.h, 0, format("%s",max).toStringz);
 		}
 		
 	void onTick()
 		{
+		max = dataBuffer.maxElement; // note: we only really need to scan if [howLongAgoWasMaxSet] indicates a time we'd scan
 		dataBuffer.addNext(*dataSource);
 		}
 	}
