@@ -228,16 +228,16 @@ class map_t
 		int height = to!int(t.object["height"].integer);
 		writeln(width, " by ", height);
 	
-		foreach(size_t j, r; t.object["layer0"].array)
+		foreach(size_t j, ref r; t.object["layer0"].array)
 			{
-			foreach(size_t i, val; r.array)
+			foreach(size_t i, ref val; r.array)
 				{
 				data[j][i] = to!ushort(val.integer); //"integer" outs long. lulbbq.
 				}
 			}
-		foreach(size_t j, r; t.object["layer1"].array)
+		foreach(size_t j, ref r; t.object["layer1"].array)
 			{
-			foreach(size_t i, val; r.array)
+			foreach(size_t i, ref val; r.array)
 				{
 				data2[j][i] = to!ushort(val.integer); //"integer" outs long. lulbbq.
 				}

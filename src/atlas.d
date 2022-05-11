@@ -92,9 +92,9 @@ import std.json;
 		writeln("------");
 		writeln(t.object["isPassable"].array);
 	
-		foreach(size_t i, r; t.object["isPassable"].array)
+		foreach(size_t i, ref r; t.object["isPassable"].array)
 			{
-			writeln(i, r);
+//			writeln(i, r);
 			isPassable[i] = to!bool(r.boolean); //"integer" outs long. lulbbq.
 			}
 			

@@ -108,7 +108,7 @@ class treasure_chest : drawable_object_t
 				
 				writeln("OPENED");
 				bmp = g.chest_open_bmp;
-				foreach(i; itemsInside)
+				foreach(ref i; itemsInside)
 					{
 					writeln("item pop");
 					i.isInside = false;

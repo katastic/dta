@@ -71,7 +71,7 @@ class bubble_handler
 	
 	void draw(viewport_t v)
 		{
-		foreach(b; bubbles)
+		foreach(ref b; bubbles)
 			{
 			drawBubble(b, v);
 			}
@@ -79,7 +79,7 @@ class bubble_handler
 	
 	void onTick()
 		{
-		foreach(b; bubbles)
+		foreach(ref b; bubbles)
 			{
 			b.lifetime--;
 			if(b.lifetime >= 0)b.isDead = true;
@@ -128,7 +128,7 @@ class particle_handler
 	void draw(viewport_t v)
 		{
 		// what about accumulation buffer particle systems like static blood decal
-		foreach(p; data)
+		foreach(ref p; data)
 			{
 			
 			}
@@ -136,7 +136,7 @@ class particle_handler
 	
 	void onTick()
 		{
-		foreach(p; data)
+		foreach(ref p; data)
 			{
 			p.x += p.vx;
 			p.y += p.vy;
@@ -306,7 +306,7 @@ class world_t
 		{
 		void draw(T)(ref T obj)
 			{
-			foreach(o; obj)
+			foreach(ref o; obj)
 				{
 				o.draw(v);
 				}
@@ -314,7 +314,7 @@ class world_t
 		
 		void drawStat(T, U)(ref T obj, ref U stat)
 			{
-			foreach(o; obj)
+			foreach(ref o; obj)
 				{
 				stat++;
 				o.draw(v);
@@ -366,7 +366,7 @@ class world_t
 		
 		void tick(T)(ref T obj)
 			{
-			foreach(o; obj)
+			foreach(ref o; obj)
 				{
 				o.onTick();
 				}
