@@ -1,16 +1,11 @@
-dlang wtfs:
-	- use max! maxElement! all these great library functions! Just kidding. They don't work with static arrays. When is it a static vs dynamic array? Maybe as little as 1 character difference in the declaration.
-	- foreach copies BY VALUE by default?! So every time you don't do foreach(ref) you're actually wasting the entire point of using reference types everywhere.
-		- wait, but there are places where i didn't use foreach(ref) and it still set the values? How?
-	
-	- toString works great. Until you want as simple a thing as myfloat.toString which doesn't exist??? (I get you can format floats differently but what if you just want to dump it into a string for debugging? Time to bustout std.format("%s",myFloat), so elegant!)
-	- don't forget that using writeln in a Deconstructor might incur a garbage collection and crash the garbage collector.
-	- RAII doesn't reliably exist. (WTF?)
-	- 'private' doesn't do anything like C++. It's private "to the module" not to the class. So literally ALL MEMBERS ARE PUBLIC inside a module. Yeah, let's make a nice statically typed language with access specifiers to ensure proper programming. Oh, and also, everyone can access literally anything. Because fuck you.
-	
+
 TODO
+	- more lighting 
+		- (draw "light" tiles with black tiles to support multiple light sources?)
+		- draw a single lightmap accumlation buffer then merge with tilemap (need to figure out the right color multipler settings)
 	- logger
 	- scripting
+	- graph
 	- snow/rain particles/leaves blowing in wind
 	- ??? i just forgot (something with particles?)
 	
@@ -313,3 +308,16 @@ player finite state machine! DRAW THIS THING.
 		-
 		-
 
+dlang wtfs:
+	- use max! maxElement! all these great library functions! Just kidding. They don't work with static arrays. When is it a static vs dynamic array? Maybe as little as 1 character difference in the declaration.
+	- foreach copies BY VALUE by default?! So every time you don't do foreach(ref) you're actually wasting the entire point of using reference types everywhere.
+		- wait, but there are places where i didn't use foreach(ref) and it still set the values? How?
+	
+	http://ddili.org/ders/d.en/foreach_opapply.html
+	
+	
+	- toString works great. Until you want as simple a thing as myfloat.toString which doesn't exist??? (I get you can format floats differently but what if you just want to dump it into a string for debugging? Time to bustout std.format("%s",myFloat), so elegant!)
+	- don't forget that using writeln in a Deconstructor might incur a garbage collection and crash the garbage collector.
+	- RAII doesn't reliably exist. (WTF?)
+	- 'private' doesn't do anything like C++. It's private "to the module" not to the class. So literally ALL MEMBERS ARE PUBLIC inside a module. Yeah, let's make a nice statically typed language with access specifiers to ensure proper programming. Oh, and also, everyone can access literally anything. Because fuck you.
+	

@@ -6,7 +6,7 @@
 
 // GLOBAL CONSTANTS
 // =============================================================================
-immutable bool DEBUG_NO_BACKGROUND = true; /// No graphical background so we draw a solid clear color.
+immutable bool DEBUG_NO_BACKGROUND = true; /// No graphical background so we draw a solid clear color. Does this do anything anymore?
 
 // =============================================================================
 
@@ -297,7 +297,6 @@ if(g.stats.fps != 0)
 		
 		// DRAW MOUSE PIXEL HELPER/FINDER
 		draw_target_dot(g.mouse_x, g.mouse_y);
-//		draw_target_dot(target.x, target.y);
 
 		int val = -1;
 		int mouse_xi = (g.mouse_x + cast(int)g.viewports[0].ox + cast(int)g.viewports[0].x)/TILE_W;

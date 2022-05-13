@@ -564,6 +564,7 @@ class circular_buffer(T, size_t size)
 
     T opApply(scope T delegate(ref T) dg)
 		{ //https://dlang.org/spec/statement.html#foreach-statement
+			//http://ddili.org/ders/d.en/foreach_opapply.html
         foreach (e; data)
 			{
             T result = dg(e);
@@ -628,6 +629,10 @@ class intrinsic_graph(T)
 		{
 		al_draw_filled_rectangle(x, y, x + w, y + h, COLOR(1,1,1,.75));
 
+		// this looks confusing but i'm not entirely sure how to clean it up
+		// We need a 'max', that is cached between onTicks. But we also have a tempMax
+		// where we choose which 'max' we use
+		
 		float tempMax = max;
 		howLongAgoWasMaxSet++;
 		if(tempMax < previousMaximum && howLongAgoWasMaxSet <= maxTimeRemembered)
@@ -651,7 +656,6 @@ class intrinsic_graph(T)
 		}
 	}
 	
-
 struct statistics_t
 	{
 	// per frame statistics
@@ -665,7 +669,7 @@ struct statistics_t
 	ulong frames_passed=0;
 	
 	void reset()
-		{ // note we do NOT reset fps/frames_passed here as they are cumulative or handled elsewhere.
+		{ // note we do NOT reset fps and frames_passed here as they are cumulative or handled elsewhere.
 		number_of_drawn_particles = 0;
 		number_of_drawn_objects = 0;
 		number_of_drawn_structures = 0;
